@@ -54,8 +54,8 @@ baseurl: ""
 #
 
 # build settings
-theme: jekyll-theme-leap-day
-#theme: jekyll-theme-midnight
+theme: jekyll-theme-midnight
+
 markdown: kramdown
 
 permalink: /:title/
