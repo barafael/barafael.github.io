@@ -20,7 +20,7 @@ to change to a better (and more expensive) sensor. The OpenAeroVTOL firmware can
 The aim for this project is to make a simple multicopter firmware for the teensy 3.2 and expand on it.
 Ideally, the basic features (transitional mixers and multiple flight modes) from openAeroVTOL should also be possible, but that is a long shot. This blog post describes a 1-dimensional controller.
 
-The code can be found at: https://github.com/medium-endian/multipid
+The code can be found at: [https://github.com/medium-endian/multipid](https://github.com/medium-endian/multipid)
 
 # Overview
 
