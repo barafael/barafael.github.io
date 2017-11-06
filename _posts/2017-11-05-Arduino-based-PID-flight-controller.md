@@ -9,6 +9,8 @@ To make best use of this article, you should have a basic understanding about
 PID, standard RC components like ESC's (electronic speed controllers), Motors
 and RX/TX, and some C programming skills.
 
+This PID controller only works on one axis (roll) for now. It would be easy to generalize.
+
 ## Why use PID for flight control?
 
 In a quadrocopter, plane, or a rocket for that matter, there are control
@@ -38,4 +40,33 @@ with its internal stabilizer.
 
 As IMU sensor, I am using the widely available and familiar good ol' MPU6050. But it would be simple to adapt the software to better and more expensive sensors. The MPU6050 offers measurement of absolute orientation as well as angular rates from the gyroscope and can be read very quickly using the I2C protocol (we will see how).
 
-As basic RC hardware, any standard ESC's and servos should work.
+As basic RC hardware, any standard ESC's, servos and TX/RX combo should work.
+
+# Overview
+
+We need to do four things:
+
+* Read input from the RC receiver
+* Read sensor values from IMU
+* Calculate PID response with previous measurements as input
+* Write the result to the connected motors.
+
+## Reading input from the receiver
+
+I use interrupts to record the time an input signal changed state, at which point I log the system time with millis() if it went ``HIGH`` or calculate the elapsed time in case it went ``LOW``. I use shared volatile variables to copy the values to the main loop. This way, it is always clear that the interrupt writes while the main loop reads the shared variables. When the variables are read in the main loop, no interrupts are allowed (since they might overwrite the values while reading them!). The read values are in milliseconds, so roughly between 1000 and 2000. This is the standard for RC Pulse Position Modulated signals.
+
+For a really good description, look at [this excellent article by Ryan Boland](https://ryanboland.com/blog/reading-rc-receiver-values/). He explains it better than I will ever be able to - and with oscilloscope screenshots!
+
+## Read sensor values from IMU
+
+To read the MPU6050, I adapted large parts from [Jeff Rowbergs example code for his library](https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU6050/examples/MPU6050_DMP6/MPU6050_DMP6.ino). I also added a function to request the raw gyro rate reading, which I found [in Joop Brokking's YMFC V2 source code](http://www.brokking.net/ymfc-3d_v2_main.html). His firmware is a great read if you are interested.
+
+Sensor data is read whenever the IMU signals that data is ready, signaled by interrupt.
+
+## Calculate PID response
+
+Relatively basic PID control code here. The setpoint is interpreted as an absolute angle, not an angular rate. That would also be possible, though.
+
+## Write result to connected motors
+
+The output is finished. It only needs to be scaled a bit and then written out using the ``writeMicroseconds(int micros)`` method of the Arduino ``Servo`` class.
