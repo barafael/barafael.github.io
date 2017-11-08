@@ -1,6 +1,3 @@
-
-# Introduction
-
 This blogpost is about a simple PID controller that eventually will be able to
 stabilize small aircraft and multicopters.  For now, it works fine on one axis
 (roll), but I will keep working on it to make it more customizable.  I am
