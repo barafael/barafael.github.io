@@ -36,7 +36,7 @@ action, the use of a macro is simply recording and playing back such a sequence
 of characters. Because vim is awesome, it stores a macro in some register
 (bearing the name you gave to the macro) so you can easily access, save for
 later, or modify the actions a macro does. You can also call a macro from
-itself for multiline edits - to vim it is simply a long chain of characters
+itself for multi-line edits - to vim it is simply a long chain of characters
 that it must interpret. Macros can be nested - you can call a macro b from
 within macro a since macro invocation is only a sequence of characters.
 Finally, it is easy to parameterise macros with register contents.

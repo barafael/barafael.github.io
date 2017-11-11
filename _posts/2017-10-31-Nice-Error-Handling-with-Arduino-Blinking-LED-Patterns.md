@@ -13,7 +13,7 @@ same method!).  In this blog post, I want to show a simple and somewhat elegant
 way to do this.
 
 Here is the code: <script
-src="https://gist.github.com/medium-endian/d1a09af50de218b90638068cf394d7cb.js"></script>
+src="https://gist.github.com/barafael/d1a09af50de218b90638068cf394d7cb.js"></script>
 
 Pretty self-explanatory! If you haven't worked with header files (like
 ``error_handling.h``) before: they are really simple. Before your code gets

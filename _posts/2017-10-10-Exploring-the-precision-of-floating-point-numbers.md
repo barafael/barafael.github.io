@@ -10,7 +10,7 @@ doubles every time.
 
 I wanted to empirically show this and wrote this short C program:
 
-<script src="https://gist.github.com/medium-endian/49d58525be9ff7738d6a8dc281649642.js"></script>
+<script src="https://gist.github.com/barafael/49d58525be9ff7738d6a8dc281649642.js"></script>
 
 ## One reason Unions are useful
 

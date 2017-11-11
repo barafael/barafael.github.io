@@ -1,4 +1,4 @@
-[Blog here](http://medium-endian.github.io)
+[Blog here](http://barafael.github.io)
 
 # Flipped Bits
 
