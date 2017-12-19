@@ -1,21 +1,12 @@
-This blogpost is about a simple PID controller that eventually will be able to
-stabilize small aircraft and multicopters.  For now, it works fine on one axis
-(roll), but I will keep working on it to make it more customizable.  I am
-thinking about different flight modes, which will each have their own mixers
-(controlling which PID coefficients to use for which axis). Transitioning
-between flight modes would interpolate the values of the two mixers.
+I am working on a simple PID controller that is supposed to eventually 
+stabilize small aircraft and multicopters. For now, it works fine on one axis
+(roll), but I will keep working on it to make it more customizable. I am
+thinking about incorporating different flight modes, which will each have their own mixers
+(controlling which PID coefficients to use for which axis, and how much impact each PID output should have on each output). Transitioning
+between flight modes could interpolate the values of the two mixers, so that modes transition smoothly into each other.
 
-For the [Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control
-Board](https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de),
-there is a firmware that does this very well:
-[OpenAeroVTOL](https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)),
-which was a big part of the inspiration for this project. The hardware this
-project is based on is showing it's age. I will also be using an MPU6050 for my
-project, but since I am not coupled with any specific board, it would be easy
-to change to a better (and more expensive) sensor. The OpenAeroVTOL firmware can be configured using the onboard LCD of the kk board (that is an admirable feat!) or, more recently, using Excel Macros (yes, really).
+The firmware that inspired me to do this project (and where transitional mixers/flight modes originate) is [OpenAeroVTOL](https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)). It runs (really well) on the [Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control Board](https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de). There is active support on the RCgroups forums, and it is often stated that this board is able to stabilise almost anything small-scale. However, development is confined by the hardware used (who knows for how long HK will be making the kk-board), the development style (code drops on release by the single author every couple months), and the word 'VTOL' in the name - it would be nice to really have a general controller not for just one niche, sacrificing some features (Tailsitter option, Heli-style rotor control) for a more general approach (also with more than 3 flight modes, which OAV has). Another feature of OAV is that it can entirely be configured via the onboard LCD screen (that is a miracle, really). Since version 1.5, you can also use (exclusively) Microsoft Excel to configure it, using a macro-based gui in .xls format (yes, really). I am not at this point by a long shot, but it would be nice to have a graphical configuration interface that can set options on the board over a serial or even wireless connection.
 
-The aim for this project is to make a simple multicopter firmware for the teensy 3.2 and expand on it.
-Ideally, the basic features (transitional mixers and multiple flight modes) from openAeroVTOL should also be possible, but that is a long shot. This blog post describes a 1-dimensional controller.
 
 The code can be found at: [https://github.com/barafael/multipid](https://github.com/barafael/multipid)
 
@@ -62,34 +53,25 @@ basic control task. The board also has very many GPIO pins, and can tolerate a
 wide range of supply voltages (such as 5V from a standard RC electronic speed
 controller) with its internal stabilizer.
 
-As IMU sensor, I am using the widely available and familiar good ol' MPU6050.
-But it would be simple to adapt the software to better and more expensive
-sensors. The MPU6050 offers measurement of absolute orientation as well as
-angular rates from the gyroscope and can be read very quickly using the I2C
-protocol (we will see how).
+As IMU sensor, I am using the widely available and familiar good ol' MPU6050. I chose this sensor because it is initially very simple, but I would like to use one of the newer Invensense sensors (ICM-20608) and implement my own Kalman/Madgwick filter. The 6050 offers measurement of absolute orientation as well as
+angular rates from the gyroscope and can be read moderately quickly using the I2C
+protocol.
 
-As basic RC hardware, any standard ESC's, servos and TX/RX combo should work.
+As basic RC hardware, any standard ESC's, servos and TX/RX combo using PPM should work.
 
-# Four simple steps
+# Four simple steps to fun
 
 We need to do four things:
 
 * Read input from the RC receiver
 * Read sensor values from IMU
-* Calculate PID
-* response with previous measurements as input Write the result to the connected motors.
+* Calculate PID response with previous measurements as input
+* Write the result to the connected motors.
 
 ## Reading input from the receiver
 
-I use interrupts to record the time an input signal changed state, at which
-point I log the system time with millis() if it went ``HIGH`` or calculate the
-elapsed time in case it went ``LOW``. I use shared volatile variables to copy
-the values to the main loop. This way, it is always clear that the interrupt
-writes while the main loop reads the shared variables. When the variables are
-read in the main loop, no interrupts are allowed (since they might overwrite
-the values while reading them!). The read values are in milliseconds, so
-roughly between 1000 and 2000. This is the standard for RC Pulse Position
-Modulated signals.
+The receiver sends pulses of varying length corresponding to the stick positions to our boards. Using interrupts, we can measure the duration between a rising flank and a falling flank of one signal, which should always be between 1000us and 2000us. We can simply hook an interrupt to each input pin, log the system time on a rising flank, and calculate duration since rising flank when the signal is falling again.
+The time measurement from our interrupt routines is written each time the interrupt routine executes. That means, we have to take care when reading those values! I used shared volatile variables which are written to by the interrupts to store the measurements. The main loop copies the data to variables which it can use undisturbed. This way, it is always clear that the interrupt writes while the main loop reads the shared variables. When the variables are read in the main loop, no interrupts are allowed (since they might overwrite the values while reading them!). The measurements are in milliseconds, so roughly between 1000 and 2000.
 
 For a really good description, look at [this excellent article by Ryan
 Boland](https://ryanboland.com/blog/reading-rc-receiver-values/). He explains
