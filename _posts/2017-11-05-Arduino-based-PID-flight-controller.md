@@ -1,44 +1,11 @@
-I am working on a simple PID controller that is supposed to eventually
-stabilize small aircraft and multicopters. For now, it works fine on one axis
-(roll), but I will keep working on it to make it more customizable. I am
-thinking about incorporating different flight modes, which will each have their
-own mixers (controlling which PID coefficients to use for which axis, and how
-much impact each PID output should have on each output). Transitioning between
-flight modes could interpolate the values of the two mixers, so that modes
-transition smoothly into each other.
+A PID-controller governs a system so that the difference between a set point
+and a measured point is minimized. This function is ubiquitous and has
+applications in many areas of engineering. In this article, I want to present a
+simple PID-based multi-purpose flight controller that runs on the Teensy 3.2
+board using Arduino libraries. It can control PWM-based actuators like servos
+and electronic speed controllers.
 
-The firmware that inspired me to do this project (and where transitional
-mixers/flight modes originate) is
-[OpenAeroVTOL](https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)).
-It runs (really well) on the [Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control
-Board](https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de).
-There is active support on the RCgroups forums, and it is often stated that
-this board is able to stabilise almost anything small-scale. However,
-development is confined by the hardware used (who knows for how long HK will be
-making the kk-board), the development style (code drops on release by the
-single author every couple months), and the word 'VTOL' in the name - it would
-be nice to really have a general controller not for just one niche, sacrificing
-some features (Tailsitter option, Heli-style rotor control) for a more general
-approach (also with more than 3 flight modes, which OAV has). Another feature
-of OAV is that it can entirely be configured via the onboard LCD screen (that
-is a miracle, really). Since version 1.5, you can also use (exclusively)
-Microsoft Excel to configure it, using a macro-based gui in .xls format (yes,
-really). I am not at this point by a long shot, but it would be nice to have a
-graphical configuration interface that can set options on the board over a
-serial or even wireless connection.
-
-
-The code can be found at:
-[https://github.com/barafael/multipid](https://github.com/barafael/multipid)
-
-# Overview
-
-A PID-controller regulates a system in such a way that the difference between a
-set point and a measured point is minimized. This ability is extremely useful
-and has many applications across most engineering disciplines. In this article,
-I want to present a simple PID-based multi-purpose flight controller that runs
-on the Teensy 3.2 board using Arduino software but should also run on other
-Arduino-compatible hardware with only slight modifications.
+# 
 
 To make best use of this article, you should have a basic understanding about
 PID, standard RC components like ESC's (electronic speed controllers), Motors
@@ -100,14 +67,14 @@ positions to our boards. Using interrupts, we can measure the duration between
 a rising flank and a falling flank of one signal, which should always be
 between 1000us and 2000us. We can simply hook an interrupt to each input pin,
 log the system time on a rising flank, and calculate duration since rising
-flank when the signal is falling again.  The time measurement from our
-interrupt routines is written each time the interrupt routine executes. That
-means, we have to take care when reading those values! I used shared volatile
-variables which are written to by the interrupts to store the measurements. The
-main loop copies the data to variables which it can use undisturbed. This way,
-it is always clear that the interrupt writes while the main loop reads the
-shared variables. When the variables are read in the main loop, no interrupts
-are allowed (since they might overwrite the values while reading them!). The
+flank when the signal is falling again. The time measurement from our interrupt
+routines is written each time the interrupt routine executes. That means, we
+have to take care when reading those values! I used shared volatile variables
+which are written to by the interrupts to store the measurements. The main loop
+copies the data to variables which it can use undisturbed. This way, it is
+always clear that the interrupt writes while the main loop reads the shared
+variables. When the variables are read in the main loop, no interrupts are
+allowed (since they might overwrite the values while reading them!). The
 measurements are in milliseconds, so roughly between 1000 and 2000.
 
 For a really good description, look at [this excellent article by Ryan
@@ -137,3 +104,41 @@ absolute angle, not an angular rate. That would also be possible, though.
 The output is finished. It only needs to be scaled a bit and then written out
 using the ``writeMicroseconds(int micros)`` method of the Arduino ``Servo``
 class.
+
+
+The code can be found at:
+[https://github.com/barafael/multipid](https://github.com/barafael/multipid)
+
+
+# Further Ideas/Inspiration
+
+I am thinking about allowing for several different flight/operation modes which
+consist mostly of a set of PID-coefficients and settings for mixers on each
+actuator output. A mixer would control how much impact each PID output should
+have on each actuator output.
+
+Transitioning between flight modes could interpolate the values of the two
+mixers, so that modes transition smoothly into each other.
+
+If this transitional flight mode interpolation sounds familiar to you, it might
+be because of
+[OpenAeroVTOL](https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)).
+It runs (really well) on the [Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control
+Board](https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de).
+There is active and friendly support on the RCgroups forums, and it is often
+stated that this board is able to stabilise almost anything small-scale.
+However, development is confined by the hardware used (who knows for how long
+HK will be making the kk-board), the development style (code drops on release
+by the single author every couple months), and the word 'VTOL' in the name. It
+would be nice to really have a general controller not for just one niche,
+sacrificing some features (Tailsitter option, Heli-style rotor control) for a
+more general approach (also with more than the 3 flight modes which OAV has).
+
+Another feature of OAV is that it can entirely be configured via the onboard
+LCD screen (that is a miracle, really). Since version 1.5, you may also use
+(exclusively) Microsoft Excel to configure it, using a macro-based gui in .xls
+format (yes, really). I am not at the point to even think about this by a long
+shot, but it would be nice to have a graphical configuration interface on a
+computer that can set options on the board over a serial or even wireless
+connection.
+
