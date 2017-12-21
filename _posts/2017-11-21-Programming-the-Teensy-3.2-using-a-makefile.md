@@ -18,7 +18,7 @@ The goals are:
 
 * being able to use any editor and just run shell commands (or press buttons)
 * to compile and flash the program being able to compile my programs
-* immediately after checking out, not having to set up arduino being able to do
+* immediately after checking out, not having to set up Arduino being able to do
 * syntax completion based on local files being able to follow the symbol under
 * the cursor and all the IDE/ctags goodness.
 
@@ -28,9 +28,9 @@ worth it's salt will be able to do this.
 
 # The Easy Part: Using Someone Else's Makefile
 
-In [this repo](https://github.com/apmorton/teensy-template), github user
+In [this repo](https://github.com/apmorton/teensy-template), GitHub user
 apmorton has prepared a working makefile. Only tiny adjustments are needed in
-the provided makefile, like setting desired clock frequency, setting teensy
+the provided makefile, like setting desired clock frequency, setting Teensy
 version and enabling more compiler warning flags :)
 
 # The Hard Part: Getting Existing Code to Compile (... and run...)
@@ -50,7 +50,7 @@ can be fixed by:
     whether it actually does the desired job
 * If the issue are duplicate function definitions:
   - Difficult one. You need to find out which of the functions to use and then
-    comment out or guard (with a preprocessor definition) the other's
+    comment out or guard (with a preprocessor definition) the others
     definition.
 * Else:
   - Tough luck, you are on your own...

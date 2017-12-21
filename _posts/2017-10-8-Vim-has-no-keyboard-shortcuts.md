@@ -39,7 +39,7 @@ later, or modify the actions a macro does. You can also call a macro from
 itself for multi-line edits - to vim it is simply a long chain of characters
 that it must interpret. Macros can be nested - you can call a macro b from
 within macro a since macro invocation is only a sequence of characters.
-Finally, it is easy to parameterise macros with register contents.
+Finally, it is easy to parameterize macros with register contents.
 
 For example, you might have a macro 'a' that finds a word matching a certain
 pattern and yanks it to register 'w', and then calls a macro 'b' which finds

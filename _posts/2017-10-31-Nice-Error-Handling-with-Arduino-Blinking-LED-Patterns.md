@@ -17,7 +17,7 @@ src="https://gist.github.com/barafael/d1a09af50de218b90638068cf394d7cb.js"></scr
 
 Pretty self-explanatory! If you haven't worked with header files (like
 ``error_handling.h``) before: they are really simple. Before your code gets
-turned into binary for the arduino, the content of the header file is placed at
+turned into binary for the Arduino, the content of the header file is placed at
 it's corresponding ``#include``. Simple as that. This way, we can define our
 error handling functions without cluttering our main program. The header file
 must be in the same directory as the main sketch. You can rename the main
