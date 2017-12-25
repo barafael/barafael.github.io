@@ -162,6 +162,7 @@ be because of
 [OpenAeroVTOL](https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)).
 It runs (really well) on the [Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control
 Board](https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de).
+
 There is active and friendly support on the RCgroups forums, and it is often
 stated that this board is able to stabilize almost anything small-scale.
 However, development is confined by the hardware used (who knows for how long
@@ -170,6 +171,11 @@ by the single author every couple months), and the word 'VTOL' in the name. It
 would be nice to really have a general controller not for just one niche,
 sacrificing some features (Tailsitter option, Heli-style rotor control) for a
 more general approach (also with more than the 3 flight modes which OAV has).
+Additionally, OAV does not support a derivative gain (the D in PID), arguing
+that this form of feedback is unnecessary for vehicles that naturally have a
+high damping factor due to having a higher mass or large wings. The accuracy of
+this statement is debatable, and to provide a more general approach a D gain is
+necessary (if only for meta-stable systems or niche cases like multicopters).
 
 Another feature of OAV is that it can entirely be configured via the onboard
 LCD screen (that is a miracle, really). Since version 1.5, you may also use
