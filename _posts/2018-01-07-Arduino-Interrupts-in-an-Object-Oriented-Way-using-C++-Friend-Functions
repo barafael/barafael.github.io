@@ -22,6 +22,8 @@ to a class) but still retain private access to all members of a specified class
 as if it was a member of that class. This class has to declare the function as
 a friend. Now, this function can be registered as interrupt!
 
+There is one tiny ugly thing that remains: to access private members of a class instance, this instance has to be known by the interrupt. This can be done by having a global pointer to a class instance which is valid for the lifetime of the instance. If you attach your interrupts and set this pointer in your constructor you should be fine. Remember to detach the interrupts and set the pointer to ```NULL``` or ```nullptr``` in the destructor, if this applies to your program.
+
 ## Example Code: Simple library to interface an Arduino or Teensy device to an RC Receiver
 
 Here is the code:
