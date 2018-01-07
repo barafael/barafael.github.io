@@ -28,7 +28,6 @@ There is one tiny ugly thing that remains: to access private members of a class 
 
 Here is the code:
 
-<script src="http://gist-it.appspot.com/http://github.com/barafael/RC-Receiver-Interface/blob/master/Receiver.h"></script>
+<script src="https://gist.github.com/barafael/7434737e6c1846a9107b87213ea14a09.js"></script>
 
-<script src="http://gist-it.appspot.com/http://github.com/barafael/RC-Receiver-Interface/blob/master/Receiver.cpp"></script>
-
+For a possibly more up-to-date version: [github repo.](https://github.com/barafael/RC-Receiver-Interface/)
