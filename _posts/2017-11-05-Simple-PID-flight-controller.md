@@ -104,19 +104,16 @@ overwrite the values while reading them, violating the 'sharing XOR mutability'
 principle.
 
 For a really good description on how to read RC receiver PPM output, look at
-[this excellent article by Ryan Boland]
-(https://ryanboland.com/blog/reading-rc-receiver-values/). He explains it
-better than I will ever be able to - and with oscilloscope screenshots!
+[this excellent article by Ryan Boland](https://ryanboland.com/blog/reading-rc-receiver-values/).
+He explains it better than I will ever be able to - and with oscilloscope screenshots!
 
 ## Read sensor values from IMU
 
 To read the MPU6050, I 'adapted' large parts from [Jeff Rowbergs example code
-for his library]
-    (https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU6050/examples/MPU6050_DMP6/MPU6050_DMP6.ino).
-    I also added a function to request the raw gyro rate reading, which I found
-    in [Joop Brokking's YMFC V2 source code]
-    (http://www.brokking.net/ymfc-3d_v2_main.html). His quadcopter firmware is
-    a messy but good read if you are interested.
+for his library](https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU6050/examples/MPU6050_DMP6/MPU6050_DMP6.ino).
+I also added a function to request the raw gyro rate reading, which I found
+in [Joop Brokking's YMFC V2 source code](http://www.brokking.net/ymfc-3d_v2_main.html).
+His quadcopter firmware is a messy but good read if you are interested.
 
 Sensor attitude data is read whenever the IMU signals that data is ready,
 signaled by interrupt. The gyroscope is read on every loop.
