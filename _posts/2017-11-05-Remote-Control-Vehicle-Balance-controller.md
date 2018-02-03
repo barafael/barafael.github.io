@@ -96,7 +96,10 @@ rising edge and a falling edge of one signal, which should always be roughly
 between 1000us and 2000us (RC standard). We can simply hook an interrupt to
 each input pin, log the system time on a rising flank, and calculate the
 duration in microseconds since rising flank when the signal is falling again.
-The code for this is in ```src/PWMReceiver.cpp```. PPM, which is conceptually similar but needs only one wire, is also implemented in ```src/PPMReceiver.cpp```. All receiver interfaces should implement virtual functions in ```include/Receiver.h```.
+The code for this is in ```src/PWMReceiver.cpp```. PPM, which is conceptually
+similar but needs only one wire, is also implemented in
+```src/PPMReceiver.cpp```. All receiver interfaces should implement virtual
+functions in ```include/Receiver.h```.
 
 ## Race Copters, Not Conditions
 The duration measurement from our interrupt routines is written each time the
@@ -109,9 +112,11 @@ When the variables are read, no interrupts are allowed since they might
 overwrite the values while reading them, violating the 'sharing XOR mutability'
 principle and thus inviting race conditions.
 
-For a really good description on how to read RC receiver PPM output, look at
+For a really good description on how to read RC receiver PPM output, have look
+at
 [this excellent article by Ryan Boland](https://ryanboland.com/blog/reading-rc-receiver-values/).
-He explains it better than I will ever be able to - and with oscilloscope screenshots!
+He explains it better than I will ever be able to - and with oscilloscope
+screenshots!
 
 ### Read sensor values from IMU
 
@@ -152,17 +157,26 @@ throttle, roll/pitch/yaw attitude PID output, roll/pitch/yaw rate output,
 rate/stabilize mode, and even motor type (servo/ESC).
 
 This is basically a Matrix-vector multiplication. Each output is the weighted
-sum of the RC inputs and the PID controlling values in each axis. Since we have 8 outputs and 8+3 (currently) values that influence them, there are 8 rows and 11 columns in our matrix.
-The input vector consists of 8 receiver inputs + 3 PID control values. The i-th
-row of the matrix consists of the weights for each output for the j-th control
-value.
+sum of the RC inputs and the PID controlling values in each axis. Since we have
+8 outputs and 8+3 (currently) values that influence them, there are 8 rows and
+11 columns in our matrix.  The input vector consists of 8 receiver inputs + 3
+PID control values. The i-th row of the matrix consists of the weights for each
+output for the j-th control value.
 
-This is a bit complex, but essentially it allows us to say: "This output reacts to the throttle stick with a factor of 0.8, and to the yaw pid value with a factor of 0.1."
-Additionally, we can store a matrix for each flight mode, and transition from one matrix to the next smoothly while transitioning flight modes.
+This is a bit complex, but essentially it allows us to say: "This output reacts
+to the throttle stick with a factor of 0.8, and to the yaw pid value with a
+factor of 0.1." Additionally, we can store a matrix for each flight mode, and
+transition from one matrix to the next smoothly while transitioning flight
+modes.
 
-Where is the catch? Well, none of this is implemented... The matrix multiplication part can be done in [under a microsecond(!) on the teensy 3.5](https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/) using the capabilities of the Cortex M4. That is an interesting challenge and I hope I will get to it.
+Where is the catch? Well, none of this is implemented... The matrix
+multiplication part can be done in
+[under a microsecond(!) on the teensy 3.5](https://forum.pjrc.com/threads/49479-Fixed-point-known-size-matrix-multiplication-on-teensy-3-2-3-5)
+using the capabilities of the Cortex M4. That is an interesting challenge and I
+hope I will get to it.
 
-All of this depends on getting the PID and IMU and Output implementations to work with 16 bit fixed-point numbers, and never floats.
+All of this depends on getting the PID and IMU and Output implementations to
+work with 16 bit fixed-point numbers, and never floats.
 
 ## Give me the Code!
 
