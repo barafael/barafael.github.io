@@ -1,58 +1,50 @@
-A PID-controller governs a system so that the difference between a setpoint
-and a measured value is minimized. This function is ubiquitous and has
-applications in many areas of engineering. In this article, I want to present a
-simple PID-based multi-purpose flight controller that runs on the Teensy 3.2
-board using Arduino libraries. It can control PWM-based actuators like servos
-and electronic speed controllers driving brushless motors.
+In this article, I want to present a PID-based multi-purpose balance controller
+that runs on the Teensy 3.2 board using Arduino libraries. It can control
+PWM-based actuators like servos or LEDs and electronic speed controllers
+driving brushless motors. This control is based on an external signal like the
+output from an RC receiver, and the output of an intertial measurement unit.
+
+That means you can use this controller to stabilise or balance small vehicles
+like planes, multicopters, VTOLs, hydrofoils, hovercraft, or rockets...
 
 To get the most use out of this article, you should have a basic understanding
 about PID, standard RC components like ESCs (electronic speed controllers),
 brushless motors, RX/TX, and some C/C++ programming skills.
 
-## Why use PID for flight control?
+## Why use PID for balance control?
 
-In quadcopters, planes, or many other vehicle types, we have to constantly
+A PID controller governs a system so that the difference between a setpoint and
+a measured value is minimized, effectively driving our system to where we want
+it to be. Note that anything measurable and 'steerable' (that is at least
+somewhat linear) can be fed into a PID controller, like temperature, position,
+atlitude, force... Using an IMU (Intertial Measurement Unit) to give us our
+measurement, we can generate an output signal that depends on the attitude and
+angular velocity of our system.
+
+In quadcopters, planes, and many other vehicle types, we have to constantly
 monitor and manipulate the attitude, thrust, velocity and similar parameters to
 achieve the desired result. To influence those parameters, there are control
 surfaces, levers or propellers/jets which inflict forces on our craft in any
-necessary direction.
+necessary degree of freedom.
 
-For example, the elevator on a plane diverts airflow, causing a force on the
-long lever that is the aircraft's tail and pitching the plane up or down. A
-hydrofoil watercraft is very similar to an airplane in that it uses foils to
-generate lift and basically identical (but smaller) control surfaces to control
-attitude. The propellers on a multicopter produce all the lift, but they also
-influence the angle and angular rate at which the copter is moving in each
-axis. A more modern example would be the small thrusters on spacecraft
-which are used for attitude control. Hovercraft thrusters are conceptually
-similar in 2 dimensions (no up/down).
+Those propellers and levers generally control rates too - rate of rotation,
+rate of climb, etc. That makes them ideal for being governed by a PID
+controller.
 
-But even more different control modes are thinkable - a rover might raise and
-lower the suspension in order to achieve a given attitude, which conceptually
-isn't much different from free-floating vehicles. Let's conclude that
-applications of attitude/rate control for air, ground and water vehicles are
-numerous.
-
-All those properties (pitch, yaw, roll angles or angular rates, thrust,
-ascent/descent...) are suitable for regulation through a PID controller - we
-have a setpoint, and we can use an inertial measurement unit to find out their
-current value.
-
-
-# Cascaded PID
+### Cascaded PID
 
 It is useful to use not only one but two PID controllers because the sensor
-output from the gyroscope is way faster than the output from the
-Kalman/Madgwick algorithm that fuses gyroscope and accelerometer data and
-produces an accurate attitude estimation. We can cascade the controllers: the
-first loop receives the setpoint interpreted as attitude and the currently
-most accurate estimation of the attitude and produces a needed angular rate as
-a result. This rate is fed into another loop as setpoint, and this rate loop
-receives the faster angular rate readings from the gyroscope directly. If the
-second loop executes more often, then it will ensure that the overall loop rate
-is fast and not limited by the time it takes to fuse the IMU data. Gyroscope
-data drifts only over time, whereas accelerometer data does not drift but is
-subject to high-frequency noise.
+output from the gyroscope is way faster than the output from the sensor fusion
+algorithm that fuses gyroscope and accelerometer data and produces an accurate
+attitude estimation. Gyroscope data drifts only over time, whereas
+accelerometer data does not drift but is subject to high-frequency noise. We
+can cascade the controllers: the first loop receives the setpoint interpreted
+as attitude and the currently most accurate estimation of the attitude and
+produces a needed angular rate as a result. This rate is fed into another loop
+as setpoint, and this rate loop receives the faster angular rate readings from
+the gyroscope directly. If the second loop executes more often, then it will
+ensure that the overall loop rate is fast and not limited by the time it takes
+to fuse the IMU data.
 
 The setpoint can either be interpreted as a desired absolute angle or as a
 desired angular rate. In the first case, the PID controller will attempt to
@@ -76,35 +68,39 @@ internal voltage regulator.
 
 As IMU sensor, I am using the widely available and familiar MPU6050. This
 sensor offers measurement of absolute orientation as well as angular rates from
-the gyroscope and provides data moderately quickly using the I2C protocol. I
-chose this sensor because it is initially very simple, but I would like to use
-one of the newer Invensense sensors (ICM-20608) and implement my own
-Kalman/Madgwick filter at some point.
+the gyroscope and provides data moderately quickly using the I2C protocol.
+I am also evaluating
+[Kris Winers SENtral-based 'Ultimate Fusion Solution'](https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/)
+which has proven to be extremely fast and accurate, if a bit expensive. I chose
+to let the sensors do their fusion for now because it is initially very simple,
+but I would like to use one of the newer Invensense sensors (ICM-20608,
+ICM-40602) and implement my own Kalman/Madgwick filter at some point.
 
 As basic peripheral hardware (actuators), any standard ESCs, servos and TX/RX
 combo using PPM should work.
 
-# Four simple steps to fun (and control)
+## Four simple steps
 
 Here are the steps that need to be done to stabilize and control:
 
 * Read input from the RC receiver
 * Read sensor values from IMU
 * Calculate PID response with those measurements as input
-* Write the result to the connected actuators
+* Write the result to the connected actuators, using predefined weights
 
-## Reading input from the receiver
+### Reading input from the receiver
 
 The receiver sends pulses of varying on-time corresponding to the stick
 positions to our board. Using interrupts, we can measure the duration between a
-rising flank and a falling flank of one signal, which should always be between
-1000us and 2000us (RC standard). We can simply hook an interrupt to each input
-pin, log the system time on a rising flank, and calculate duration in
-microseconds since rising flank when the signal is falling again. The code for
-this is in ```src/PWMReceiver.cpp```.
+rising edge and a falling edge of one signal, which should always be roughly
+between 1000us and 2000us (RC standard). We can simply hook an interrupt to
+each input pin, log the system time on a rising flank, and calculate the
+duration in microseconds since rising flank when the signal is falling again.
+The code for this is in ```src/PWMReceiver.cpp```. PPM, which is conceptually similar but needs only one wire, is also implemented in ```src/PPMReceiver.cpp```. All receiver interfaces should implement virtual functions in ```include/Receiver.h```.
 
+## Race Copters, Not Conditions
 The duration measurement from our interrupt routines is written each time the
-interrupt routine executes on a falling flank. That means, we have to be
+interrupt routine executes on a falling edge. That means, we have to be
 careful when reading those values! I used shared volatile variables which are
 written to by the interrupts to store the measurements. The main loop copies
 the data to variables which it can use undisturbed. This way, it is always
@@ -117,7 +113,7 @@ For a really good description on how to read RC receiver PPM output, look at
 [this excellent article by Ryan Boland](https://ryanboland.com/blog/reading-rc-receiver-values/).
 He explains it better than I will ever be able to - and with oscilloscope screenshots!
 
-## Read sensor values from IMU
+### Read sensor values from IMU
 
 To read the MPU6050, I 'adapted' large parts from
 [Jeff Rowbergs example code for his (unfortunately abandoned and a little outdated) project I2CDevLib](https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU6050/examples/MPU6050_DMP6/MPU6050_DMP6.ino).
@@ -125,18 +121,18 @@ I also added a function to request the raw gyro rate reading, which I found
 in [Joop Brokking's YMFC V2 source code](http://www.brokking.net/ymfc-3d_v2_main.html).
 His quadcopter firmware is a bit messy coding-wise but easy to understand and a
 good read if you are interested. His understanding of the topic is great and it
-shoes in his helpful youtube videos.
+shows in his helpful youtube videos.
 
-Sensor attitude data is read whenever the IMU signals that data is ready,
+DMP-infused attitude data is read whenever the IMU signals that data is ready,
 signalled by an interrupt. The gyroscope is read on every loop.
 
-## Calculate PID response
+### Calculate PID response
 
-This is where the magic happens, but this is actually very simple. The PID
+This is where the magic happens, but it is actually very simple. The PID
 algorithm in this discrete form (really the one everyone uses) is short and
 sweet, using the "poor man's derivative (-)" and the "poor man's integral (+)".
-The implementation of dual rates complicates things a bit but is useful in
-the long run.
+Some smoothing is applied to the D term (if enabled), but I am unsure if this
+is actually beneficial.
 
 I adapted some ideas presented in
 [Brett Beauregard's series "Improving the beginners PID"](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
@@ -144,24 +140,36 @@ I adapted some ideas presented in
 Eventually, PID coefficients will depend on the currently chosen mode (if I get
 to the implementation).
 
-## Write result to connected motors
+### Write result to connected actuators
 
-The output is finished. It only needs to be scaled a bit and then written out
-using the ``writeMicroseconds(int micros)`` method of the Arduino ``Servo``
-class.
+The output is basically finished. It only needs to be scaled a bit and then
+written out using the various output methods defined in
+```src/ESCOutput.cpp```, ```src/ServoOutput.cpp``` and
+```src/FastPWMOutput.cpp```.  Eventually, this will need more work: depending
+on the current flight mode, output mixer volumes will have to be chosen for
+each output channel. Possible parameters for the output channel mixers are
+throttle, roll/pitch/yaw attitude PID output, roll/pitch/yaw rate output,
+rate/stabilize mode, and even motor type (servo/ESC).
 
-Eventually, this will need more work: depending on the current flight mode,
-output mixer volumes will have to be chosen for each output channel. Possible
-parameters for the output channel mixers are throttle, roll/pitch/yaw attitude
-PID output, roll/pitch/yaw rate output, rate/stabilize mode, and even motor
-type (servo/ESC). More explanation on this in the next part.
+This is basically a Matrix-vector multiplication. Each output is the weighted
+sum of the RC inputs and the PID controlling values in each axis. Since we have 8 outputs and 8+3 (currently) values that influence them, there are 8 rows and 11 columns in our matrix.
+The input vector consists of 8 receiver inputs + 3 PID control values. The i-th
+row of the matrix consists of the weights for each output for the j-th control
+value.
+
+This is a bit complex, but essentially it allows us to say: "This output reacts to the throttle stick with a factor of 0.8, and to the yaw pid value with a factor of 0.1."
+Additionally, we can store a matrix for each flight mode, and transition from one matrix to the next smoothly while transitioning flight modes.
+
+Where is the catch? Well, none of this is implemented... The matrix multiplication part can be done in [under a microsecond(!) on the teensy 3.5](https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/) using the capabilities of the Cortex M4. That is an interesting challenge and I hope I will get to it.
+
+All of this depends on getting the PID and IMU and Output implementations to work with 16 bit fixed-point numbers, and never floats.
 
 ## Give me the Code!
 
-The code of the current implementation can be found at
+The code can be found at
 [https://github.com/barafael/raPID](https://github.com/barafael/raPID)
 
-# Further Ideas/Inspiration
+## Further Ideas/Inspiration
 
 I am thinking about allowing for several different flight/operation modes which
 consist mostly of a set of PID-coefficients and settings for mixers on each
