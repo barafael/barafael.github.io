@@ -2,7 +2,7 @@ In this article, I want to present a PID-based multi-purpose balance controller
 that runs on the Teensy 3.2 board using Arduino libraries. It can control
 PWM-based actuators like servos or LEDs and electronic speed controllers
 driving brushless motors. This control is based on an external signal like the
-output from an RC receiver, and the output of an intertial measurement unit.
+output from an RC receiver, and the output of an inertial measurement unit.
 
 That means you can use this controller to stabilise or balance small vehicles
 like planes, multicopters, VTOLs, hydrofoils, hovercraft, or rockets...
@@ -17,7 +17,7 @@ A PID controller governs a system so that the difference between a setpoint and
 a measured value is minimized, effectively driving our system to where we want
 it to be. Note that anything measurable and 'steerable' (that is at least
 somewhat linear) can be fed into a PID controller, like temperature, position,
-atlitude, force... Using an IMU (Intertial Measurement Unit) to give us our
+altitude, force... Using an IMU (Inertial Measurement Unit) to give us our
 measurement, we can generate an output signal that depends on the attitude and
 angular velocity of our system.
 
@@ -66,18 +66,22 @@ The board also has plenty of GPIO pins and can tolerate a wide range of supply
 voltages (such as 5V from a standard RC electronic speed controller) with its
 internal voltage regulator.
 
-As IMU sensor, I am using the widely available and familiar MPU6050. This
+As IMU sensor, I previously used the widely available and familiar MPU6050. This
 sensor offers measurement of absolute orientation as well as angular rates from
 the gyroscope and provides data moderately quickly using the I2C protocol.
-I am also evaluating
-[Kris Winers SENtral-based 'Ultimate Fusion Solution'](https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/)
-which has proven to be extremely fast and accurate, if a bit expensive. I chose
-to let the sensors do their fusion for now because it is initially very simple,
-but I would like to use one of the newer Invensense sensors (ICM-20608,
-ICM-40602) and implement my own Kalman/Madgwick filter at some point.
+But now I am using
+[Kris Winers EM-SENtral-based 'Ultimate Fusion Solution'](https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/)
+which has proven to be extremely fast and accurate, if a bit expensive. The
+sample rate for accelerometers and gyroscopes is set 1kHz for now. The
+proprietary sensor fusion in the SENtral processor reacts extremely quick to
+changes in angular position. I chose to let the sensors do their fusion for now
+because it is initially very simple, but I would like to use one of the newer
+Invensense sensors (ICM-20608, ICM-40602) and implement my own Kalman/Madgwick
+filter at some point. The ICM-40602 improves on the previous generation mostly
+in energy consumption, which is completely irrelevant in this case.
 
 As basic peripheral hardware (actuators), any standard ESCs, servos and TX/RX
-combo using PPM should work.
+combo using PWM should work.
 
 ## Four simple steps
 
@@ -91,10 +95,10 @@ Here are the steps that need to be done to stabilize and control:
 ### Reading input from the receiver
 
 The receiver sends pulses of varying on-time corresponding to the stick
-positions to our board. Using interrupts, we can measure the duration between a
-rising edge and a falling edge of one signal, which should always be roughly
-between 1000us and 2000us (RC standard). We can simply hook an interrupt to
-each input pin, log the system time on a rising flank, and calculate the
+positions to our board. Using interrupts, we can measure the time passing
+between a rising edge and a falling edge of one signal, which should always be
+roughly within 1000us and 2000us (RC standard). We can simply hook an interrupt
+to each input pin, log the system time on a rising flank, and calculate the
 duration in microseconds since rising flank when the signal is falling again.
 The code for this is in ```src/PWMReceiver.cpp```. PPM, which is conceptually
 similar but needs only one wire, is also implemented in
@@ -120,16 +124,10 @@ screenshots!
 
 ### Read sensor values from IMU
 
-To read the MPU6050, I 'adapted' large parts from
-[Jeff Rowbergs example code for his (unfortunately abandoned and a little outdated) project I2CDevLib](https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU6050/examples/MPU6050_DMP6/MPU6050_DMP6.ino).
-I also added a function to request the raw gyro rate reading, which I found
-in [Joop Brokking's YMFC V2 source code](http://www.brokking.net/ymfc-3d_v2_main.html).
-His quadcopter firmware is a bit messy coding-wise but easy to understand and a
-good read if you are interested. His understanding of the topic is great and it
-shows in his helpful youtube videos.
-
-DMP-infused attitude data is read whenever the IMU signals that data is ready,
-signalled by an interrupt. The gyroscope is read on every loop.
+Reading the measurements and computation results from the 'Ultimate IMU
+Solution' is done in a similar way like in Kris Winers example program, however
+I adapted large parts to skip software sensor fusion and provide an
+object-oriented interface to the sensor.
 
 ### Calculate PID response
 
@@ -220,4 +218,3 @@ format (yes, really). I am not at the point to even think about this by a long
 shot, but it would be nice to have a graphical configuration interface on a
 computer that can set options on the board over a serial or even wireless
 connection.
-
