@@ -320,6 +320,195 @@ help: to force the closure to take ownership of `local_arr` (and any other refer
 
 You can find more examples of less interesting dangling pointers [here](https://github.com/barafael/errare-humanum-est/tree/master/examples).
 
+# Crossing Boundaries or: the other 'billion dollar mistake'
+
+For performance reasons, the creators of the C language used raw pointers to memory blocks as array types. After creating aan array, it's size has to be tracked manually, often by something like `#define BUF_SIZE 256`. Array access by index, like `arr[115]`, happens without a bounds check. One could check manually.
+Similarly, strings (which are basically just char pointers) are delimited by a `\0`-byte marking their end. The performance benefits come with a price - it is incredibly easy to make a mistake:
+
+```c
+#define BUFFER_SIZE 15
+
+/* Compile with -fno-stack-protector */
+int main() {
+    int buffer[BUFFER_SIZE];
+    for (int index = 0; index <= BUFFER_SIZE; index++) {
+        buffer[index] = index;
+        // or equivalently, but more explicit:
+        *(buffer + index) = index;
+    }
+}
+```
+
+Just one character too much - the '=' in the for loop exit condition causes our index to reach one element past the buffer boundaries.
+This is easy to catch. But there are other buffer overruns which are even in the C library:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define BUFFER_SIZE 15
+
+/* Compile with -fno-stack-protector */
+int main() {
+    // gets is a dangerous function and gcc even warns when using it.
+    // Here, gets overwrites a part of the stack when a long text is entered on stdin,
+    // corrupting a variable that comes after the input buffer on the stack.
+    char buffer[BUFFER_SIZE];
+    int password = 0;
+
+    printf("Enter password:\n");
+    gets(buffer);
+
+    if (strcmp(buffer, "pass123") == 0) {
+        printf("Correct password\n");
+        password = 1;
+    } else {
+        printf("Wrong password\n");
+    }
+    if (password) {
+        printf("Privileged access granted!!!\n");
+    }
+}
+```
+
+And yes, you should not use `gets`, as the compiler may tell us here. So, let's use fgets, but hide a mistake in our code:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define BUFFER_SIZE 15
+
+/* Compile with -fno-stack-protector */
+int main() {
+    // fgets is somewhat better than gets. But one can still use it wrong.
+    char buffer[BUFFER_SIZE - 5];
+    int password = 0;
+
+    printf("Enter password:\n");
+    fgets(buffer, BUFFER_SIZE, stdin);
+
+    if (strcmp(buffer, "pass123") == 0) {
+        printf("Correct password\n");
+        password = 1;
+    } else {
+        printf("Wrong password\n");
+    }
+    if (password) {
+        printf("Privileged access granted!!!\n");
+    }
+}
+```
+
+The fundamental problem is that array size is unknown. There may be a performance advantage to not having those runtime index out of bounds checks, but modern LLVM is REALLY good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them.
+
+Obligatory Rust example:
+
+```rust
+use std::io::{self, BufRead};
+
+fn main() {
+    let array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for index in 0..10 {
+        println!("{}", array[index]);
+    }
+}
+```
+
+panics with 'index out of bounds' at runtime. Rust cannot catch that kind of bug at compile time (it is really really hard to catch in the general case)!
+
+# The real fun stuff: Access to shared data
+
+Data races can happen if these 3 conditions are met: multiple parts of a program have access to the same memory (sharing), at least one writes to the shared data (mutation), and there is no mechanism in place to ensure proper order of transactions (synchronisation). To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many people read, or just one writes. It turns out the borrow checker that helps to ensure memory errors don't happen also prevents many issues arising from shared access to ressources.
+
+Here is what a multithreaded C++ program could look like:
+
+```cpp
+#include <iostream>
+#include <thread>
+
+struct Account {
+    int balance{ 100 };
+};
+
+void transferMoney(int amount, Account &from, Account &to) {
+    using namespace std::chrono_literals;
+    if (from.balance >= amount) {
+        from.balance -= amount;
+        std::this_thread::sleep_for(1ns);
+        to.balance += amount;
+    }
+}
+
+void printSum(Account &a1, Account &a2) {
+    std::cout << (a1.balance + a2.balance) << std::endl;
+}
+
+int main() {
+    Account     account1;
+    Account     account2;
+    std::thread thr1(transferMoney, 50, std::ref(account1), std::ref(account2));
+    std::thread thr2(transferMoney, 130, std::ref(account2), std::ref(account1));
+
+    thr1.join();
+    thr2.join();
+
+    std::cout << "account1.balance: " << account1.balance << std::endl;
+    std::cout << "account2.balance: " << account2.balance << std::endl;
+
+    std::cout << std::endl;
+}
+```
+
+We give the data race some time to occur. What happens is not deterministic, but the second transaction is sometimes just swallowed by the void.
+We have met all 3 of the above conditions.
+To fix the problem, we might use an `atomic` type for `balance`, however, not even cppcheck or clang-tidy warn us here.
+
+Translating the same to Rust:
+
+```rust
+#[derive(Debug)]
+struct Account {
+    balance: u32,
+}
+
+impl Account {
+    fn transfer_money_to(&mut self, amount: u32, mut to: Account) {
+        if self.balance >= amount {
+            self.balance -= amount;
+            std::thread::sleep(std::time::Duration::from_millis(1));
+            to.balance += amount;
+        }
+    }
+
+    fn new(initial: u32) -> Self {
+        Account {
+            balance: initial,
+        }
+    }
+}
+
+fn main() {
+    let mut account1 = Account::new(100);
+    let mut account2 = Account::new(100);
+
+    let child1 = std::thread::spawn(|| {
+        account1.transfer_money_to(50, account2)
+    });
+
+    let child2 = std::thread::spawn(|| {
+        account2.transfer_money_to(130, account1)
+    });
+
+    child1.join();
+    child2.join();
+
+    println!("{:?}\n{:?}", account1, account2);
+}
+```
+
+The error message here is quite long because there are so many mistakes from the Rust compiler's point of view.
+
 # More examples
 
 A few more examples can be found [here](https://github.com/barafael/errare-humanum-est/tree/master/examples).
