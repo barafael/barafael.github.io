@@ -31,10 +31,10 @@ use std::ptr;
 fn main() {
     let pointer: *mut u32 = ptr::null_mut();
     unsafe {
-        pointer.write(10);
+        *pointer = 10;
     }
     unsafe {
-        println!("{}", pointer.read());
+        println!("{}", *pointer);
     }
 }
 ```
@@ -87,7 +87,7 @@ fn main() {
     let stdin = std::io::stdin();
     let buffer = stdin.lock().lines().next().unwrap().unwrap();
 
-    std::mem::drop(buffer);
+    drop(buffer);
 
     println!("buffer: {}", buffer);
 }
@@ -99,7 +99,7 @@ All the Rust compiler has to say is:
 error[E0382]: use of moved value: `buffer`
   --> use_after_free.rs:10:28
    |
-8  |     std::mem::drop(buffer);
+8  |     drop(buffer);
    |                    ------ value moved here
 9  |
 10 |     println!("buffer: {}", buffer);
@@ -225,7 +225,7 @@ fn main() {
     let reference = &mut array[6];
 
     // at this point, reference becomes a dangling pointer
-    std::mem::drop(array);
+    drop(array);
 
     println!("{}'s array has been set free!", *reference);
     *reference = 3;
@@ -242,7 +242,7 @@ error[E0505]: cannot move out of `array` because it is borrowed
 8  |     let reference = &mut array[6];
    |                          ----- borrow of `array` occurs here
 ...
-11 |     std::mem::drop(array);
+11 |     drop(array);
    |                    ^^^^^ move out of `array` occurs here
 ```
 
