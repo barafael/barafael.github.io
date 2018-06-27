@@ -1,10 +1,12 @@
-When hearing about Rust the first time, one often hears words like 'double free', 'data race', and 'dangling pointer'.
-But without an understanding of these problems, the safety aspect of Rust becomes more difficult to appreciate.
-Rust aims to appeal not only to systems programmers(where these kinds of problems are well-known), but developers from any background. I have collected examples to show and explain specific problems and see how the rust complainer, `rustc`, handles them.
+When learning about Rust for the first time, one might be confronted with words like 'double free', 'data race', and 'dangling pointer'.
+But without an understanding of these problems, the safety aspect of Rust is perhaps difficult to appreciate.
+However, Rust aims to appeal not only to systems programmers(where these kinds of problems are well-known), but developers from any background.
 
-## Let's start simple: Null pointer dereferencing
+In order to explain some of the problems Rust solves, I have collected examples to show and explain specific problems and see how `rustc`(the Rust complainer) handles them.
 
-When Tony Hoare finished implementing ALGOL 60 in 1965, he didn't know that he would be apologizing for one of its features 44 years later: at '09 QCon in London, he called null references a 'billion dollar mistake'.
+## Let's start simple: Dereferencing Null Pointers
+
+When Tony Hoare finished implementing ALGOL 60 in 1965, he couldn't know that he would be apologizing for one of its concepts 44 years later: at '09 QCon in London, he called null pointers a 'billion dollar mistake'.
 
 Languages since have picked up variations of the concept. For example, Java has no pointers accessible to the programmer, yet it has a `NullPointerException`.
 
@@ -21,7 +23,8 @@ int main() {
 }
 ```
 
-We create a pointer to an int with the value of `NULL`. When we try to write to that location, a SIGSEGV happens.
+We create a pointer to an int with the value of `NULL`. When we try to write to or read from that location, a SIGSEGV happens.
+
 How does this look in Rust? Simply put, safe Rust has no null references. There is no way to express this in safe Rust.
 But there is always `unsafe`:
 
@@ -39,12 +42,12 @@ fn main() {
 }
 ```
 
-Of course, this way we do get a SIGSEGV. Had to bend over backwards and do it explicitly!
+Of course, this way we do get a SIGSEGV.
 
 ## Free of 'use-after-free'
 
-Something more interesting: unlike many other languages, we have to explicitly request and release our memory from/to the OS when working with C.
-Those actions are hidden when using Java, Python, or Haskell. This is a difficult problem because we have to ensure that:
+And now for something more interesting: unlike many other languages, we have to explicitly request and release our memory from/to the OS when working with C.
+Those actions are hidden when using Java, Python, or Haskell. Managing memory manually is a difficult problem, because we have to ensure that:
 
 * all allocated memory is free'd
 * memory that was free'd before is never reused
@@ -52,7 +55,7 @@ Those actions are hidden when using Java, Python, or Haskell. This is a difficul
 
 If we fail to do this, our program might crash, or worse, it might corrupt data or present opportunities to attackers.
 
-The `free` function in C deallocates a block of memory, but it does not invalidate our pointer - we can still use it:
+The `free` function in C deallocates a block of memory, but it does not invalidate our pointer to that memory - we can still use it:
 
 ```c
 #include <stdio.h>
@@ -110,17 +113,17 @@ error[E0382]: use of moved value: `buffer`
 
 The error message uses some Rust-specific language, but it is pretty clear.
 
-It is important to note that the `drop` function is not often used in Rust. That is because an object can be destructed when it goes out of it's owners scope. But the function exists, and it is the most beautiful function ever:
+It is important to note that the `drop` function is not often used in Rust. That is because an object can be destructed automatically when it goes out of it's owners scope. But the function exists, and it is one of the most beautiful functions in the standard library:
 
 ```rust
 pub fn drop<T>(_x: T) { }
 ```
 
-That's all they wrote: take ownership of an _x of an unconstrained type T, and go out of scope, resulting in deterministic deconstruction.
+That's all they wrote: take ownership of an `_x` of an unconstrained type T, and go out of scope, resulting in deterministic deconstruction of `_x`.
 
 ## But what about `std::move`?
 
-Modern C++ introduced moving ownership. The move constructor invalidates the old owner in some agreed upon way, even if the object is const. After the move, the old pointer can (but should not) be still be used.
+Modern C++ introduced moving ownership. The move constructor invalidates the old owner in some agreed-upon way, even if the object is const. After the move, the old pointer can (but should not) be used.
 
 ```cpp
 #include <iostream>
@@ -193,11 +196,11 @@ In C-like languages, we can use adresses of objects on the heap or stack directl
 #include "stdlib.h"
 #include "stdio.h"
 
-#define BUF_SIZE 10
+#define BUFFER_SIZE 16
 
 int main() {
-    int *array = malloc(BUF_SIZE * sizeof(int));
-    for (size_t index = 0; index < BUF_SIZE; index++) {
+    int *array = malloc(BUFFER_SIZE * sizeof(int));
+    for (size_t index = 0; index < BUFFER_SIZE; index++) {
         array[index] = index;
     }
     // Take a pointer into the heap-allocated array
@@ -233,7 +236,7 @@ fn main() {
 }
 ```
 
-The compiler rejects! Error message:
+The compiler interjects! Error message:
 
 ```
 error[E0505]: cannot move out of `array` because it is borrowed
@@ -248,7 +251,7 @@ error[E0505]: cannot move out of `array` because it is borrowed
 
 The message is clear. How dare we move array to `drop` if we still have borrowed it to `reference`?
 
-# Closures And Pointers
+# Capturing Closures
 
 Closures are anonymous functions which can capture variables from the scope they originate in.
 This means that if we create a string variable `some_string` and a closure `some_closure` in one scope, we can use `some_string` from `some_closure`.
@@ -275,7 +278,7 @@ int main() {
 
 The function `get_lambda_with_local_reference` will return a function<int(int)>, which is a lambda that takes and returns an int.
 That function is defined in the last line of `get_lambda_with_local_reference` as returning the sum of it's argument and the element at index 2 of an array defined in the same scope.
-When we return the lambda, this array goes out of scope and when calling the lambda, we get a random value(at best).
+When we return the lambda, this array goes out of scope. When we call it, the lambda dereferences some random value from the stack(at best).
 
 Same story in Rust:
 
@@ -298,7 +301,7 @@ fn main() {
 }
 ```
 
-The Rust Complainer says no:
+The Rust Complainer says NO:
 
 ```
 error[E0373]: closure may outlive the current function, but it borrows `local_arr`, which is owned by the current function
@@ -314,7 +317,7 @@ help: to force the closure to take ownership of `local_arr` (and any other refer
   |     ^^^^^^^^^^^^
 ```
 
-`rustc` also suggests how to fix the problem, as in the function `get_lambda_with_moved_reference`.
+`rustc` also suggests how to fix the problem, as seen in the function `get_lambda_with_moved_reference`.
 
 ### More dangling pointers
 
@@ -340,15 +343,15 @@ int main() {
 ```
 
 Just one character too much - the '=' in the for loop exit condition causes our index to reach one element past the buffer boundaries.
-This is easy to catch. But there are other buffer overruns which are even in the C library:
+This is easy to catch. But there are other possible buffer overruns which are even in the C library:
 
 ```c
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFER_SIZE 15
+#define BUFFER_SIZE 16
 
-/* Compile with -fno-stack-protector */
+/* Compile with -fno-stack-protector for full effect */
 int main() {
     // gets is a dangerous function and gcc even warns when using it.
     // Here, gets overwrites a part of the stack when a long text is entered on stdin,
@@ -370,14 +373,14 @@ int main() {
     }
 }
 ```
-
+Writing a string into the buffer that is larger than the buffer will actually corrupt the password flag and grant us privileged access!
 And yes, you should not use `gets`, as the compiler may tell us here. So, let's use fgets, but hide a mistake in our code:
 
 ```c
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFER_SIZE 15
+#define BUFFER_SIZE 16
 
 /* Compile with -fno-stack-protector */
 int main() {
@@ -400,7 +403,7 @@ int main() {
 }
 ```
 
-The fundamental problem is that array size is unknown. There may be a performance advantage to not having those runtime index out of bounds checks, but modern LLVM is REALLY good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them.
+The fundamental problem is that the array size is unknown. There may be a performance advantage to not having those runtime index bounds checks, but modern LLVM is REALLY good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them in my opinion.
 
 Obligatory Rust example:
 
@@ -417,9 +420,11 @@ fn main() {
 
 panics with 'index out of bounds' at runtime. Rust cannot catch that kind of bug at compile time (it is really really hard to catch in the general case)!
 
-# The real fun stuff: Access to shared data
+# The Real Fun Stuff: Access to Shared Data
 
-Data races can happen if these 3 conditions are met: multiple parts of a program have access to the same memory (sharing), at least one writes to the shared data (mutation), and there is no mechanism in place to ensure proper order of transactions (synchronisation). To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many people read, or just one writes. It turns out the borrow checker that helps to ensure memory errors don't happen also prevents many issues arising from shared access to ressources.
+Data races can happen if these 3 conditions are met: (1) multiple parts of a program have access to the same memory (sharing), (2) at least one of them writes to the shared data (mutation), and (3) there is no mechanism in place to ensure proper order of transactions (synchronisation).
+
+To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many processes read, or at most one writes. It turns out the borrow checker that ensures memory errors never happen also prevents many issues arising from shared access to ressources, because there is always a clear owner and it is known if and how data is shared.
 
 Here is what a multithreaded C++ program could look like:
 
@@ -461,7 +466,8 @@ int main() {
 ```
 
 We give the data race some time to occur. What happens is not deterministic, but the second transaction is sometimes just swallowed by the void.
-We have met all 3 of the above conditions.
+We have met all 3 of the above conditions!
+
 To fix the problem, we might use an `atomic` type for `balance`, however, not even cppcheck or clang-tidy warn us here.
 
 Translating the same to Rust:
