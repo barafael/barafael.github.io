@@ -23,7 +23,7 @@ int main() {
 }
 ```
 
-We create a pointer to an int with the value of `NULL`. When we try to write to or read from that location, a SIGSEGV happens.
+We create a pointer to an int with the value of `NULL`. When we try to write to or read from that location, a SIGSEGV happens to happen on my machine and setup, but dereferencing a NULL pointer is undefined behaviour, meaning that anything could happen.
 
 How does this look in Rust? Simply put, safe Rust has no null references. There is no way to express this in safe Rust.
 But there is always `unsafe`:
@@ -42,7 +42,7 @@ fn main() {
 }
 ```
 
-Of course, this way we do get a SIGSEGV.
+And, with this code, I happen to get a SIGSEGV, too.
 
 ## Free of 'use-after-free'
 
