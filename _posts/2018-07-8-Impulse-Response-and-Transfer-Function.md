@@ -53,14 +53,54 @@ A simple example: set all values of the filter to $1/N$. Then a sample in a filt
 
 Notice the filter coefficients in the previous example where $1/N$. Otherwise we might not preserve the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished. This kind of filter is called "Energy-Preserving".
 
-There is more: a linear filter has the property that you can apply it to a sum of 2 signals and get the same result as applying it to each individually and then summing the result. Put in another way:
+There are many more properties, one of which is linearity. A linear filter has the property that you can apply it to a sum of signals and get the same result as applying it to each  signal individually and then summing the result. Put in another way:
 
 Let $c, d \in l_2(\mathbb{Z})$ and $a, b \in \mathbb{R}$ . Then:
+
 $$
 F(ac+bd) = aFc + bFd
 $$
 
 This property will become important later.
 
-## Impulse Response and Transfer Function
+## The Unit Impulse and why it is important
 
+The Unit Impulse function is... not actually a function, but a distribution. However, we will treat it as the following function here:
+
+$$
+\delta(t) =
+\begin{cases}
+0,  & t \lt 0 \\
+1,  & t == 0\\
+0,  & t \gt 0
+\end{cases}
+$$
+
+The impulse contains frequencies from every wavelength with the same amplitude. Intuitively, it is a "bang", like a gunshot. It's Fourier Transform is... just $1$. In other words, we can get a unit impulse by summing up cosines of ever-increasing frequency. So what happens if we apply a filter to a unit impulse? Well, by above linearity property, that would be the same as applying the filter to each of the frequencies the unit impulse is comprised of - which is, all of them. You read that right - with the unit impulse, we can see what a filter does to ANY frequency. Does it diminish high frequency? Only the low frequencies from the impulse get through. Is there a band that the filter attenuates? Those frequencies will be dimmed in the result. By the way, the result of applying a filter to a unit impulse is aptly called the "Impulse Response".
+
+Now let's think about what the Fourier Transform of an impulse response contains. The impulse response contains every frequency with the amplitude that the filter permits for this frequency. So it's spectral content directly displays how the filter behaves for a given frequency.
+
+I will denote the impulse response $F\delta$ of a filter $F$ with $f$.
+
+## Convolution and applying filters
+
+Now let's clear up why applying filters can be done as a convolution. The best explanation I found is rather mathematical, but "easy to understand".
+
+First, let's look at a signal $c$ in a slightly contrived way:
+
+$$
+c(\cdot) = \sum_{k \in \mathbb{Z}}c(k)\delta(\cdot-k)
+$$
+
+Equivalently, where $\tau_{s}c(\cdot) = c(\cdot + s)$:
+
+$$
+c(\cdot) = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta
+$$
+
+Which is to say: you can picture a signal at a point as a unit impulse at exactly that point multiplied with the signal.
+
+Now what happens if we apply a filter $F$ to that signal and simplify the result?
+
+$$Fc(\cdot) = F\Big[\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta\Big] = \sum_{k \in \mathbb{Z}}c(k)F[\tau_{-k}\delta] = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}F[\delta] = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}f = \sum_{k \in \mathbb{Z}}c(k)f(\cdot - k) = (c \ast f)(\cdot)
+$$
