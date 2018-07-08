@@ -3,7 +3,7 @@ layout: post
 mathjax: true
 ---
 
-Filtering data and signals is a great application of mathematics in signal processing. But with all the Fourier transforms, Convolutions, and various properties like causality, time-invariance, linearity... It can get confusing. In this post, I want to clarify the relationship between a filter, it's impulse response and transfer function, and why applying a filter is the same as convoluting a transformed signal with a transfer function. Don't worry, it will sound less intimidating in the end.
+Filtering data and signals is a great application of mathematics in signal processing. But with all the Fourier transforms, Convolutions, and various properties like causality, time-invariance, linearity... It can get confusing. In this post, I want to clarify the relationship between a filter, it's impulse response and transfer function, and why applying a filter is the same as convoluting a transformed signal with an impulse response. Don't worry, it will sound less intimidating in the end.
 
 ## Prerequisites and Notation
 
