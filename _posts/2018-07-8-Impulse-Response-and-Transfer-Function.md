@@ -9,24 +9,24 @@ Filtering data and signals is a great application of mathematics in signal proce
 
 I will use $\widehat{f}$ to refer to the Fourier Transform of $f$ and $f \ast c$ to refer to the Convolution of $f$ and $c$. Their raw definitions are:
 
-Let $f \in l_2(\mathbb{Z})$ be a signal. Then:
+Let $c \in l_2(\mathbb{Z})$ be a signal. Then:
 
 $$
-\widehat{f}(\xi) = \sum_{k \in \mathbb{Z}}f(k)e^{-i\xi k}
+\widehat{c}(\xi) = \sum_{k \in \mathbb{Z}}c(k)e^{-i\xi k}
 $$
 
-Let $f, c \in l_2(\mathbb{Z})$. Then:
+Let $c, d \in l_2(\mathbb{Z})$. Then:
 
 $$
-(f \ast c)(\tau) = \sum_{k \in \mathbb{Z}}f(\tau - k)c(k)
+(c \ast d)(\tau) = \sum_{k \in \mathbb{Z}}c(\tau - k)d(k)
 $$
 
 A fundamental theorem in Signal Processing is the Convolution Theorem. I will only state it here, but it will be important later:
 
-Let $f, c \in l_2(\mathbb{Z})$. Then:
+Let $c, d \in l_2(\mathbb{Z})$. Then:
 
 $$
-\widehat{(f \ast c)}(\xi) = \widehat{f}\widehat{c}
+\widehat{(c \ast d)}(\xi) = \widehat{c}\widehat{d}
 $$
 
 ## What's a filter?
@@ -47,6 +47,20 @@ for each sample:
 
 (This explanation is probably very engineer-like and insufficient for mathematicians. What can I do.)
 
-A simple example: set all values of the filter to 1/N. Then a sample in a filtered signal is the arithmetic mean of the samples around it, removing high-frequency content.
+A simple example: set all values of the filter to $1/N$. Then a sample in a filtered signal is the arithmetic mean of the samples around it, removing high-frequency content.
 
-Notice the filter coefficients where 1/N. Otherwise we might not preserve the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished.
+## Properties of Filters
+
+Notice the filter coefficients in the previous example where $1/N$. Otherwise we might not preserve the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished. This kind of filter is called "Energy-Preserving".
+
+There is more: a linear filter has the property that you can apply it to a sum of 2 signals and get the same result as applying it to each individually and then summing the result. Put in another way:
+
+Let $c, d \in l_2(\mathbb{Z})$ and $a, b \in \mathbb{R}$ . Then:
+$$
+F(ac+bd) = aFc + bFd
+$$
+
+This property will become important later.
+
+## Impulse Response and Transfer Function
+
