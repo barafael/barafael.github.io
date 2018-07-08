@@ -1,11 +1,11 @@
 In [this
 blogpost](http://fabiensanglard.net/floating_point_visually_explained/), Fabien
 Sanglard explains how floating point numbers are generally displayed in modern
-computers (using the ``IEEE754`` Norm).  His alternative explanation using
-windows and offsets is brilliant and shines light on a fact that may be
+computers (using the ``IEEE754`` Norm). His alternative perspective using
+buckets and offsets is brilliant and explains a fact that may be
 overlooked when using the standard explanation: the accuracy of floating point
-numbers declines with a factor of 2 by each window!  That is because the same
-'amount' of numbers is dispersed in any window, but the size of the windows
+numbers declines with a factor of 2 by each bucket!  That is because the same
+'amount' of numbers is dispersed in any bucket, but the size of the bucket
 doubles every time.
 
 I wanted to empirically show this and wrote this short C program:
@@ -42,7 +42,7 @@ they do not allow for arbitrary accuracy, they are not what mathematicians
 would call _dense_.
 
 That means, we can take a float and increase it by exactly one tiny amount,
-yielding the next-larger float in that window! That is what the function
+yielding the next-larger float in that bucket! That is what the function
 ``increase_float`` does.
 
 We construct a ``float_parts`` union using the float as content. Then, we look
