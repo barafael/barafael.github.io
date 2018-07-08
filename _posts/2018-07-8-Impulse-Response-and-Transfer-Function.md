@@ -1,4 +1,5 @@
 ---
+layout: post
 mathjax: true
 ---
 
@@ -7,10 +8,10 @@ Filtering data and signals is a great application of mathematics in signal proce
 ## Prerequisites and Notation
 
 You should know about the Fourier Transform and about the Convolution. I will use
-
-$$
-   |\psi_1\rangle = a|0\rangle + b|1\rangle
-$$
+$
+   \widehat{f}
+$
+to refer to the Fourier Transform of $f$.
 
 ## What's a filter?
 
