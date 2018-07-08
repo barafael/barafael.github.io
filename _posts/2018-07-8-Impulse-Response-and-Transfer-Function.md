@@ -7,11 +7,27 @@ Filtering data and signals is a great application of mathematics in signal proce
 
 ## Prerequisites and Notation
 
-You should know about the Fourier Transform and about the Convolution. I will use
-$
-   \widehat{f}
-$
-to refer to the Fourier Transform of $f$.
+I will use $\widehat{f}$ to refer to the Fourier Transform of $f$ and $f \ast c$ to refer to the Convolution of $f$ and $c$. Their raw definitions are:
+
+Let $f \in l_2(\mathbb{Z})$ be a signal. Then:
+
+$$
+\widehat{f}(\xi) = \sum_{k \in \mathbb{Z}}f(k)e^{-i\xi k}
+$$
+
+Let $f, c \in l_2(\mathbb{Z})$. Then:
+
+$$
+(f \ast c)(\tau) = \sum_{k \in \mathbb{Z}}f(\tau - k)c(k)
+$$
+
+A fundamental theorem in Signal Processing is the Convolution Theorem. I will only state it here, but it will be important later:
+
+Let $f, c \in l_2(\mathbb{Z})$. Then:
+
+$$
+\widehat{(f \ast c)}(\xi) = \widehat{f}\widehat{c}
+$$
 
 ## What's a filter?
 
