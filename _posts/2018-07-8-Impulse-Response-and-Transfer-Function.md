@@ -7,7 +7,11 @@ Filtering data and signals is a great application of mathematics in signal proce
 
 ## Prerequisites and Notation
 
-I will use $\widehat{f}$ to refer to the Fourier Transform of $f$ and $f \ast c$ to refer to the Convolution of $f$ and $c$. Their raw definitions are:
+I will use $\widehat{c}$ to refer to the Fourier Transform of $c$ (and $(c + d)\hat{ }$ for the transform of larger terms). Conversely, I will use the inverted hat for the inverse of the Fourier Transform: $f(t) = (\widehat{f}(\cdot))\check{ }(t)$.
+
+To denote the Convolution of two signals $f$ and $c$, I will use $f \ast c$.
+
+The raw definitions are (incomplete for brevity):
 
 Let $c \in l_2(\mathbb{Z})$ be a signal. Then:
 
@@ -114,5 +118,5 @@ $$
 And there you have it! Applying a filter to a signal is the same as multiplying the transformed signal with the transfer function and taking the inverse Fourier Transform of the result:
 
 $$
-\widehat{Fc(\cdot)} = \widehat{(c \ast f)(\cdot)} = \hat{c}\hat{f}
+Fc(\cdot) = (c \ast f)(\cdot) = (\hat{c}\hat{f})\check{ }(\cdot)
 $$
