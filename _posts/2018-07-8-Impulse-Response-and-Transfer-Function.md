@@ -51,7 +51,7 @@ A simple example: set all values of the filter to $1/N$. Then a sample in a filt
 
 ## Properties of Filters
 
-Notice the filter coefficients in the previous example where $1/N$. Otherwise we might not preserve the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished. This kind of filter is called "Energy-Preserving".
+Notice the filter coefficients in the previous example where $1/N$. Otherwise, we might modify the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished. This kind of filter is called "Energy-Preserving".
 
 There are many more properties, one of which is linearity. A linear filter has the property that you can apply it to a sum of signals and get the same result as applying it to each  signal individually and then summing the result. Put in another way:
 
@@ -71,7 +71,7 @@ $$
 \delta(t) =
 \begin{cases}
 0,  & t \lt 0 \\
-1,  & t == 0\\
+1,  & t = 0\\
 0,  & t \gt 0
 \end{cases}
 $$
@@ -102,5 +102,17 @@ Which is to say: you can picture a signal at a point as a unit impulse at exactl
 
 Now what happens if we apply a filter $F$ to that signal and simplify the result?
 
-$$Fc(\cdot) = F\Big[\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta\Big] = \sum_{k \in \mathbb{Z}}c(k)F[\tau_{-k}\delta] = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}F[\delta] = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}f = \sum_{k \in \mathbb{Z}}c(k)f(\cdot - k) = (c \ast f)(\cdot)
+$$
+Fc(\cdot) = F\Big[\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta\Big] = \\
+\sum_{k \in \mathbb{Z}}c(k)F[\tau_{-k}\delta] = \\
+\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}F[\delta] = \\
+\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}f = \\
+\sum_{k \in \mathbb{Z}}c(k)f(\cdot - k) = \\
+(c \ast f)(\cdot)
+$$
+
+And there you have it! Applying a filter to a signal is the same as multiplying the transformed signal with the transfer function and taking the inverse Fourier Transform of the result:
+
+$$
+\widehat{Fc(\cdot)} = \widehat{(c \ast f)(\cdot)} = \hat{c}\hat{f}
 $$
