@@ -90,7 +90,7 @@ This property will become important later.
 
 ## The Unit Impulse and why it is important
 
-The Unit Impulse function is... not actually a function, but a distribution. However, we will treat it as the following function here:
+The Unit Impulse function (or dirac delta) is... not actually a function, but a distribution. However, we will treat it as the following function here:
 
 $$
 \delta(t) =
@@ -102,17 +102,20 @@ $$
 $$
 
 The impulse contains frequencies from every wavelength with the same amplitude.
-Intuitively, it is a "bang", like a gunshot. It's Fourier Transform is... just $1$.
-In other words, we can get a unit impulse by summing up cosines of
-ever-increasing frequency. So what happens if we apply a filter to a unit impulse?
-Well, by above linearity property, that would be the same as applying
-the filter to each of the frequencies the unit impulse is comprised of - which
-is, all of them. You read that right - with the unit impulse, we can see what a
-filter does to ANY frequency.
+Intuitively, it is a "bang", like a gunshot. It's Fourier Transform is... just $1$:
+
+$$
+\widehat{\delta}(\xi) = \int_{-\inf}^{\inf}\delta (t)e^{-i\xi t}dt = 1
+$$
+
+In other words, we can get a unit impulse by summing up cosines of ever-increasing frequency.
+So what happens if we apply a filter to a unit impulse?
+Well, by the linearity property stated above, that would be the same as applying the filter to each of the frequencies the unit impulse is comprised of - which is, all of them.
+You read that right - with the unit impulse, we can see what a filter does to ANY frequency.
 Does it diminish high frequency? Only the low frequencies from the impulse get through.
 Is there a band that the filter attenuates? Those frequencies will be dimmed in the result. By the way, the result of applying a filter to a unit impulse is aptly called the "Impulse Response".
 
-Now let's think about the Fourier Transform of an impulse response.
+Now, let's think about the Fourier Transform of an impulse response.
 The impulse response contains every frequency with the amplitude that the filter permits for this frequency.
 So it's spectral content directly displays how the filter behaves for a given frequency.
 

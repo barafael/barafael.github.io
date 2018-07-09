@@ -1,13 +1,12 @@
 According to Earnshaw's Theorem, there exist no stable equilibrium points in any static magnetic or electric field.
-Paraphrasing this: at no point in the field of a magnet can you position another magnet such that it stays still, suspended by the field.
+Paraphrasing this: at no point in a magnetic field can you position another magnet such that it stays still even when slightly disturbed.
 But this is what control systems are supposed to solve, right?
 
-# Physical Structure of the Suspender
+# Physical Structure of The Suspender
 
-This is simple: there is an electric magnet lifted high about 20cm, which has a constant-current power source which is controlled by a microcontroller.
+This is simple: there is an electric magnet lifted high about 20cm, which has a constant-current power source, driven by a microcontroller.
 Below and above the magnet, there are Hall sensors which can be sampled by the microcontroller.
-Below the magnet, there is a moving platform which can move up and down. On that platform, there is a load cell (scale), which measures the weight of a small permanent magnet.
-The position of the platform is controlled by stepper motors and roughly sampled by a linear potentiometer.
+Below the magnet, there is a platform which can move up and down, driven by stepper motors. On that platform, there is a load cell (scale), which measures the weight of a small permanent magnet.
 
 # 'State-Space Exploration'
 
