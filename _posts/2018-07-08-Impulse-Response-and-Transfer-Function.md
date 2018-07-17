@@ -37,7 +37,7 @@ $$
 \widehat{(c \ast d)}(\xi) = \widehat{c}(\xi)\widehat{d}(\xi)
 $$
 
-The proof is included here for completeness, however it is not particularly important for the rest of the post, so feel free to skip it:
+The proof is included here for completeness, however it is **not particularly important for the rest of the post, so feel free to skip it**:
 
 $$
 \def\colonequals{:=}
@@ -105,7 +105,7 @@ The impulse contains frequencies from every wavelength with the same amplitude.
 Intuitively, it is a "bang", like a gunshot. It's Fourier Transform is... just $1$:
 
 $$
-\widehat{\delta}(\xi) = \int_{-\inf}^{\inf}\delta (t)e^{-i\xi t}dt = 1
+\widehat{\delta}(\xi) = \int_{-\infty}^{\infty}\delta (t)e^{-i\xi t}dt = 1
 $$
 
 In other words, we can get a unit impulse by summing up cosines of ever-increasing frequency.
