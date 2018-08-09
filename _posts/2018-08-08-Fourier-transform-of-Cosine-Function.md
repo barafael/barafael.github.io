@@ -19,18 +19,18 @@ $$
 \widehat{f}(\xi) = \int_{-\infty}^{\infty}f(t)e^{-i\xi t}dt
 $$
 
-## Transforming the Cosine
+## Transforming the Cosine Function
 
 ### Plugging the Cosine into the definition of the Fourier Transform
 
 $$
 \widehat{(cos)}(\xi) = \\
-\int_{-\infty}^{\infty}cos(t)e^{-i\xi t}dt \\
-\int_{-\infty}^{\infty}\frac{e^{it}+e^{-it}}{2}e^{-i\xi t}dt \\
-\frac{1}{2}\int_{-\infty}^{\infty}e^{it}e^{-i\xi t}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it}e^{-i\xi t}dt\\
-\frac{1}{2}\int_{-\infty}^{\infty}e^{it(1-\xi)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt\\
-\frac{1}{2}\int_{-\infty}^{\infty}e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt\\
-\frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(1-\xi)}dt\\
+\int_{-\infty}^{\infty}cos(t)e^{-i\xi t}dt =\\
+\int_{-\infty}^{\infty}\frac{e^{it}+e^{-it}}{2}e^{-i\xi t}dt =\\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it}e^{-i\xi t}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it}e^{-i\xi t}dt =\\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it(1-\xi)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =\\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =\\
+\frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(1-\xi)}dt =\\
 \frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi)\\
 $$
 
@@ -64,8 +64,26 @@ So, now that we have the transform of the 1-function (albeit the derivation was 
 ### Final Result
 
 $$
-\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi)\\
+\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi) = \\
 \frac{1}{2}\delta(\xi-1) + \frac{1}{2}\delta(1-\xi)\\
 $$
 
 The result: Two Impulses, one at 1, one at -1, suffice to describe the spectrum of the cosine function!
+
+## What about Cosine Functions with different Frequencies?
+
+A cosine can be given for any frequency by scaling it: $cos(a*t)$ where $a \in \mathbb{R}$ denotes the desired frequency.
+We can write this using the scaling operator $\sigma_{a} f(\cdot) = f(a\cdot)$. If we scale a function like that, we can try to imagine what will happen to the spectrum of the function: if we increase the frequency ($a \gt 1$), we stretch the spectrum to accomodate the higher spectral components, and if we decrease the frequency ($a \lt 1$), we compress the spectrum because there are now lower spectral components. Stated mathematically:
+
+$$
+\sigma_{a}\widehat{f} = \frac{1}{a}\widehat{f}(\frac{\xi}{a})
+$$
+
+Applying this to the Cosine yields:
+
+$$
+\sigma_{a}\widehat{cos} = \frac{1}{a}\widehat{cos}(\frac{\xi}{a}) = \\
+\frac{1}{a}\frac{1}{2}\delta(\frac{\xi-1}{a}) + \frac{1}{a}\frac{1}{2}\delta(\frac{1-\xi}{a})\\
+$$
+
+As one might expect, transforming cosines of differing frequencies shifts the impulses around to the corresponding spectral frequencies.
