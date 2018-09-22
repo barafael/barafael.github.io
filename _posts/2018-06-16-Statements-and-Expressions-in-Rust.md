@@ -133,8 +133,8 @@ let result = match choice {
     0 => "zero for u",
     1...9 => "choice not great",
     i if i % 2 == 1 => "larger than or equal 11, and odd",
-    i if i == 42 => "u r n4rd",
-    i if i == 300 => {
+    42 => "u r n4rd",
+    300 => {
         if is_sparta {
             "This is Sparta!"
         } else {
