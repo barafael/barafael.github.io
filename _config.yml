@@ -9,8 +9,7 @@ name: Flipped Bits
 description: a log of interesting things I came across while programming, learning math, or attempting to make hardware do stuff.
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
-avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png
-
+avatar: https://avatars1.githubusercontent.com/u/6966738?s=400&u=2ac46d4e38a60bdf4c502408a903d9d8b31f1155&v=4
 #
 # Flags below are optional
 #
@@ -19,8 +18,8 @@ avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/je
 footer-links:
   email: rafael.bachmann.93@gmail.de
   facebook:
-  github: barafael/barafael.github.io
-  linkedin:
+  github: barafael
+  linkedin: barafael
   rss: y
   twitter:
   stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
@@ -35,7 +34,7 @@ google_analytics:
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
-url:
+url: http://barafael.github.io 
 
 # If you're hosting your site at a Project repository on GitHub pages
 # (http://yourusername.github.io/repository-name)
@@ -48,7 +47,7 @@ baseurl: ""
 #
 
 # build settings
-# theme: jekyll-theme-midnight
+theme: jekyll-theme-midnight
 
 markdown: kramdown
 
@@ -84,4 +83,3 @@ exclude:
   - README.md
   - CNAME
 
-theme: jekyll-theme-midnight
