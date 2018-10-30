@@ -13,33 +13,27 @@ Here are some properties that I think it might have:
 * No inheritance
 * Compile-time generics with java-like bounds
 * Complete avoidance of NULL/nullptr
-
 * Only numeric types with explicit size and signedness (like uint64\_t)
-
 * A struct type that can be initialised with a designated initializer
-
 * A Checked Tagged Union Type
     * As a result: Option type with null pointer optimization
-
-* Rust style algebraic error management
-
+* Rust style algebraic error management (Result and Option)
 * C-Style for loop and iterable interface for collections
-
-* Standard library with collections
+* Standard library with collections (List, Set, Map)
 * Strings not null-terminated, but stored length
 * Standard Library smart pointers
     * What types? Heap, Refcount, Mutex, ...
-
-* Optional Array bounds checking at Runtime
-
+* Explicit Optional Array bounds checking at Runtime
 * Unicode Support
-
 * Module system
 * Central repo and library manager for such modules
 
 # Data and Program Structure
 
 Data can be structured in Product Types (structures). Functions on structs should be declared like members, and take a pointer to their instance.
+An first-class tagged union type is essentially what a tagged union is in C, except that variant checking can be enforced.
+Type-safe enumeration type?
+Dereferencing a member is '.' regardless of pointer to structure or structure value.
 
 <pre>
 data SomeThing {
@@ -68,18 +62,29 @@ An overloadable operator is just defined by a trait.
 # Syntactic Properties
 
 I like the basic syntactic elements of C, but here are some complements
-* keywords `true` and `false`
+* Keywords `true` and `false`
 * `:=` for assignment, `=` for equality (Pascal-style)
 * No unary pre/post increment/decrement (like Rust)
 * If clauses/loops always require curly braces, making the parenthesis around the condition obsolete (like Rust)
-
+* Numeric literal syntax for binary, octal, decimal, hexadecimal
+* Underscore as digit separator
+* Casting with ':' or 'as' also for literals, removing the need for literal suffixes
+* Blocks/Scopes that return values
+* Explicit endianness of a variable, optional
+* switch-case:
+    * explicit fallthrough, implicit break
+    * ranges (case 0 ... 10)
+    * ranges for floating point?
+    * switch-case returns a value
+* Functions in a scope can call each other, regardless of definition order
 
 # Comfortable Niceties
 
-Tuple support
-Pattern matching
-Type inference for local variables
-Native bitfields
+* Tuple support
+* Pattern matching
+* Type inference for local variables
+* Native bitfields with defined consistent memory layout
+* Half precision floating point for graphics programming (short float)
 
 # Open Questions
 
@@ -91,6 +96,6 @@ Native bitfields
 ## How to handle Pointers
 
 # Conclusion
-You might notice that I essentially took some features o Rust and stuffed them into a C-like language. But I made a very strong omission: the borrow checker and lifetimes. This would make the language in question less safe, but might be worth it for simplicity's sake. In hindsight the question this post answers is: is the main source of language complexity in Rust the Ownership system? To which I think the answer is yes - everything else in Rust is rather simple. Now, the Ownership system is also one of the strongest properties of Rust.
+You might notice that I essentially took some features of Rust and stuffed them into a C-like language. But I made a very strong omission: the borrow checker and lifetimes. This would make the language in question less safe, but might be worth it for simplicity's sake. In hindsight the question this post answers is: is the main source of language complexity in Rust the Ownership system? To which I think the answer is yes - everything else in Rust is rather simple. Now, the Ownership system is also one of the strongest properties of Rust.
 
 Even without the borrow checker/ownership system, this still is a rather safe language, and way easier to use.
