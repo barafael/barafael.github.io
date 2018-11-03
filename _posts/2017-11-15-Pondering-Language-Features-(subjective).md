@@ -2,9 +2,11 @@ This is an attempt to define some language features of a sane and simple, yet po
 As such it is COMPLETELY subjective, because I have no formal education about this.
 But I thought long and hard about it, and if anything, it will be fun for me to read this in a while when I might know more about the topic.
 
+By the way: I now realize this post could be titled "Rust without the Borrow Checker" or "I don't understand the Rust Borrow Checker", but I think there is value in a drastically simpler and more comfortable language without the benefits and complexity of the Borrow Checker that can pay the cost of safety at runtime.
+
 # Some General Elements of C, C++ and Rust
 
-I want this language to be essentially like C, but with more modern concepts and abstractions.
+I imagine this language to be essentially like C, but with more modern concepts and abstractions.
 Here are some properties that I think it might have:
 
 * No garbage collector
@@ -12,21 +14,22 @@ Here are some properties that I think it might have:
 * No implicit conversion (unlike C)
 * No inheritance
 * Compile-time generics with java-like bounds
-* Complete avoidance of NULL/nullptr
-* Only numeric types with explicit size and signedness (like uint64\_t)
+* Complete avoidance of NULL/nullptr by Option<T> Type
+* Nnumeric types with explicit size and signedness (like uint64\_t)
 * A struct type that can be initialised with a designated initializer
 * A Checked Tagged Union Type
     * As a result: Option type with null pointer optimization
 * Rust style algebraic error management (Result and Option)
 * C-Style for loop and iterable interface for collections
 * Standard library with collections (List, Set, Map)
-* Strings not null-terminated, but stored length
+* Strings not null-terminated, but stored length, `realloc` on heap
 * Standard Library smart pointers
     * What types? Heap, Refcount, Mutex, ...
-* Explicit Optional Array bounds checking at Runtime
+* Explicit Optional Array bounds checking at runtime
 * Unicode Support
 * Module system
 * Central repo and library manager for such modules
+* Type inference for local variables only
 
 # Data and Program Structure
 
@@ -64,7 +67,7 @@ An overloadable operator is just defined by a trait.
 I like the basic syntactic elements of C, but here are some complements
 * Keywords `true` and `false`
 * `:=` for assignment, `=` for equality (Pascal-style)
-* No unary pre/post increment/decrement (like Rust)
+* No unary pre/post increment/decrement
 * If clauses/loops always require curly braces, making the parenthesis around the condition obsolete (like Rust)
 * Numeric literal syntax for binary, octal, decimal, hexadecimal
 * Underscore as digit separator
@@ -74,15 +77,15 @@ I like the basic syntactic elements of C, but here are some complements
 * switch-case:
     * explicit fallthrough, implicit break
     * ranges (case 0 ... 10)
-    * ranges for floating point?
-    * switch-case returns a value
+    * ranges for floating point!
+    * switch-case can return a value
 * Functions in a scope can call each other, regardless of definition order
+* Explicit options for struct member ordering (No reorder, minimal space, padding, ...)
 
 # Comfortable Niceties
 
 * Tuple support
 * Pattern matching
-* Type inference for local variables
 * Native bitfields with defined consistent memory layout
 * Half precision floating point for graphics programming (short float)
 
@@ -91,6 +94,7 @@ I like the basic syntactic elements of C, but here are some complements
 * Preprocessor/Macro System
 * Types which constrain a numeric variable to a certain interval
     * Resolved at runtime or compile time
+* There are no exceptions, so is `defer` necessary?
 
 ## How to avoid NULL
 ## How to handle Pointers
