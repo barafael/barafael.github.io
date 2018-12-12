@@ -1,12 +1,12 @@
-When learning about Rust for the first time, one might be confronted with words like 'double free', 'data race', and 'dangling pointer'.
-But without an understanding of these problems, the safety aspect of Rust is perhaps difficult to appreciate.
-However, Rust aims to appeal not only to systems programmers(where these kinds of problems are well-known), but developers from any background.
+When learning about Rust for the first time, one is confronted with words like 'double free', 'data race', and 'dangling pointer'.
+Without an understanding of these problems, the safety aspects of Rust are perhaps difficult to appreciate.
+However, Rust aims to appeal not only to systems programmers(where these kinds of problems are well-known), but developers from any background! It is perfectly fine to write high-level Rust code without knowing what a data race is (that is the freedom Rust grants) but understanding the underlying issue makes the compiler error messages more understandable.
 
-In order to explain some of the problems Rust solves, I have collected examples to show and explain specific problems and see how `rustc`(the Rust complainer) handles them.
+To explain some of the problems Rust solves, I have collected examples to show and explain specific problems and see what `rustc`("the Rust complainer") has to say about them.
 
 ## Let's start simple: Dereferencing Null Pointers
 
-When Tony Hoare finished implementing ALGOL 60 in 1965, he couldn't know that he would be apologizing for one of its concepts 44 years later: at '09 QCon in London, he called null pointers a 'billion dollar mistake'.
+When Tony Hoare finished implementing ALGOL 60 in 1965, he couldn't know that he would be apologizing for one of its concepts 44 years later: at '09 QCon in London, he called null pointers a 'billion dollar mistake.'
 
 Languages since have picked up variations of the concept. For example, Java has no pointers accessible to the programmer, yet it has a `NullPointerException`.
 
@@ -16,17 +16,18 @@ Let's look at a simple C example of a null pointer dereference:
 #include <stdio.h>
 
 int main() {
-    // Reading and writing to a NULL pointer results in undefined behaviour.
+    // Reading and writing to a NULL pointer results in undefined behavior.
     int *ptr = NULL;
     *ptr     = 10;
     printf("%d", *ptr);
 }
 ```
 
-We create a pointer to an int with the value of `NULL`. When we try to write to or read from that location, a SIGSEGV happens to happen on my machine and setup, but dereferencing a NULL pointer is undefined behaviour, meaning that anything could happen.
+We create a pointer to an int with the value of `NULL`. When we try to write to that location, a SIGSEGV happens to happen on my machine and setup, but dereferencing a NULL pointer is undefined behavior, meaning that anything could happen.
 
 How does this look in Rust? Simply put, safe Rust has no null references. There is no way to express this in safe Rust.
-But there is always `unsafe`:
+
+There is always `unsafe`:
 
 ```rust
 use std::ptr;
@@ -42,20 +43,22 @@ fn main() {
 }
 ```
 
-And, with this code, I happen to get a SIGSEGV, too.
+With this code, I happen to get a SIGSEGV, too.
 
-## Free of 'use-after-free'
+## And now for something more interesting: Free of 'use-after-free'
 
-And now for something more interesting: unlike many other languages, we have to explicitly request and release our memory from/to the OS when working with C.
-Those actions are hidden when using Java, Python, or Haskell. Managing memory manually is a difficult problem, because we have to ensure that:
+Unlike many other languages, we have to explicitly request and release our memory from/to the operating system when working with C.
+Those actions still happen when using Java, Python, or Haskell, but they happen automatically in the background. This is safe (because it is automatic), and it is very comfortable for the programmer. However, such garbage collection has a cost, which is out of scope for this article but frequently discussed.
 
-* all allocated memory is free'd
-* memory that was free'd before is never reused
-* memory is free'd exactly once in all code paths of the program
+Managing memory manually (like it is done in most systems programming languages) is a difficult problem because we have to ensure that:
 
-If we fail to do this, our program might crash, or worse, it might corrupt data or present opportunities to attackers.
+* all allocated memory is `free()`'d (no memory leaks)
+* memory that was `free()`'d before is never reused (no use-after-free)
+* memory is `free()`'d exactly once in all code paths of the program (no double free)
 
-The `free` function in C deallocates a block of memory, but it does not invalidate our pointer to that memory - we can still use it:
+If we fail to do this, our program might crash, or worse, it might corrupt data anywhere or present opportunities to attackers.
+
+The `free` function in C deallocates previously allocated blocks of memory, but it does not invalidate our pointer to that memory - we can still use it:
 
 ```c
 #include <stdio.h>
@@ -66,7 +69,7 @@ The `free` function in C deallocates a block of memory, but it does not invalida
 int main() {
     puts("Enter your name!");
     char *buffer = malloc(BUF_SIZE);
-    
+
     fgets(buffer, BUF_SIZE, stdin);
     printf("buffer: %s\n", buffer);
     free(buffer);
@@ -111,19 +114,21 @@ error[E0382]: use of moved value: `buffer`
    = note: move occurs because `buffer` has type `std::string::String`, which does not implement the `Copy` trait
 ```
 
-The error message uses some Rust-specific language, but it is pretty clear.
+The error message uses some Rust-specific language (move? Copy trait?), but it is pretty clear: ownership of the buffer is moved into `drop()`, after which the buffer is not usable.
 
-It is important to note that the `drop` function is not often used in Rust. That is because an object can be destructed automatically when it goes out of it's owners scope. But the function exists, and it is one of the most beautiful functions in the standard library:
+It is important to note that the `drop` function is used rarely in Rust. That is because every object is destructed automatically at the point where its owner's scope ends (which is known at compile time).
+
+Regardless, the function exists, and it is one of the most beautiful functions in the standard library:
 
 ```rust
 pub fn drop<T>(_x: T) { }
 ```
 
-That's all they wrote: take ownership of an `_x` of an unconstrained type T, and go out of scope, resulting in deterministic deconstruction of `_x`.
+That's all they wrote: take ownership of an `_x` of an unconstrained type T, and go out of scope, resulting in the deterministic deconstruction of `_x`.
 
 ## But what about `std::move`?
 
-Modern C++ introduced moving ownership. The move constructor invalidates the old owner in some agreed-upon way, even if the object is const. After the move, the old pointer can (but should not) be used.
+Modern C++ introduced moving ownership. The move constructor invalidates the old owner in some agreed-upon way, even if the object is const. After the move, the old pointer may still be used (but that is not a good idea!).
 
 ```cpp
 #include <iostream>
@@ -190,7 +195,7 @@ But copying is a quick operation only for a few basic types! For any other type,
 # The Many Kinds Of Dangling Pointers
 
 ### Dangling Pointer Into Heap
-In C-like languages, we can use adresses of objects on the heap or stack directly. This is powerful, but it means we have to be cautious about the memory at the other end of a pointer:
+In C-like languages, we can use the addresses of objects on the heap or stack directly. This is powerful, but it means we have to be cautious about the memory at the other end of a pointer:
 
 ```c
 #include "stdlib.h"
@@ -215,7 +220,7 @@ int main() {
 }
 ```
 
-This program allocates a buffer on the heap, creates a pointer into that buffer, then frees the buffer. However, the pointer still exists! That is clearly a dangling pointer into the heap. Let's reconstruct this in Rust:
+This program allocates a buffer on the heap, creates a pointer into that buffer, then frees the buffer. However, the pointer still exists! That is a dangling pointer into the heap. Let's reconstruct this in Rust:
 
 ```rust
 fn main() {
@@ -227,7 +232,7 @@ fn main() {
     // Take a pointer into the heap-allocated array
     let reference = &mut array[6];
 
-    // at this point, reference becomes a dangling pointer
+    // at this point, reference would become a dangling pointer
     drop(array);
 
     println!("{}'s array has been set free!", *reference);
@@ -249,13 +254,13 @@ error[E0505]: cannot move out of `array` because it is borrowed
    |                    ^^^^^ move out of `array` occurs here
 ```
 
-The message is clear. How dare we move array to `drop` if we still have borrowed it to `reference`?
+The message is clear. How dare we move the ownership of the variable array to `drop` if we still have borrowed it to `reference`?
 
 # Capturing Closures
 
-Closures are anonymous functions which can capture variables from the scope they originate in.
-This means that if we create a string variable `some_string` and a closure `some_closure` in one scope, we can use `some_string` from `some_closure`.
-But closures would be pointless if we could not pass them around different scopes! That is dangerous, though:
+Closures are anonymous functions which can capture variables from their originating scope.
+Therefore, if we create a string variable `some_string` and a closure `some_closure` in one scope, we can use `some_string` from `some_closure`.
+Closures would be pointless if we could not pass them around different scopes! That is dangerous, though:
 
 ```cpp
 #include <iostream>
@@ -263,40 +268,40 @@ But closures would be pointless if we could not pass them around different scope
 
 using namespace std;
 
-function<int(int)> get_lambda_with_local_reference() {
+function<int(int)> get_lambda_with_local_reference(int index) {
     int local_arr[] = { 1, 2, 3, 4, 5 };
-    return [&](int value) { return value + local_arr[2]; };
+    return [&](int value) { return value + local_arr[index]; };
 }
 
 int main() {
     // This function returns a lambda which internally keeps a pointer to a local array.
     // Of course, when using the returned lambda, the array does not exist anymore.
-    function<int(int)> function = get_lambda_with_local_reference();
+    function<int(int)> function = get_lambda_with_local_reference(2);
     cout << "lambda uses stack-local reference:" << function(6) << endl;
 }
 ```
 
-The function `get_lambda_with_local_reference` will return a function<int(int)>, which is a lambda that takes and returns an int.
-That function is defined in the last line of `get_lambda_with_local_reference` as returning the sum of it's argument and the element at index 2 of an array defined in the same scope.
-When we return the lambda, this array goes out of scope. When we call it, the lambda dereferences some random value from the stack(at best).
+The function `get_lambda_with_local_reference` will return a `function<int(int)>`, which is a lambda that takes and returns an int.
+That function is defined in the last line of `get_lambda_with_local_reference` as returning the sum of its argument and the element at index `index` of an array defined in the same (stack frame) scope.
+When we return the lambda, this array goes out of scope. When we call it, the lambda dereferences some random value from the stack (at best).
 
 Same story in Rust:
 
 ```rust
 // This function returns a closure with a pointer to a stack-local array.
-fn get_lambda_with_local_reference() -> impl Fn(i32) -> i32 {
+fn get_lambda_with_local_reference(index: usize) -> impl Fn(i32) -> i32 {
     let local_arr = [1, 2, 3];
-    |value| value + local_arr[2]
+    |value| value + local_arr[index]
 }
 
 // Moving the stack-local array into the returned closure is fine.
-fn get_lambda_with_moved_reference() -> impl Fn(i32) -> i32 {
+fn get_lambda_with_moved_reference(index: usize) -> impl Fn(i32) -> i32 {
     let local_arr = [1, 2, 3];
-    move |value| value + local_arr[2]
+    move |value| value + local_arr[index]
 }
 
 fn main() {
-    let function = get_lambda_with_local_reference();
+    let function = get_lambda_with_local_reference(2);
     println!("lambda uses stack-local reference: {}", function(6));
 }
 ```
@@ -307,13 +312,13 @@ The Rust Complainer says NO:
 error[E0373]: closure may outlive the current function, but it borrows `local_arr`, which is owned by the current function
  --> dangling_pointer_closure.rs:5:5
   |
-5 |     |value| value + local_arr[2]
+5 |     |value| value + local_arr[index]
   |     ^^^^^^^         --------- `local_arr` is borrowed here
   |     |
   |     may outlive borrowed value `local_arr`
 help: to force the closure to take ownership of `local_arr` (and any other referenced variables), use the `move` keyword
   |
-5 |     move |value| value + local_arr[2]
+5 |     move |value| value + local_arr[index]
   |     ^^^^^^^^^^^^
 ```
 
@@ -323,15 +328,15 @@ help: to force the closure to take ownership of `local_arr` (and any other refer
 
 You can find more examples of less interesting dangling pointers [here](https://github.com/barafael/errare-humanum-est/tree/master/examples).
 
-# Crossing Boundaries or: the other 'billion dollar mistake'
+# Crossing Boundaries or: yet another 'Billion Dollar Mistake'
 
-For performance reasons, the creators of the C language used raw pointers to memory blocks as array types. After creating aan array, it's size has to be tracked manually, often by something like `#define BUF_SIZE 256`. Array access by index, like `arr[115]`, happens without a bounds check. One could check manually.
-Similarly, strings (which are basically just char pointers) are delimited by a `\0`-byte marking their end. The performance benefits come with a price - it is incredibly easy to make a mistake:
+For performance reasons, the creators of the C language used raw pointers to memory blocks as array types. After creating an array, it's size has to be tracked manually, often by something like `#define BUF_SIZE 256`. Array access by index, like `arr[115]`, happens without checking bounds. One could check manually.
+Similarly, strings (which are just char pointers) always end with a `\0`-byte. The performance benefits come with a price - it is incredibly easy to make a mistake:
 
 ```c
 #define BUFFER_SIZE 15
 
-/* Compile with -fno-stack-protector */
+/* Compile with -fno-stack-protector for real fun */
 int main() {
     int buffer[BUFFER_SIZE];
     for (int index = 0; index <= BUFFER_SIZE; index++) {
@@ -353,9 +358,9 @@ This is easy to catch. But there are other possible buffer overruns which are ev
 
 /* Compile with -fno-stack-protector for full effect */
 int main() {
-    // gets is a dangerous function and gcc even warns when using it.
+    // gets is a hazardous function, and gcc even warns when using it.
     // Here, gets overwrites a part of the stack when a long text is entered on stdin,
-    // corrupting a variable that comes after the input buffer on the stack.
+    // possibly corrupting a variable that comes after the input buffer on the stack.
     char buffer[BUFFER_SIZE];
     int password = 0;
 
@@ -373,7 +378,7 @@ int main() {
     }
 }
 ```
-Writing a string into the buffer that is larger than the buffer will actually corrupt the password flag and grant us privileged access!
+Writing a string into the buffer that is larger than the buffer can corrupt the password flag and grant us privileged access!
 And yes, you should not use `gets`, as the compiler may tell us here. So, let's use fgets, but hide a mistake in our code:
 
 ```c
@@ -403,7 +408,7 @@ int main() {
 }
 ```
 
-The fundamental problem is that the array size is unknown. There may be a performance advantage to not having those runtime index bounds checks, but modern LLVM is REALLY good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them in my opinion.
+The fundamental problem is that the array size is unknown. There may be a performance advantage to not having those runtime index bounds checks, but modern LLVM is good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them in my opinion.
 
 Obligatory Rust example:
 
@@ -418,13 +423,13 @@ fn main() {
 }
 ```
 
-panics with 'index out of bounds' at runtime. Rust cannot catch that kind of bug at compile time (it is really really hard to catch in the general case)!
+This code panics with 'index out of bounds' at runtime. Rust cannot catch that kind of bug at compile time (it is hard to catch in the general case)!
 
 # The Real Fun Stuff: Access to Shared Data
 
-Data races can happen if these 3 conditions are met: (1) multiple parts of a program have access to the same memory (sharing), (2) at least one of them writes to the shared data (mutation), and (3) there is no mechanism in place to ensure proper order of transactions (synchronisation).
+Data races can happen if these 3 conditions are met: (1) multiple parts of a program have access to the same memory (sharing), (2) at least one of them writes to the shared data (mutation), and (3) there is no mechanism in place to ensure proper order of transactions (synchronization).
 
-To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many processes read, or at most one writes. It turns out the borrow checker that ensures memory errors never happen also prevents many issues arising from shared access to ressources, because there is always a clear owner and it is known if and how data is shared.
+To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many processes read, or at most one writes. It turns out the borrow checker that ensures memory errors never happen also prevents many issues arising from shared access to resources because there is always a clear owner and it is known if and how data is shared.
 
 Here is what a multithreaded C++ program could look like:
 
@@ -521,4 +526,4 @@ A few more examples can be found [here](https://github.com/barafael/errare-human
 
 # A solution for C and C++: great linters
 
-The `cppcheck` and `clang-tidy` have heuristics for many of the problems listed here. Often, their explanation of the problem is very good, as well.
+The `cppcheck` and `clang-tidy` have heuristics for many of the problems listed here. Often, their explanation of the problem is excellent, as well.
