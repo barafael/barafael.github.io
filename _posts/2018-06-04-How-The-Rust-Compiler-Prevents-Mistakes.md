@@ -155,9 +155,9 @@ int main() {
     cout << "Contents of vec: \"" << vec[0] << "\", \"" << vec[1] << "\"\n";
 }
 ```
+Note that a moved-from object (that is not trivially destructible) still has to be destroyed: http://www.drdobbs.com/cpp/why-moving-an-object-does-not-destroy-th/231601451
 
 Rust has moves and ownership baked deep into the language:
-
 
 ```rust
 fn main() {
