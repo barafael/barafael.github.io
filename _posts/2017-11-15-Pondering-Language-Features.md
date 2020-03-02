@@ -2,7 +2,7 @@ This is an attempt to define some language features of a sane and simple, yet po
 As such it is COMPLETELY subjective, because I have no formal education about this.
 But I thought long and hard about it, and if anything, it will be fun for me to read this in a while when I might know more about the topic.
 
-By the way: I now realize this post could be titled "Rust without the Borrow Checker" or "I don't understand the Rust Borrow Checker", but I think there is value in a drastically simpler and more comfortable language without the benefits and complexity of the Borrow Checker that can pay the cost of safety at runtime.
+By the way: I now realize this post could be titled "Rust without the Borrow Checker" or "I don't understand the Rust Borrow Checker", but I think there is value in a drastically simpler language without the benefits and complexity of the Borrow Checker that can pay the cost of safety at runtime.
 
 # Some General Elements of C, C++ and Rust
 
@@ -10,12 +10,12 @@ I imagine this language to be essentially like C, but with more modern concepts 
 Here are some properties that I think it might have:
 
 * No garbage collector
-* Static Typing (unlike C)
+* Strong Typing (unlike C)
 * No implicit conversion (unlike C)
 * No inheritance
-* Compile-time generics with java-like bounds
+* Compile-time generics with java-like type bounds
 * Complete avoidance of NULL/nullptr by Option<T> Type
-* Nnumeric types with explicit size and signedness (like uint64\_t)
+* Numeric types with explicit size and signedness (like uint64\_t)
 * A struct type that can be initialised with a designated initializer
 * A Checked Tagged Union Type
     * As a result: Option type with null pointer optimization
@@ -25,7 +25,7 @@ Here are some properties that I think it might have:
 * Strings not null-terminated, but stored length, `realloc` on heap
 * Standard Library smart pointers
     * What types? Heap, Refcount, Mutex, ...
-* Explicit Optional Array bounds checking at runtime
+* Explicit opt-out Array bounds checking at runtime
 * Unicode Support
 * Module system
 * Central repo and library manager for such modules
@@ -33,7 +33,7 @@ Here are some properties that I think it might have:
 
 # Data and Program Structure
 
-Data can be structured in Product Types (structures). Functions on structs should be declared like members, and take a pointer to their instance.
+Data can be structured in structures. Functions on structs should be declared like members, and take a pointer to their instance.
 An first-class tagged union type is essentially what a tagged union is in C, except that variant checking can be enforced.
 Type-safe enumeration type?
 Dereferencing a member is '.' regardless of pointer to structure or structure value.
