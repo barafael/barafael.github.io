@@ -47,7 +47,7 @@ baseurl: ""
 #
 
 # build settings
-theme: jekyll-theme-slate
+theme: jekyll-theme-midnight
 
 markdown: kramdown
 
