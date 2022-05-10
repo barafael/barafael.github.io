@@ -24,7 +24,7 @@ The implementation is scrutinized with mocking, proptests, and mutation tests. A
 The parameter types inside the driver optionally implement the `clap::ArgEnum` derive macro behind the feature gate `"arg_enum"` (which also requires `std`). This means, the enums can be used as part of a CLI! And, using the super powers of [klask](https://github.com/MichalGniadek/klask), this CLI can be turned into a GUI. See [this project](https://github.com/barafael/ebyte-e32-ui) for how that goes! (I should probably blog about it).
 
 Sneak peek:
-![image](https://user-images.githubusercontent.com/6966738/167720605-97b2e4d3-e759-4086-8944-60e8dd9aadc6.png)
+![image]({{ site.baseurl }}/images/ebyte-e32-gui.png)
 
 # Blocking Operation
 
