@@ -14,9 +14,12 @@ The implementation is scrutinized with mocking, proptests, and mutation tests. A
 
 [Ebyte E32 Rust Driver on GitHub](https://github.com/barafael/ebyte-e32-rs)
 
-# [Demo Project (bare metal, STM32F411 Black Pill)](https://github.com/barafael/ebyte-e32-demo)
+# Demo Project (bare metal, STM32F411 Black Pill)
+[To be found here](https://github.com/barafael/ebyte-e32-demo)
 
-# [CLI and graphical user interfaces for testing](https://github.com/barafael/ebyte-e32-ui)
+# CLI and graphical user interfaces for testing
+
+[Project here](https://github.com/barafael/ebyte-e32-ui)
 
 The parameter types inside the driver optionally implement the `clap::ArgEnum` derive macro behind the feature gate `"arg_enum"` (which also requires `std`). This means, the enums can be used as part of a CLI! And, using the super powers of [klask](https://github.com/MichalGniadek/klask), this CLI can be turned into a GUI. See [this project](https://github.com/barafael/ebyte-e32-ui) for how that goes! (I should probably blog about it).
 
@@ -37,7 +40,8 @@ All operations are blocking, of course... Should be changed when `embedded-hal` 
 
 # Prior Work
 
-[Renzo Mischiantis Ebyte E32 Library](https://www.mischianti.org/2019/10/21/lora-e32-device-for-arduino-esp32-or-esp8266-library-part-2/)
-[Same library on GitHub](https://github.com/xreef/LoRa_E32_Series_Library)
+* [Renzo Mischiantis Ebyte E32 Library](https://www.mischianti.org/2019/10/21/lora-e32-device-for-arduino-esp32-or-esp8266-library-part-2/)
+
+* [Same library on GitHub](https://github.com/xreef/LoRa_E32_Series_Library)
 
 Thanks for your inspiration!
