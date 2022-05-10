@@ -20,14 +20,24 @@ The implementation is scrutinized with mocking, proptests, and mutation tests. A
 
 The parameter types inside the driver optionally implement the `clap::ArgEnum` derive macro behind the feature gate `"arg_enum"` (which also requires `std`). This means, the enums can be used as part of a CLI! And, using the super powers of [klask](https://github.com/MichalGniadek/klask), this CLI can be turned into a GUI. See [this project](https://github.com/barafael/ebyte-e32-ui) for how that goes! (I should probably blog about it).
 
+Sneak peek:
+![image](https://user-images.githubusercontent.com/6966738/167720605-97b2e4d3-e759-4086-8944-60e8dd9aadc6.png)
+
 # Blocking Operation
 
 All operations are blocking, of course... Should be changed when `embedded-hal` becomes `async` or somehow supports non-blocking operation better than with `nb` (technically, you could do non-blocking implementation now - `nb::Result` gives you a `WouldBlock` which you could work with).
 
+# Module Graph
+
+![mods](https://user-images.githubusercontent.com/6966738/167720087-1b370eac-fedc-40b8-a3c1-3fa21d9b496b.png)
+
+# Reduced Dependency Graph
+
+![graph](https://user-images.githubusercontent.com/6966738/167720107-6ffab467-3955-4892-ba7b-68e9fea7c9e0.png)
 
 # Prior Work
 
 [Renzo Mischiantis Ebyte E32 Library](https://www.mischianti.org/2019/10/21/lora-e32-device-for-arduino-esp32-or-esp8266-library-part-2/)
 [Same library on GitHub](https://github.com/xreef/LoRa_E32_Series_Library)
 
-Thanks for inspiration!
+Thanks for your inspiration!
