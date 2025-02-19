@@ -138,7 +138,7 @@ Some smoothing is applied to the D term (if enabled), but I am unsure if this
 is actually beneficial.
 
 I adapted some ideas presented in
-[Brett Beauregard's series "Improving the beginners PID"](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
+[Brett Beauregard's series "Improving the beginners PID"](https://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
 
 Eventually, PID coefficients will depend on the currently chosen mode (if I get
 to the implementation).

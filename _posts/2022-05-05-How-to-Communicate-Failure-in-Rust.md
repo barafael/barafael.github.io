@@ -34,6 +34,6 @@ A realistic usage of anyhow: [achat](https://github.com/barafael/achat), a simpl
 
 Some realistic usages of thiserror can be found here:
 
-* [pils](https://github.com/barafael/pils/blob/main/src/error.rs), a simple lisp implementation inspired by [Build Your Own LISP](buildyourownlisp.com)
+* [pils](https://github.com/barafael/pils/blob/main/src/error.rs), a simple lisp implementation inspired by [Build Your Own LISP](https://www.buildyourownlisp.com)
 * (Silly code) [famous-last-words](https://github.com/barafael/famous-last-words)
 * (Silly code) [Deutsche Bahn Delay Reasons](https://github.com/barafael/deutsche-bahn-delay-reasons)
