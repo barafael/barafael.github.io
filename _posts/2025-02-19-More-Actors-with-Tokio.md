@@ -1,5 +1,6 @@
 ---
 layout: post
+toc: true
 ---
 
 In spring 2021, when I was first submerging into [tokio](https://tokio.rs), a colleague and friend mentioned I should ingest this article thoroughly:
@@ -151,7 +152,7 @@ Then, you can collect the oneshot returned here and await it at your convenience
 For an example, see the [unit test](#simple-unit-test).
 
 
-### <a href="" name="simple-unit-test"></a> Unit Testing the `UniqueIdService`
+### <a href="simple-unit-test" name="simple-unit-test"></a> Unit Testing the `UniqueIdService`
 
 Testing actors is a fascinating subject. It _must_ be simple!
 All the other actors an actor is talking to _do not need to be mocked_:
@@ -190,7 +191,7 @@ async fn should_increment_unique_id() {
 
 [Full Example](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=bb316eb8bf6ab51602bfaedb2a841e70)
 
-## <a href="" name="bounded-mpsc-footgun"></a>Ruling out Deadlocks with Bounded Channels
+## <a href="bounded-mpsc-footgun" name="bounded-mpsc-footgun"></a>Ruling out Deadlocks with Bounded Channels
 
 Attempting to send a message on a tokio bounded mpsc channel is `async`, because the channel might be filled to the bound.
 In that case, sending will "suspend" until space becomes available.
@@ -213,7 +214,7 @@ A and B are engaged in a sort of toxic nepotistic double binding.
 
 > **_Note:_** Strive for your channel topology to be a **Directed Acyclic Graph**.
 
-## <a href="" name="automatic-application-shutdown"></a>Automatic Application Shutdown
+## <a href="automatic-application-shutdown" name="automatic-application-shutdown"></a>Automatic Application Shutdown
 
 When exiting an event loop, the event loop resources are dropped.
 Other actors may then realize this situation and perform their own natural shutdown.
@@ -221,7 +222,7 @@ If your entire system topology is a DAG, you can achieve graceful shutdown by dr
 
 ![DAG actor topology]({{ site.baseurl }}/images/actor-dag.drawio.svg)
 
-# <a href="" name="ooop"></a>This style facilitates "Original OOP" (OOOP)
+# <a href="ooop" name="ooop"></a>This style facilitates "Original OOP" (OOOP)
 
 Famously, Alan Kay "didn't have C++ in mind" when coining the term "OOP" (Object Oriented Programming).
 This means inheritance, overloading, and a `class` keyword are completely besides the point!
