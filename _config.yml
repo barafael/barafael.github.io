@@ -20,7 +20,7 @@ footer-links:
   facebook:
   github: barafael
   linkedin: barafael
-  rss: y
+  rss: n
   twitter:
   stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
 
@@ -47,7 +47,9 @@ baseurl: ""
 #
 
 # build settings
-theme: jekyll-theme-midnight
+remote_theme: pages-themes/minimal@v0.2.0
+plugins:
+- jekyll-remote-theme 
 
 markdown: kramdown
 
@@ -69,11 +71,6 @@ kramdown:
 # Set the Sass partials directory, as we're using @imports
 sass:
   style: :expanded # You might prefer to minify using :compressed
-
-# Use the following plug-ins
-gems:
-  - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
-  - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
 
 # Exclude these files from your production _site
 exclude:
