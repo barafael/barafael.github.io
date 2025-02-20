@@ -1,5 +1,5 @@
 In [this
-blogpost](http://fabiensanglard.net/floating_point_visually_explained/), Fabien
+blogpost](https://fabiensanglard.net/floating_point_visually_explained/), Fabien
 Sanglard explains how floating point numbers are generally displayed in modern
 computers (using the ``IEEE754`` Norm). His alternative perspective using
 buckets and offsets is brilliant and explains a fact that may be
