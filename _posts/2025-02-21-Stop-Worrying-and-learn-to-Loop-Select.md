@@ -35,6 +35,12 @@ the resulting value is matched on a user-supplied pattern (3).
 If the pattern does not match (3a), the macro disregards that process but continues monitoring the remaining ones.
 Else, all other processes (futures) are canceled (3b) and the macro evaluates to the value yielded by the future.
 
+### In terms of Syntax
+
+```rust
+
+```
+
 # Example 1: Explicit shutdown requires `loop-select!`
 
 Imagine an actor which periodically sends a message into the world.
@@ -146,6 +152,32 @@ So what happens if all arms become disabled? A `panic!`.
 
 > **_Note_**: That's because a `panic!` is one way to create a value of type `T`, by creating a value of type `!` (the never type). The never type is the only subtype in Rust, and it's a subtype of every other type. There is even an `impl From<!> for T` somewhere, among other fun shenanigans.
 
+Here's a simple example:
+
+```rust
+    #[tokio::test]
+    #[should_panic(expected = "all branches are disabled and there is no else branch")]
+    async fn select_nothing() {
+        let _nonono = tokio::select! {
+            Some(n) = async { None } => { n },
+        };
+    }
+```
+
+To fix it in this case, you can just add a `break` as a `select!` arm:
+
+```rust
+let zero = tokio::select! {
+    Some(n) = async { None } => { n },
+    else => 0,
+};
+```
+
+I like to `match` or `let-else` on the `mpsc`-arm of the `select` (there usually is one) and break there.
+In other cases, one may want to break from the `loop-select` when [`read`](https://docs.rs/tokio/latest/tokio/io/trait.AsyncReadExt.html#method.read)ing an [`AsyncRead`](https://docs.rs/tokio/latest/tokio/io/trait.AsyncRead.html) returns `0` (no more bytes to be had).
+
+[Full example](https://github.com/barafael/barafael.github.io/tree/master/_projects/select-examples)
+
 ## Issue #3: Easy to create an infinite busy loop
 
 Imagine having an actor to collect messages from three mpsc channels (for sake of example, it's not terribly important).
@@ -179,11 +211,55 @@ pub async fn event_loop(
 }
 ```
 
-Once all channel handles have been dropped, every pattern always matches.
-Then, we get our useless tracing output,
-and finally, we start from top.
+Once all channel handles have been dropped, every pattern always matches (even though it will always be `None`).
+Then, we get our useless tracing output, and finally, we start from top.
 I decided to include this example because busy loops like this are especially bad in an `async` world.
-The only solace offered here is that the loop is `async-busy`, that is, at least it does not hog the CPU.
+The only solace offered here is that the loop is `async-busy`, that is, at least it does not permanently hog the CPU.
 It is busy in the sense that it can always run, but at least `tokio` won't let it suffocate the other tasks.
 
 [Full example](https://github.com/barafael/barafael.github.io/tree/master/_projects/infinite-busy-loop-via-select)
+
+## Issue #4: Tooling
+
+`Rustfmt` simply does not touch anything within a `select`, and Rust Analyzer also struggles with it.
+That's not surprising, as the syntax is obviously invalid Rust to it.
+
+I like to take it as an incentive to create functions for all event handlers.
+Here's my recommended approach: in your `select`, only bother with message/event collection and shutdown.
+The `select`, at the start of the event loop, shall only produce a value of a type `Event` or similar.
+Then, after collecting the event, a method `on_event` can be called.
+
+```rust
+pub async fn event_loop(mut self, mut rx: mpsc::Receiver<Message>) -> Self {
+    loop {
+        // Collect some event.
+        let event = select! {
+            message = rx.recv() => {
+                let Some(message) = message else {
+                    break;
+                };
+                Event::Message(message)
+            }
+            Some((id, status)) = self.tasks.next() => {
+                Event::TaskStatus(id, status)
+            }
+        };
+
+        // Process the event.
+        if let Err(error) = self.on_event(event) {
+            warn!(?error, "Error processing event");
+        }
+    }
+
+    // Await completion of remaining tasks.
+    while let Some((id, status)) = self.tasks.next().await {
+        if let Err(error) = self.on_task_status(id, status) {
+            warn!(?error, "Error processing task status");
+        }
+    }
+
+    self
+}
+```
+
+[Full example](https://github.com/barafael/barafael.github.io/tree/master/_projects/nice-loop-select)
