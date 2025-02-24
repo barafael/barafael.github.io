@@ -35,12 +35,6 @@ the resulting value is matched on a user-supplied pattern (3).
 If the pattern does not match (3a), the macro disregards that process but continues monitoring the remaining ones.
 Else, all other processes (futures) are canceled (3b) and the macro evaluates to the value yielded by the future.
 
-### In terms of Syntax
-
-```rust
-
-```
-
 # Example 1: Explicit shutdown requires `loop-select!`
 
 Imagine an actor which periodically sends a message into the world.
