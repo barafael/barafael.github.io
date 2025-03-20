@@ -58,8 +58,8 @@ impl UniqueIdService {
     }
 ```
 
-Notably, the event loop is a *method* consuming *and returning* `Self`.
-It can easily be spawned onto a task, but _doesn't have to_.
+Notably, the event loop is a method _consuming and returning_ `Self`.
+It can be spawned as a task, but _doesn't have to_.
 
 By returning `Self`, we can inspect the state after the event loop finished, and even re-enter it.
 And, we can assert that the correct target actor state has been reached in a [unit test](#simple-unit-test).
@@ -162,8 +162,8 @@ There is no way to ensure real-time constraints within tokio naively, so **don't
 
 The actor interface as-is enables us to write a test with a deterministic order of events,
 because we don't need to spawn a task running your actor and then send messages to it.
-Instead, we enqueue the messages, then **drop the sender**.
-Only after this, we await the event loop. Here we encounter "natural actor shutdown". We can assert on the resulting final state.
+Instead, we enqueue the messages, then _drop the sender_.
+Only then, we await the event loop. Here we encounter "natural actor shutdown". We can assert on the resulting final state.
 
 ```rust
 #[tokio::test]
@@ -208,11 +208,11 @@ Then, A would be blocked until B processes the next message, meaning A would pro
 If B now sends messages to A, they would not be processed, filling the channel to the bound.
 Yikes! Deadlock.
 
-This situation is bad in another way, even if the deadlock never arises.
+This situation is bad in another way, _even if the deadlock never arises_.
 The actor cycle prevents natural actor shutdown of A and B, because there always exists a handle to each receiver.
 A and B are engaged in a sort of toxic nepotistic double binding.
 
-> **_Note:_** Strive for your channel topology to be a **Directed Acyclic Graph**. See next section.
+> **_Note:_** Strive for your channel topology to be a **Directed Acyclic Graph** (see below).
 
 ## <a href="#automatic-application-shutdown" name="automatic-application-shutdown"></a>Automatic Application Shutdown
 
