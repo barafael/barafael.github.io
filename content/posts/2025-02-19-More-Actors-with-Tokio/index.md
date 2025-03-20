@@ -24,7 +24,7 @@ beyond the basic examples normally introduced.
 
 > **_Note:_** It is recommended to have read the aforementioned article before reading this one. In fact, **if you're gonna read one article, [read Alice's article](https://ryhl.io/blog/actors-with-tokio/)**.
 
-## The Recipe (adjusted to an internet stranger's taste)
+## The Recipe (adjusted to this internet strangers taste)
 
 Alice's post starts off with a recipe, briefly introducing the style by example.
 Although the principle remains, I suggest a few changes.
@@ -43,13 +43,13 @@ pub struct UniqueIdService {
 
 An actor should not own channel handles or sockets or other I/O resources.
 It may require them as arguments for its event loop of course! But not hold them as members.
-**Ownership is responsibility**, and who is really responsible for the run-time resources of the actor? The actor's event loop.
+**Ownership is responsibility**, and who is really responsible for the run-time resources of the actor? The actor's event loop (see below).
 
-> **_Note:_** Among other things, holding simple data as actor state simplifies restarting an actor after it broke out of its event loop: all you have to do is create new runtime resources and start the event loop again.
+> **_Note:_** Holding simple data as actor state also simplifies restarting an actor after it broke out of its event loop: all you have to do is create new runtime resources and start the event loop again.
 
 ### I prefer the Event Loop as consuming _method_
 
-Somewhat contrary to the original recipe, I prefer this particular event loop signature:
+Somewhat differently to the original recipe, I prefer this particular event loop signature:
 
 ```rust
 impl UniqueIdService {
@@ -62,15 +62,15 @@ Notably, the event loop is a *method* consuming *and returning* `Self`.
 It can easily be spawned onto a task, but _doesn't have to_.
 
 By returning `Self`, we can inspect the state after the event loop finished, and even re-enter it.
-Or, we can assert that the correct target actor state has been reached in a [unit test](#simple-unit-test).
+And, we can assert that the correct target actor state has been reached in a [unit test](#simple-unit-test).
 
 ### I like to leave the spawning to the user
 
 The original recipe [`tokio::spawn`]s the actor in a helper function.
-But who are we to prescribe that particular use? The user may want to
+But who are we to prescribe that particular use? One may want to:
 
-* await the end of the event loop,
-* monitor the [`tokio::task::JoinHandle<_>`],
+* await the end of the event loop (without spawning),
+* spawn, then monitor the [`tokio::task::JoinHandle<_>`],
 * create the actor event loop future and put it in something like a `FuturesUnordered` along with its brethren, or
 * spawn the event loop future on a non-tokio executor.
 
@@ -91,10 +91,9 @@ there are no more `mpsc::Sender`s.
 In this situation, all messages have been handled, and no more senders can ever be created.
 After exiting the event loop, but before returning from the function, an actor may run asynchronous cleanup logic
 (such as unsubscribing from a message broker or closing a websocket connection).
+After cleaning up, the event loop shall [drop all runtime resources](#automatic-application-shutdown).
 
-Finally, when an event loop terminates, it breaks from the event loop, [dropping all runtime resources](#automatic-application-shutdown).
-
-> **_Note:_** `std::ops::drop` runs when the event loop exits, which will drop at least the event loop resources. If the task was spawned and isn't being awaited somewhere, the full actor resources are dropped.
+> **_Note:_** If the task was spawned and isn't being joined somewhere, all actor resources are dropped. This includes channel handles of other actors.
 
 > **_More Note:_** Sounds like garbage collection? [Not a coincidence](#ooop).
 
@@ -103,34 +102,33 @@ Finally, when an event loop terminates, it breaks from the event loop, [dropping
 An actor should generally detect the condition where it is no longer needed and shut down by breaking out of its event loop.
 I prefer this over explicitly shutting down an actor.
 Ideally, shutdown naturally happens gracefully when each actor finishes processing and drops its actor handles.
-Some designs do require to distribute a [`tokio_util::sync::CancellationToken`](https://docs.rs/tokio-util/latest/tokio_util/sync/struct.CancellationToken.html) among the components, though.
+Some designs do require distributing a [`tokio_util::sync::CancellationToken`](https://docs.rs/tokio-util/latest/tokio_util/sync/struct.CancellationToken.html) among the components, though.
 
 ### Message `enum`s are great
 
-I have not changed a thing about the message type in the original recipe, because it's very good and timeless.
+I have not changed a thing about the message type in the original recipe, because it's timeless.
 Remember to make your messages own your data - don't borrow.
 
 > **_Note_**: A message is a way to transfer ownership from one actor to another, thereby transferring the responsibility to handle the data. Borrowing indicates time-coupling of components, which would defeat the purpose of autonomously running actors, so don't do it. Don't worry, if you do it, you'll end in lifetime soup and back out, anyway.
 
 > **_More Note_**: Sounds like a V-Table? [Not a coincidence](#ooop).
 
-#### A Note on Call-and-Response
+#### On Call-and-Response
 
-Most actors in my experience do not require and should not employ the call-response pattern demonstrated in this example. It's a sort of sync-async crossover anyway, and blocks the "calling" actor (when implemented naively). Look at the original post under the "No responses to messages" heading.<br>Most actors I have seen simply take "Commands", i.e. messages carrying the plain-old-data to be processed.
-
-The most fun designs I have been with did not use the pattern at all, and data flowed only in one direction. This is good for a number of reasons, notably it [prevents the biggest footgun of bounded mpsc channels](#bounded-mpsc-footgun) and [facilitates automatic application shutdown](#automatic-application-shutdown).
+Most actors in my experience do not require and should not employ the call-response pattern demonstrated in this example. It's a sort of sync-async crossover anyway, and blocks the "calling" actor (when implemented naively). Look at the original post under the "No responses to messages" heading.**Most actors I have seen simply take "Commands", i.e. messages carrying the plain-old-data to be processed.**
+The most fun designs I have been with did not use the pattern at all, and data flowed only left-to-right. This is good for a number of reasons, notably it [prevents the biggest footgun of bounded mpsc channels](#bounded-mpsc-footgun) and [facilitates automatic application shutdown](#automatic-application-shutdown).
 
 ### I don't believe in actor handles
 
 The original recipe recommends to implement an actor handle type.
 Perhaps surprisingly, I have stopped writing actor handle types!
 In my opinion, actor handles paper too much over the operations on the channel handle to the actor.
-I feel they obscure what is actually happening and prevent us from doing cool shit. We can't
+I feel they obscure what is actually happening and prevent us from doing _cool shit_. We can't
 
-* await the termination of the actor (unless we forward [`mpsc::Sender::closed`](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.closed) of the underlying handle)
+* await the termination of the actor (unless we forward [`mpsc::Sender::closed`](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.closed) of the underlying sender handle)
 * store the response futures (`oneshot::Receiver`s) in a combinator ([see unit test](#simple-unit-test)),
 * use the actor handle from a blocking context,
-* ... much more cool shit.
+* ... much more _cool shit_.
 
 In short, [all the methods implemented on the `mpsc::Sender`](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html) are there for good reasons, but our handle is hiding them.
 
@@ -155,10 +153,9 @@ For an example, see the [unit test](#simple-unit-test).
 
 ### <a href="#simple-unit-test" name="simple-unit-test"></a> Unit Testing the `UniqueIdService`
 
-Testing actors is a fascinating subject. It _must_ be simple!
-All the other actors an actor is talking to _do not need to be mocked_:
+I have found that actors which aren't easy to test hint at bad architecture. The interfaces should be clear, and all the other parties an actor talks to _should not need to be mocked_:
 the communication medium is some channel,
-so one only needs to create such a channel and enqueue the correct messages on it (_before_ running the event loop).
+so one only needs to create such a channel and enqueue the correct messages on it (_before_ running the event loop, see below).
 
 Care must be taken to not run into timing-dependent behaviour in a unit test (and **please avoid at great cost situations where you put a `sleep` call in your test! It reeks**.
 There is no way to ensure real-time constraints within tokio naively, so **don't pretend there is** by bounding the execution time of your function under test).
@@ -166,7 +163,7 @@ There is no way to ensure real-time constraints within tokio naively, so **don't
 The actor interface as-is enables us to write a test with a deterministic order of events,
 because we don't need to spawn a task running your actor and then send messages to it.
 Instead, we enqueue the messages, then **drop the sender**.
-After this, when we `await` the actor event loop, we encounter "natural actor shutdown", and finally assert the result.
+Only after this, we await the event loop. Here we encounter "natural actor shutdown". We can assert on the resulting final state.
 
 ```rust
 #[tokio::test]
@@ -190,6 +187,7 @@ async fn should_increment_unique_id() {
 ```
 
 > **_Note_**: The event loop returns `Self`. This means, even if you do need to spawn it, `.await`ing the `tokio::task::JoinHandle<UniqueIdService>` yields your actor state.
+
 > **_Note_**: One should generally, but especially in tests, await the completion of tasks somehow, if only to assert they did not panic. If you can, avoid placing asserts in test-only tasks.
 
 [Full Example](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=bb316eb8bf6ab51602bfaedb2a841e70)
@@ -199,9 +197,8 @@ async fn should_increment_unique_id() {
 Attempting to send a message on a tokio bounded mpsc channel is `async`, because the channel might be filled to the bound.
 In that case, sending will "suspend" until space becomes available.
 This is great, because it introduces _backpressure_.
-In normal operation, the mpsc queue regulates flow differences between sending and receiving.
-It can even compensate spikes in message flow rate, depending on the buffer depth.
 
+In normal operation, the mpsc queue compensates flow rate differences between sending and receiving.
 However, imagine a situation where actor A sends actor B messages, while actor B sends actor A messages:
 
 ![Cyclic Actors](actor-cycle.drawio.svg)
@@ -219,16 +216,16 @@ A and B are engaged in a sort of toxic nepotistic double binding.
 
 ## <a href="#automatic-application-shutdown" name="automatic-application-shutdown"></a>Automatic Application Shutdown
 
-When exiting an event loop, the event loop resources are dropped.
+When exiting an event loop, the event loop resources including handles of other actors are dropped.
 Other actors may then realize this situation and perform their own natural shutdown.
 If your entire system topology is a DAG, you can achieve graceful shutdown by dropping the "top-level handle".
 
-![DAG actor topology]({{ site.baseurl }}/images/actor-dag.drawio.svg)
+![DAG actor topology](actor-dag.drawio.svg)
 
 This is not limited to mpsc channels, but they are the primary enabler.
 Normally, there will be other asynchronous resources to be monitored,
 within a `loop { select! { ... } }`.
-Frequently, it is useful to only ever `break` from that loop when `recv`ing yields `None`.
+Frequently, it is useful to only ever `break` from that loop when mpsc-`recv`ing yields `None`.
 
 # <a href="#ooop" name="ooop"></a>"Original OOP" (OOOP)
 
