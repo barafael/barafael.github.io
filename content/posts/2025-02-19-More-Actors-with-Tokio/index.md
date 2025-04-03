@@ -66,22 +66,25 @@ And, we can assert that the correct target actor state has been reached in a [un
 
 ### I like to leave the spawning to the user
 
-The original recipe [`tokio::spawn`]s the actor in a helper function.
-But who are we to prescribe that particular use? One may want to:
+The original recipe [`tokio::spawn`](https://docs.rs/tokio/latest/tokio/task/fn.spawn.html)s the actor event loop in a helper function.
+But who are we to assume that particular use? One may want to:
 
 * await the end of the event loop (without spawning),
-* spawn, then monitor the [`tokio::task::JoinHandle<_>`],
-* create the actor event loop future and put it in something like a `FuturesUnordered` along with its brethren, or
+* spawn, then monitor the [`tokio::task::JoinHandle<_>`](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html),
+* create the actor event loop future and put it in something like a [`FuturesUnordered`](https://docs.rs/futures/latest/futures/stream/struct.FuturesUnordered.html) along with its brethren, or
 * spawn the event loop future on a non-tokio executor.
+
+That's not to say you should not spawn the event loop onto some kind of task.
+Spawning is great, and it lets an actor run free (either concurrently or in parallel) in its own little world (no foreign references, in or out).
 
 ### I like "Natural Actor Shutdown"
 
-The actor still employs one of the most important aspects of the original design, which is "natural actor shutdown":
+The actor scheme presented here still employs one of the most important aspects of the original design, which is "natural actor shutdown":
 
 ```rust
-    while let Some(message) = rx.recv().await {
-        self.handle_message(message);
-    }
+while let Some(message) = rx.recv().await {
+    self.handle_message(message);
+}
 ```
 
 We exit when `recv`ing on the channel yields `None`.
@@ -135,16 +138,16 @@ In short, [all the methods implemented on the `mpsc::Sender`](https://docs.rs/to
 My suggestion if you really want to reduce boilerplate anyway is to use associated functions on the actor (`UniqueIdService`) type:
 
 ```rust
-    /// Query for a unique id.
-    ///
-    /// Returns `None` if the actor is not running.
-    pub async fn get_unique_id(sender: &mpsc::Sender<Message>) -> Option<oneshot::Receiver<u32>> {
-        let (callback, callback_receiver) = oneshot::channel();
-        let message = Message::GetUniqueId { callback };
+/// Query for a unique id.
+///
+/// Returns `None` if the actor is not running.
+pub async fn get_unique_id(sender: &mpsc::Sender<Message>) -> Option<oneshot::Receiver<u32>> {
+    let (callback, callback_receiver) = oneshot::channel();
+    let message = Message::GetUniqueId { callback };
 
-        sender.send(message).await.ok()?;
-        Some(callback_receiver)
-    }
+    sender.send(message).await.ok()?;
+    Some(callback_receiver)
+}
 ```
 
 I recommend to not fold in the `oneshot::Receiver` like in the original handle implementation!
