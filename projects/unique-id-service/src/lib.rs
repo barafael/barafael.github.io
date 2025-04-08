@@ -59,6 +59,7 @@ impl UniqueIdService {
 mod test {
     use super::*;
 
+    // marker-start:unittest_uidservice
     #[tokio::test]
     async fn should_increment_unique_id() {
         let actor = UniqueIdService::new();
@@ -77,4 +78,5 @@ mod test {
         assert_eq!(nums, (0, 1, 2));
         assert_eq!(service, UniqueIdService { next_id: 3 });
     }
+    // marker-end:unittest_uidservice
 }
