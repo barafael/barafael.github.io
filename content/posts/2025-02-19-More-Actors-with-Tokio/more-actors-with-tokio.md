@@ -1,5 +1,5 @@
 ---
-title: Unit Testing
+title: More Actors with Tokio
 marp: true
 theme: rhea
 color: "dark-gray"
@@ -50,7 +50,14 @@ _paginate: false
 
 ---
 
-### Street Definition
+<iframe width="100%" height="90%" src="https://barafael.github.io/posts/more-actors-with-tokio">
+</iframe>
+
+[barafael.github.io/posts/more-actors-with-tokio](https://barafael.github.io/posts/more-actors-with-tokio) (2025)
+
+---
+
+### Actor: (my) Street Definition
 
 <style scoped>
 div.twocols {
@@ -77,7 +84,7 @@ div.twocols p.break {
   isolates state/process
 * Communicates with others
   via message passing (channels)
-* Channels outline system topology
+* Channel kinds outline system topology
 
 <p class="break"></p>
 
@@ -85,7 +92,25 @@ div.twocols p.break {
 
 </div>
 
-Inspired by [Alan Kay on Quora](https://www.quora.com/profile/Rafael-Bachmann-2/https-www-quora-com-What-does-Alan-Kay-mean-when-he-said-OOP-to-me-means-only-messaging-local-retention-and-protection) (the real one stated [similar ideas](https://wiki.c2.com/?AlanKaysDefinitionOfObjectOriented)).
+Inspired by Alan Kay [on Quora][quora], the real one had [similar ideas][c2].
+
+[quora]: https://www.quora.com/profile/Rafael-Bachmann-2/https-www-quora-com-What-does-Alan-Kay-mean-when-he-said-OOP-to-me-means-only-messaging-local-retention-and-protection
+[c2]: https://wiki.c2.com/?AlanKaysDefinitionOfObjectOriented
+
+---
+
+### Architecture
+
+* Birds-eye-view:
+  complex but manageable
+* Only actors and channels!
+* Fun and useful to follow messages along channels.
+
+[Protohackers Exercise 6 :arrow_right:](https://github.com/barafael/protohackers/tree/main/speedd)
+
+![bg fit right](images/speedd.drawio.svg)
+
+<h4 align="center">Architecture is concerned with distributing responsibility</h4>
 
 ---
 
@@ -101,105 +126,13 @@ pub struct UniqueIdService {
 ````
 
 No  runtime resources (sockets, channel handles, etc.) here!
-They belong to the actor _event loop_ future.
+They _should_ belong to the actor **event loop** future.
+
+<h3 align="center">Responsibility is Ownership</h3>
 
 ---
 
-### The Event Loop
-
-<style scoped>
-{
-  font-size: 34px
-}
-</style>
-
-`async fn` which takes `self` and runtime resources.
-
-````rust
-impl UniqueIdService {
-    pub async fn event_loop(mut self, mut rx: mpsc::Receiver<Message>) -> Self {
-        loop {
-            select! {
-                ...
-            }
-        }
-    }
-````
-
-[Loop-select is a real superpower](https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/).
-
----
-
-### Why that particular signature?
-
-Applied ownership (_move_ semantics) to show who's boss:
-
-**_Question:_** Why return `Self`?
-
-* Tests: can assert on the guts
-* Shutdown: can act on leftovers
-* Restart: can inject in fresh instance
-* Distributed actors: can move data elsewhere and restart
-
----
-
-### Aside: Deterministic [Unit Test](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=bb316eb8bf6ab51602bfaedb2a841e70)
-
-````rust marker:unittest_uidservice
-#[tokio::test]
-async fn should_increment_unique_id() {
-    let actor = UniqueIdService::new();
-    let (tx, rx) = mpsc::channel(3);
-
-    let resp1 = UniqueIdService::get_unique_id(&tx).await.unwrap();
-    let resp2 = UniqueIdService::get_unique_id(&tx).await.unwrap();
-    let resp3 = UniqueIdService::get_unique_id(&tx).await.unwrap();
-
-    // Important for this test:
-    drop(tx);
-
-    let service = actor.event_loop(rx).await;
-
-    let nums = tokio::try_join!(resp1, resp2, resp3).unwrap();
-    assert_eq!(nums, (0, 1, 2));
-    assert_eq!(service, UniqueIdService { next_id: 3 });
-}
-````
-
----
-
-### Architecture
-
-* Only actors and channels here!
-* Birds-eye-view: complex but manageable
-* State of the running system
-* Fun and useful to follow messages along channels
-
-[Protohackers Exercise 6](https://github.com/barafael/protohackers/tree/main/speedd)
-
-![bg fit right](images/speedd.drawio.svg)
-
----
-
-![bg 80%](images/system_architecture.drawio.svg)
-
----
-
-### Graceful shutdown
-
-An actor should shut down when its primary means of communication goes away:
-
-- Socket closes
-- Channel becomes empty and there are no more senders
-- Timeout occurs
-
-When an actor exits, it drops its handles toward other actors - signaling them to exit, too.
-
-<small>Sounds like garbage collection?</small>
-
----
-
-### The Messages define the Actor
+### The Core Idea is _messaging_
 
 <style scoped>
 table {
@@ -210,11 +143,11 @@ table, tbody, tr, th, td {
     border-width: 0px;
 }
 </style>
-
 <table>
 <tr>
 <td>
 
+* `enum` is perfect for this
 * Type of actual actor is _erased_
 * Mocking is not required
 
@@ -240,7 +173,19 @@ pub enum Message {
 </tr>
 </table>
 
-<small>Sounds like a VTable/Polymorphism/type erasure?</small>
+<h3 align="center">Channels are a tool for transferring ownership</h3>
+
+---
+
+### Graceful shutdown
+
+An actor should shut down when its primary means of communication goes away:
+
+- Socket closes
+- Channel becomes empty and there are no more senders
+- Timeout occurs
+
+When an actor exits, it drops its handles toward other actors - signaling them to exit, too.
 
 ---
 
@@ -263,29 +208,70 @@ pub enum Message {
 
 ---
 
-### Want more?
-
-![bg right:40% 80%](images/more-actors-with-tokio-blogpost-qrcode.svg)
-
-Blog post: [More Actors with Tokio](https://barafael.github.io/posts/more-actors-with-tokio/)
-
-<iframe style="margin-top:5%" width="100%" height="70%" src="https://barafael.github.io/posts/more-actors-with-tokio">
-</iframe>
-
----
-
-### Rust Meetup Nuremberg
-
-[Monthly online meetings](https://www.meetup.com/de-de/rust-noris/)
-
-![bg 80%](images/rust-nuremberg-meetup-logo.png)
-![bg 60%](images/rust-nuremberg-meetup-qrcode.svg)
-
----
-
 ### Questions?
+
+<!--
+_paginate: false
+ -->
 
 <iframe style="margin-top:5%" width="100%" height="80%" src="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&code=fn+main%28%29+%7B%7D%0A">
 </iframe>
 
 ![bg right:20% grayscale](images/gorch-fock-takelage/Takelage_(Gorch_Fock_II).jpeg)
+
+---
+
+![bg 80%](images/system_architecture.drawio.svg)
+
+---
+
+### Aside: Deterministic [Unit Tests](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=bb316eb8bf6ab51602bfaedb2a841e70)
+
+Playbook:
+Construct Data :arrow_right: Enqueue Messages :arrow_right: **drop sender** :arrow_right:
+Run event loop to completion :arrow_right: assert on results
+
+* Avoid spawning.
+* Avoid defining actor mocks - channels suffice.
+* Avoid **at all cost** having to wait 1s to reach a state :shaking_face:.
+
+Use the type system to inject resources (`Stream`, `AsyncRead`, etc.).
+**System becomes protocol-agnostic**.
+
+---
+
+### The Event Loop
+
+<style scoped>
+{
+  font-size: 34px
+}
+</style>
+
+`async fn` which consumes `self` and runtime resources.
+
+````rust
+impl UniqueIdService {
+    pub async fn event_loop(mut self, mut rx: mpsc::Receiver<Message>) -> Self {
+        loop {
+            select! {
+                ...
+            }
+        }
+    }
+````
+
+[Loop-select is a real superpower](https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/).
+
+---
+
+### `event_loop` returns `Self` considered :ok_hand:
+
+Read the blog post for details :shrug:
+
+Advantages:
+
+* Tests: can assert on the guts.
+* Shutdown: can act on leftovers.
+* Restart: can inject in fresh instance.
+* Distributed actors: can move data elsewhere and restart.
