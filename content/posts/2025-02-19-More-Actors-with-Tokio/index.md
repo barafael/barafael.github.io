@@ -5,7 +5,7 @@ date = 2025-02-19
 
 In spring 2021, when I was first submerging into [tokio](https://tokio.rs), a colleague and friend mentioned I should ingest this article:
 [Actors with Tokio](https://ryhl.io/blog/actors-with-tokio/) by Alice Ryhl.
-And man, did I ingest it.
+And, did I ingest it.
 To summarize, the article proposes an architectural style which relies on
 message passing (channels) and
 inherent parallelism (tasks)
@@ -17,20 +17,15 @@ But really, [go read the article](https://ryhl.io/blog/actors-with-tokio/).
 Alice's post shaped and will continue to shape the asynchronous designs I take part in.
 Unsurprisingly, I'm not the only one - everybody working with Rust in network applications and beyond seems to relate.
 
-I have successfully and happily applied the proposed "actor" architecture style now for several years.
-Here, I suggest a few adjustments to the original style for improved testability and composability.
-Additionally, I share my insights on how to employ this style in larger systems,
-beyond the basic examples normally introduced.
+I have happily and successfully applied this "actor" architecture style over the last years.
+Over this time, I have discovered a few minor adjustments to the proposed style for improved testability and composability.
 
 > **_Note:_** It is recommended to have read the aforementioned article before reading this one. In fact, **if you're gonna read one article, [read Alice's article](https://ryhl.io/blog/actors-with-tokio/)**.
 
-## The Recipe (adjusted to this internet strangers taste)
+## I believe that an actor should *be* its data
 
 Alice's post starts off with a recipe, briefly introducing the style by example.
 Although the principle remains, I suggest a few changes.
-
-### I believe that an actor should *be* its data
-
 In the original recipe, the actor holds its state _and its receiver_.
 What if an actor consisted solely of its plain-old-data state?
 
@@ -47,7 +42,7 @@ It may require them as arguments for its event loop of course! But not hold them
 
 > **_Note:_** Holding simple data as actor state also simplifies restarting an actor after it broke out of its event loop: all you have to do is create new runtime resources and start the event loop again.
 
-### I prefer the Event Loop as consuming _method_
+## I prefer the Event Loop as _consuming method_
 
 Somewhat differently to the original recipe, I prefer this particular event loop signature:
 
@@ -64,7 +59,7 @@ It can be spawned as a task, but _doesn't have to_.
 By returning `Self`, we can inspect the state after the event loop finished, and even re-enter it.
 And, we can assert that the correct target actor state has been reached in a [unit test](#simple-unit-test).
 
-### I like to leave the spawning to the user
+## I like to leave the spawning to the user
 
 The original recipe [`tokio::spawn`](https://docs.rs/tokio/latest/tokio/task/fn.spawn.html)s the actor event loop in a helper function.
 But who are we to assume that particular use? One may want to:
@@ -75,53 +70,9 @@ But who are we to assume that particular use? One may want to:
 * spawn the event loop future on a non-tokio executor.
 
 That's not to say you should not spawn the event loop onto some kind of task.
-Spawning is great, and it lets an actor run free (either concurrently or in parallel) in its own little world (no foreign references, in or out).
+Spawning is great, and it lets an actor run free (employing parallelism) in its own little world (no foreign references, in or out).
 
-### I like "Natural Actor Shutdown"
-
-The actor scheme presented here still employs one of the most important aspects of the original design, which is "natural actor shutdown":
-
-```rust
-while let Some(message) = rx.recv().await {
-    self.handle_message(message);
-}
-```
-
-We exit when `recv`ing on the channel yields `None`.
-As per [the docs](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Receiver.html#method.recv), this happens when
-there are no more messages in the `mpsc::Receiver` queue, and
-there are no more `mpsc::Sender`s.
-In this situation, all messages have been handled, and no more senders can ever be created.
-After exiting the event loop, but before returning from the function, an actor may run asynchronous cleanup logic
-(such as unsubscribing from a message broker or closing a websocket connection).
-After cleaning up, the event loop shall [drop all runtime resources](#automatic-application-shutdown).
-
-> **_Note:_** If the task was spawned and isn't being joined somewhere, all actor resources are dropped. This includes channel handles of other actors.
-
-> **_More Note:_** Sounds like garbage collection? [Not a coincidence](#ooop).
-
-#### What about Explicit Shutdown?
-
-An actor should generally detect the condition where it is no longer needed and shut down by breaking out of its event loop.
-I prefer this over explicitly shutting down an actor.
-Ideally, shutdown naturally happens gracefully when each actor finishes processing and drops its actor handles.
-Some designs do require distributing a [`tokio_util::sync::CancellationToken`](https://docs.rs/tokio-util/latest/tokio_util/sync/struct.CancellationToken.html) among the components, though.
-
-### Message `enum`s are great
-
-I have not changed a thing about the message type in the original recipe, because it's timeless.
-Remember to make your messages own your data - don't borrow.
-
-> **_Note_**: A message is a way to transfer ownership from one actor to another, thereby transferring the responsibility to handle the data. Borrowing indicates time-coupling of components, which would defeat the purpose of autonomously running actors, so don't do it. Don't worry, if you do it, you'll end in lifetime soup and back out, anyway.
-
-> **_More Note_**: Sounds like a V-Table? [Not a coincidence](#ooop).
-
-#### On Call-and-Response
-
-Most actors in my experience do not require and should not employ the call-response pattern demonstrated in this example. It's a sort of sync-async crossover anyway, and blocks the "calling" actor (when implemented naively). Look at the original post under the "No responses to messages" heading.**Most actors I have seen simply take "Commands", i.e. messages carrying the plain-old-data to be processed.**
-The most fun designs I have been with did not use the pattern at all, and data flowed only left-to-right. This is good for a number of reasons, notably it [prevents the biggest footgun of bounded mpsc channels](#bounded-mpsc-footgun) and [facilitates automatic application shutdown](#automatic-application-shutdown).
-
-### I don't believe in actor handles
+## I don't believe in actor handles
 
 The original recipe recommends to implement an actor handle type.
 Perhaps surprisingly, I have stopped writing actor handle types!
@@ -154,7 +105,7 @@ I recommend to not fold in the `oneshot::Receiver` like in the original handle i
 By holding the receiver, you can collect and await it at your convenience.
 For an example, see the [unit test](#simple-unit-test).
 
-### <a href="#simple-unit-test" name="simple-unit-test"></a> Unit Testing the `UniqueIdService`
+## <a href="#simple-unit-test" name="simple-unit-test"></a> Unit Testing the `UniqueIdService`
 
 I have found that actors which aren't easy to test hint at bad architecture. The interfaces should be clear, and all the other parties an actor talks to _should not need to be mocked_:
 the communication medium is some channel,
@@ -195,7 +146,7 @@ async fn should_increment_unique_id() {
 
 [Full Example](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=bb316eb8bf6ab51602bfaedb2a841e70)
 
-## <a href="#bounded-mpsc-footgun" name="bounded-mpsc-footgun"></a>Ruling out Deadlocks with Bounded Channels
+# <a href="#bounded-mpsc-footgun" name="bounded-mpsc-footgun"></a>Ruling out Deadlocks with Bounded Channels
 
 Attempting to send a message on a tokio bounded mpsc channel is `async`, because the channel might be filled to the bound.
 In that case, sending will "suspend" until space becomes available.
@@ -217,18 +168,72 @@ A and B are engaged in a sort of toxic nepotistic double binding.
 
 > **_Note:_** Strive for your channel topology to be a **Directed Acyclic Graph** (see below).
 
-## <a href="#automatic-application-shutdown" name="automatic-application-shutdown"></a>Automatic Application Shutdown
+## Message `enum`s are great
 
-When exiting an event loop, the event loop resources including handles of other actors are dropped.
+I have not changed a thing about the message type in the original recipe, because it's timeless.
+Remember to make your messages own your data - don't borrow.
+
+> **_Note_**: A message is a way to transfer ownership from one actor to another, thereby transferring the responsibility to handle the data. Borrowing indicates time-coupling of components, which would defeat the purpose of autonomously running actors, so don't do it. Don't worry, if you do it, you'll end in lifetime soup and back out, anyway.
+
+> **_More Note_**: Sounds like a V-Table? [Not a coincidence](#ooop).
+
+## On Call-and-Response
+
+Most actors in my experience do not require and should not employ the call-response pattern demonstrated in this example. It's a sort of sync-async crossover anyway, and blocks the "calling" actor (when implemented naively). Look at the original post under the "No responses to messages" heading.**Most actors I have seen simply take "Commands", i.e. messages carrying the plain-old-data to be processed.**
+The most fun designs I have been with did not use the pattern at all, and data flowed only left-to-right. This is good for a number of reasons, notably it [prevents the biggest footgun of bounded mpsc channels](#bounded-mpsc-footgun) and [facilitates automatic application shutdown](#automatic-application-shutdown).
+
+## <a href="#automatic-application-shutdown" name="automatic-application-shutdown"></a>I like "Natural Actor Shutdown"
+
+The actor scheme presented here still employs one of the most important aspects of the original design, which is "natural actor shutdown":
+
+```rust
+while let Some(message) = rx.recv().await {
+    self.handle_message(message);
+}
+```
+
+We exit when `recv`ing on the channel yields `None`.
+As per [the docs](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Receiver.html#method.recv), this happens when
+there are no more messages in the `mpsc::Receiver` queue, **and**
+there are no more `mpsc::Sender`s.
+In this situation, all messages have been handled, and no more senders can ever be created.
+After exiting the event loop, but before returning from the function, an actor may run asynchronous cleanup logic
+(such as unsubscribing from a message broker or closing a websocket connection).
+After cleaning up, the event loop shall [drop all runtime resources](#automatic-application-shutdown).
 Other actors may then realize this situation and perform their own natural shutdown.
+
 If your entire system topology is a DAG, you can achieve graceful shutdown by dropping the "top-level handle".
 
 ![DAG actor topology](actor-dag.drawio.svg)
 
-This is not limited to mpsc channels, but they are the primary enabler.
-Normally, there will be other asynchronous resources to be monitored,
-within a `loop { select! { ... } }`.
-Frequently, it is useful to only ever `break` from that loop when mpsc-`recv`ing yields `None`.
+> **_Note:_** If the task was spawned and isn't being joined somewhere, all actor resources are dropped. This includes channel handles of other actors.
+
+> **_More Note:_** Sounds like garbage collection? [Not a coincidence](#ooop).
+
+### What about Explicit Shutdown?
+
+An actor should generally detect the condition where it is no longer needed and shut down by breaking out of its event loop.
+I prefer this over explicitly shutting down an actor.
+Ideally, shutdown naturally happens gracefully when each actor finishes processing and drops its actor handles.
+Some designs do require distributing a [`tokio_util::sync::CancellationToken`](https://docs.rs/tokio-util/latest/tokio_util/sync/struct.CancellationToken.html) among the components, though.
+
+## There is no Rust Actor Framework, and it's called `tokio`
+
+As a personal opinion of mine, and perhaps a spicy take: don't use an actor framework.
+The ones I have seen are bad abstractions over `tokio::spawn` and overly restrictive.
+
+## Don't make a `Heartbeat` Actor
+
+If your actor has the sole purpose of periodically announcing itself to the world, something is wrong.
+If all other actors in the system are stuck or bogged down slow, should that heartbeat actor still run free? No.
+
+## The only thing better than an actor: no actor
+
+If you can avoid an actor, do so. Try to delete as many actors from your design as possible.
+Too many times I have observed that after an initial design, by deleting stuff from it, one can arrive at a beautiful final design.
+If a region of your design doesn't feel right or look nice, **trust your gut**: try to find the root cause of the strangeness, then try to eliminate it.
+You may, like me, uncover corners that are incidentally complex and can be fixed.
+Refuse to start implementation until you understand the problem (mind the "unreasonable effectiveness of **understanding the problem**").
 
 # <a href="#ooop" name="ooop"></a>"Original OOP" (OOOP)
 
