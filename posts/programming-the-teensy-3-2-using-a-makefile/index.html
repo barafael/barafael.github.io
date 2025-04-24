@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Programming the Teensy 3.2 using a makefile
+        
+    </title>
+
+        
+            <meta property="og:title" content="Programming the Teensy 3.2 using a makefile" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Programming the Teensy 3.2 using a makefile<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2017-11-21</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 523 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/programming-the-teensy-3-2-using-a-makefile/#benefits-from-using-make">Benefits from using Make</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/programming-the-teensy-3-2-using-a-makefile/#the-easy-part-using-someone-else-s-makefile">The Easy Part: Using Someone Else&#x27;s Makefile</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/programming-the-teensy-3-2-using-a-makefile/#the-hard-part-getting-existing-code-to-compile-and-run">The Hard Part: Getting Existing Code to Compile (... and run...)</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/programming-the-teensy-3-2-using-a-makefile/#the-hardest-part-fixing-remaining-issues-when-the-program-compiles-fine">The Hardest Part: Fixing Remaining Issues When The Program Compiles Fine</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>The Arduino toolchain is a good starting point. So many libraries, most of them
+fine quality, and the editor allows you to write incorrect C++ so you can have
+a simpler life...</p>
+<p>Wait, what? That's right, the Arduino IDE does a lot of stuff to compile your
+program that usually does not happen in the standard C++ compilation procedure.
+For example, the IDE generates function prototypes for you, so that you can
+write your functions in whichever order you like. This alone is iffy for some.
+But it also automatically includes header files needed  for your libraries,
+making the entire process rather opaque. This would have been reason enough for
+me to look into doing it differently, but really the elephant in the room that
+needed changing was the poor, often belittled Arduino IDE. The IDE simply does
+not do the toolchain justice.</p>
+<h2 id="benefits-from-using-make">Benefits from using Make<a class="zola-anchor" href="#benefits-from-using-make" aria-label="Anchor link for: benefits-from-using-make">🔗</a></h2>
+<p>Goals:</p>
+<ul>
+<li>Use any editor and just run shell commands (or press buttons)</li>
+<li>Compile and flash the program immediately after checking out from version
+control, not having to set up Arduino</li>
+<li>Do syntax highlighting and completion based on local files</li>
+<li>Symbol lookup (go to definition, find usage) and all the vim/IDE/ctags
+goodness.</li>
+</ul>
+<h2 id="the-easy-part-using-someone-else-s-makefile">The Easy Part: Using Someone Else's Makefile<a class="zola-anchor" href="#the-easy-part-using-someone-else-s-makefile" aria-label="Anchor link for: the-easy-part-using-someone-else-s-makefile">🔗</a></h2>
+<p>In <a href="https://github.com/apmorton/teensy-template">this repo</a>, GitHub user
+apmorton has prepared a working makefile. Only tiny adjustments are needed in
+the provided makefile, like setting desired clock frequency, setting Teensy
+version and enabling more compiler warning flags :)</p>
+<h2 id="the-hard-part-getting-existing-code-to-compile-and-run">The Hard Part: Getting Existing Code to Compile (... and run...)<a class="zola-anchor" href="#the-hard-part-getting-existing-code-to-compile-and-run" aria-label="Anchor link for: the-hard-part-getting-existing-code-to-compile-and-run">🔗</a></h2>
+<p>I had used numerous Arduino libraries in my existing project. Here it became
+apparent how much the Arduino IDE actually did in the backgound - after
+including the libraries, there was a large wall of compiler warnings and
+errors. Most of them can be fixed:</p>
+<ul>
+<li>If it is a missing (undeclared) function:
+<ul>
+<li>Looking up the header file it should be located in using google or man
+pages</li>
+<li>Looking for that header file in ./teensy3 or ./tools using ripgrep or
+similar</li>
+<li>Including that file, and seeing if that at least removes the error</li>
+<li>When all errors are fixed, taking a hard look at all the included code, and
+whether it actually does the desired job</li>
+</ul>
+</li>
+<li>If the issue are duplicate function definitions:
+<ul>
+<li>Difficult one. You need to find out which of the functions to use and then
+comment out or guard (with a preprocessor definition) the others
+definition.</li>
+</ul>
+</li>
+<li>Else:
+<ul>
+<li>Tough luck, you are on your own...</li>
+</ul>
+</li>
+</ul>
+<h2 id="the-hardest-part-fixing-remaining-issues-when-the-program-compiles-fine">The Hardest Part: Fixing Remaining Issues When The Program Compiles Fine<a class="zola-anchor" href="#the-hardest-part-fixing-remaining-issues-when-the-program-compiles-fine" aria-label="Anchor link for: the-hardest-part-fixing-remaining-issues-when-the-program-compiles-fine">🔗</a></h2>
+<p>It is likely that after compiling with only few errors, the program still has
+different behaviour than when running under Arduino IDE... In my case, example
+code from I2Cdevlib was not setting an interrupt pin's pinMode and thus the
+interrupts were ignored when not using the IDE. Presumably, the IDE does some
+special magic to fix this up, I don't know. Setting the pinMode fixed this.</p>
+<p>Good Luck!</p>
+<p>P.S. there is an even harder part - keeping the toolchain up to date. Using
+platformio can fix this and get you all the benefits, but there is
+something to be appreciated about just running <code>make flash</code>...</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Object-Oriented Arduino interrupts: using C++ Friend Functions
+        
+    </title>
+
+        
+            <meta property="og:title" content="Object-Oriented Arduino interrupts: using C++ Friend Functions" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Object-Oriented Arduino interrupts: using C++ Friend Functions<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2018-01-07</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 364 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/object-oriented-arduino-interrupts-using-c-friend-functions/#c-friend-functions">C++ Friend Functions</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/object-oriented-arduino-interrupts-using-c-friend-functions/#example-code-simple-library-to-interface-an-arduino-or-teensy-device-to-an-rc-receiver">Example Code: Simple library to interface an Arduino or Teensy device to an RC Receiver</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>Most Arduino users won't ever need interrupts or even C++/OOP for that matter.
+But for writing a nice object-oriented library or advancing your programming
+skills, both are very interesting subjects. But they clash somewhat: an
+interrupt is basically a global function that takes no arguments (not even
+C++-<code>this</code>) and returns no value, either. It is not called by the main
+program like regular functions, but instead runs when it is triggered by an
+external signal, like a pin logic voltage level change. This idea has no place
+in an OOP (let alone functional!) world - what object does the function belong
+to? It is global and cannot see or modify anything but static data, and the
+fact that it does not take arguments makes it impossible to call this function
+with method syntax. If this is confusing, don't worry: in C++, a function knows
+which object it belongs to by the implicit, invisible argument <code>this</code>. If
+it is still confusing, don't worry - it doesn't really matter. It just means
+that interrupts and OOP do not mix well.</p>
+<p>Unless...</p>
+<h2 id="c-friend-functions">C++ Friend Functions<a class="zola-anchor" href="#c-friend-functions" aria-label="Anchor link for: c-friend-functions">🔗</a></h2>
+<p>A Friend Function is a function that can be at global scope (i.e. not belonging
+to a class) but still retain private access to all members of a specified class
+as if it was a member of that class. This class has to declare the function as
+a friend. Now, this function can be registered as interrupt!</p>
+<p>There is one tiny ugly thing that remains: to access private members of a class instance, this instance has to be known by the interrupt. This can be done by having a global pointer to a class instance which is valid for the lifetime of the instance. If you attach your interrupts and set this pointer in your constructor you should be fine. Remember to detach the interrupts and set the pointer to <code>NULL</code> or <code>nullptr</code> in the destructor, if this applies to your program.</p>
+<h2 id="example-code-simple-library-to-interface-an-arduino-or-teensy-device-to-an-rc-receiver">Example Code: Simple library to interface an Arduino or Teensy device to an RC Receiver<a class="zola-anchor" href="#example-code-simple-library-to-interface-an-arduino-or-teensy-device-to-an-rc-receiver" aria-label="Anchor link for: example-code-simple-library-to-interface-an-arduino-or-teensy-device-to-an-rc-receiver">🔗</a></h2>
+<p>Here is the code:</p>
+<script src="https://gist.github.com/barafael/7434737e6c1846a9107b87213ea14a09.js"></script>
+<p>For a possibly more up-to-date version: <a href="https://github.com/barafael/RC-Receiver-Interface/">github repo.</a></p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

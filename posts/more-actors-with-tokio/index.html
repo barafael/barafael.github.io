@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         More Actors with Tokio
+        
+    </title>
+
+        
+            <meta property="og:title" content="More Actors with Tokio" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        More Actors with Tokio<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2025-02-19</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 2175 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#i-believe-that-an-actor-should-be-its-data">I believe that an actor should be its data</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#i-prefer-the-event-loop-as-consuming-method">I prefer the Event Loop as consuming method</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#i-like-to-leave-the-spawning-to-the-user">I like to leave the spawning to the user</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#i-don-t-believe-in-actor-handles">I don&#x27;t believe in actor handles</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#unit-testing-the-uniqueidservice"> Unit Testing the UniqueIdService</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#ruling-out-deadlocks-with-bounded-channels">Ruling out Deadlocks with Bounded Channels</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#message-enums-are-great">Message enums are great</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#on-call-and-response">On Call-and-Response</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#i-like-natural-actor-shutdown">I like &quot;Natural Actor Shutdown&quot;</a>
+                                        </li>
+
+                                        
+                                            <ul>
+                                                
+                                                    <li>
+                                                        <a href="https://barafael.github.io/posts/more-actors-with-tokio/#what-about-explicit-shutdown">What about Explicit Shutdown?</a>
+                                                    </li>
+                                                
+                                            </ul>
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#there-is-no-rust-actor-framework-and-it-s-called-tokio">There is no Rust Actor Framework, and it&#x27;s called tokio</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#don-t-make-a-heartbeat-actor">Don&#x27;t make a Heartbeat Actor</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#the-only-thing-better-than-an-actor-no-actor">The only thing better than an actor: no actor</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/more-actors-with-tokio/#original-oop-ooop">&quot;Original OOP&quot; (OOOP)</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>In spring 2021, when I was first submerging into <a href="https://tokio.rs">tokio</a>, a colleague and friend mentioned I should ingest this article:
+<a href="https://ryhl.io/blog/actors-with-tokio/">Actors with Tokio</a> by Alice Ryhl.
+And, did I ingest it.
+To summarize, the article proposes an architectural style which relies on
+message passing (channels) and
+inherent parallelism (tasks)
+as well as
+concurrency (via <code>async/.await</code>)
+to neatly and safely structure applications dealing with I/O.
+But really, <a href="https://ryhl.io/blog/actors-with-tokio/">go read the article</a>.</p>
+<p>Alice's post shaped and will continue to shape the asynchronous designs I take part in.
+Unsurprisingly, I'm not the only one - everybody working with Rust in network applications and beyond seems to relate.</p>
+<p>I have happily and successfully applied this "actor" architecture style over the last years.
+Over this time, I have discovered a few minor adjustments to the proposed style for improved testability and composability.</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> It is recommended to have read the aforementioned article before reading this one. In fact, <strong>if you're gonna read one article, <a href="https://ryhl.io/blog/actors-with-tokio/">read Alice's article</a></strong>.</p>
+</blockquote>
+<h2 id="i-believe-that-an-actor-should-be-its-data">I believe that an actor should <em>be</em> its data<a class="zola-anchor" href="#i-believe-that-an-actor-should-be-its-data" aria-label="Anchor link for: i-believe-that-an-actor-should-be-its-data">🔗</a></h2>
+<p>Alice's post starts off with a recipe, briefly introducing the style by example.
+Although the principle remains, I suggest a few changes.
+In the original recipe, the actor holds its state <em>and its receiver</em>.
+What if an actor consisted solely of its plain-old-data state?</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[derive(Debug, PartialEq, Eq)]
+</span><span style="color:#ff5600;">pub struct </span><span>UniqueIdService {
+</span><span>    next_id: </span><span style="color:#ff5600;">u32</span><span>,
+</span><span>}
+</span></code></pre>
+<p>An actor should not own channel handles or sockets or other I/O resources.
+It may require them as arguments for its event loop of course! But not hold them as members.
+<strong>Ownership is responsibility</strong>, and who is really responsible for the run-time resources of the actor? The actor's event loop (see below).</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> Holding simple data as actor state also simplifies restarting an actor after it broke out of its event loop: all you have to do is create new runtime resources and start the event loop again.</p>
+</blockquote>
+<h2 id="i-prefer-the-event-loop-as-consuming-method">I prefer the Event Loop as <em>consuming method</em><a class="zola-anchor" href="#i-prefer-the-event-loop-as-consuming-method" aria-label="Anchor link for: i-prefer-the-event-loop-as-consuming-method">🔗</a></h2>
+<p>Somewhat differently to the original recipe, I prefer this particular event loop signature:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">impl </span><span>UniqueIdService {
+</span><span>    </span><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>(</span><span style="color:#ff5600;">mut </span><span>self, </span><span style="color:#ff5600;">mut </span><span>rx: mpsc::Receiver&lt;Message&gt;) -&gt; </span><span style="color:#ff5600;">Self </span><span>{
+</span><span>        </span><span style="color:#ff5600;">...
+</span><span>    }
+</span></code></pre>
+<p>Notably, the event loop is a method <em>consuming and returning</em> <code>Self</code>.
+It can be spawned as a task, but <em>doesn't have to</em>.</p>
+<p>By returning <code>Self</code>, we can inspect the state after the event loop finished, and even re-enter it.
+And, we can assert that the correct target actor state has been reached in a <a href="https://barafael.github.io/posts/more-actors-with-tokio/#simple-unit-test">unit test</a>.</p>
+<h2 id="i-like-to-leave-the-spawning-to-the-user">I like to leave the spawning to the user<a class="zola-anchor" href="#i-like-to-leave-the-spawning-to-the-user" aria-label="Anchor link for: i-like-to-leave-the-spawning-to-the-user">🔗</a></h2>
+<p>The original recipe <a href="https://docs.rs/tokio/latest/tokio/task/fn.spawn.html"><code>tokio::spawn</code></a>s the actor event loop in a helper function.
+But who are we to assume that particular use? One may want to:</p>
+<ul>
+<li>await the end of the event loop (without spawning),</li>
+<li>spawn, then monitor the <a href="https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html"><code>tokio::task::JoinHandle&lt;_&gt;</code></a>,</li>
+<li>create the actor event loop future and put it in something like a <a href="https://docs.rs/futures/latest/futures/stream/struct.FuturesUnordered.html"><code>FuturesUnordered</code></a> along with its brethren, or</li>
+<li>spawn the event loop future on a non-tokio executor.</li>
+</ul>
+<p>That's not to say you should not spawn the event loop onto some kind of task.
+Spawning is great, and it lets an actor run free (employing parallelism) in its own little world (no foreign references, in or out).</p>
+<h2 id="i-don-t-believe-in-actor-handles">I don't believe in actor handles<a class="zola-anchor" href="#i-don-t-believe-in-actor-handles" aria-label="Anchor link for: i-don-t-believe-in-actor-handles">🔗</a></h2>
+<p>The original recipe recommends to implement an actor handle type.
+Perhaps surprisingly, I have stopped writing actor handle types!
+In my opinion, actor handles paper too much over the operations on the channel handle to the actor.
+I feel they obscure what is actually happening and prevent us from doing <em>cool shit</em>. We can't</p>
+<ul>
+<li>await the termination of the actor (unless we forward <a href="https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.closed"><code>mpsc::Sender::closed</code></a> of the underlying sender handle)</li>
+<li>store the response futures (<code>oneshot::Receiver</code>s) in a combinator (<a href="https://barafael.github.io/posts/more-actors-with-tokio/#simple-unit-test">see unit test</a>),</li>
+<li>use the actor handle from a blocking context,</li>
+<li>... much more <em>cool shit</em>.</li>
+</ul>
+<p>In short, <a href="https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html">all the methods implemented on the <code>mpsc::Sender</code></a> are there for good reasons, but our handle is hiding them.</p>
+<p>My suggestion if you really want to reduce boilerplate anyway is to use associated functions on the actor (<code>UniqueIdService</code>) type:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#919191;">/// Query for a unique id.
+</span><span style="color:#919191;">///
+</span><span style="color:#919191;">/// Returns `None` if the actor is not running.
+</span><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">get_unique_id</span><span>(sender: </span><span style="color:#ff5600;">&amp;</span><span>mpsc::Sender&lt;Message&gt;) -&gt; </span><span style="color:#a535ae;">Option</span><span>&lt;oneshot::Receiver&lt;</span><span style="color:#ff5600;">u32</span><span>&gt;&gt; {
+</span><span>    </span><span style="color:#ff5600;">let </span><span>(callback, callback_receiver) </span><span style="color:#ff5600;">= </span><span>oneshot::channel();
+</span><span>    </span><span style="color:#ff5600;">let</span><span> message </span><span style="color:#ff5600;">= </span><span>Message::GetUniqueId { callback };
+</span><span>
+</span><span>    sender.</span><span style="color:#a535ae;">send</span><span>(message).await.</span><span style="color:#a535ae;">ok</span><span>()</span><span style="color:#ff5600;">?</span><span>;
+</span><span>    </span><span style="color:#a535ae;">Some</span><span>(callback_receiver)
+</span><span>}
+</span></code></pre>
+<p>I recommend to not fold in the <code>oneshot::Receiver</code> like in the original handle implementation!
+By holding the receiver, you can collect and await it at your convenience.
+For an example, see the <a href="https://barafael.github.io/posts/more-actors-with-tokio/#simple-unit-test">unit test</a>.</p>
+<h2 id="unit-testing-the-uniqueidservice"><a href="#simple-unit-test" name="simple-unit-test"></a> Unit Testing the <code>UniqueIdService</code><a class="zola-anchor" href="#unit-testing-the-uniqueidservice" aria-label="Anchor link for: unit-testing-the-uniqueidservice">🔗</a></h2>
+<p>I have found that actors which aren't easy to test hint at bad architecture. The interfaces should be clear, and all the other parties an actor talks to <em>should not need to be mocked</em>:
+the communication medium is some channel,
+so one only needs to create such a channel and enqueue the correct messages on it (<em>before</em> running the event loop, see below).</p>
+<p>Care must be taken to not run into timing-dependent behaviour in a unit test (and <strong>please avoid at great cost situations where you put a <code>sleep</code> call in your test! It reeks</strong>.
+There is no way to ensure real-time constraints within tokio naively, so <strong>don't pretend there is</strong> by bounding the execution time of your function under test).</p>
+<p>The actor interface as-is enables us to write a test with a deterministic order of events,
+because we don't need to spawn a task running your actor and then send messages to it.
+Instead, we enqueue the messages, then <em>drop the sender</em>.
+Only then, we await the event loop. Here we encounter "natural actor shutdown". We can assert on the resulting final state.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[tokio::test]
+</span><span>async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">should_increment_unique_id</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let</span><span> actor </span><span style="color:#ff5600;">= </span><span>UniqueIdService::new();
+</span><span>    </span><span style="color:#ff5600;">let </span><span>(tx, rx) </span><span style="color:#ff5600;">= </span><span>mpsc::channel(3);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> resp1 </span><span style="color:#ff5600;">= </span><span>UniqueIdService::get_unique_id(</span><span style="color:#ff5600;">&amp;</span><span>tx).await.</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>    </span><span style="color:#ff5600;">let</span><span> resp2 </span><span style="color:#ff5600;">= </span><span>UniqueIdService::get_unique_id(</span><span style="color:#ff5600;">&amp;</span><span>tx).await.</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>    </span><span style="color:#ff5600;">let</span><span> resp3 </span><span style="color:#ff5600;">= </span><span>UniqueIdService::get_unique_id(</span><span style="color:#ff5600;">&amp;</span><span>tx).await.</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Important for this test:
+</span><span>    </span><span style="color:#a535ae;">drop</span><span>(tx);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> service </span><span style="color:#ff5600;">=</span><span> actor.</span><span style="color:#a535ae;">event_loop</span><span>(rx).await;
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> nums </span><span style="color:#ff5600;">= </span><span>tokio::try_join</span><span style="color:#ff5600;">!</span><span>(resp1, resp2, resp3).</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>    assert_eq!(nums, (0, 1, 2));
+</span><span>    assert_eq!(service, UniqueIdService { next_id: 3 });
+</span><span>}
+</span></code></pre>
+<blockquote>
+<p><strong><em>Note</em></strong>: The event loop returns <code>Self</code>. This means, even if you do need to spawn it, <code>.await</code>ing the <code>tokio::task::JoinHandle&lt;UniqueIdService&gt;</code> yields your actor state.</p>
+</blockquote>
+<blockquote>
+<p><strong><em>Note</em></strong>: One should generally, but especially in tests, await the completion of tasks somehow, if only to assert they did not panic. If you can, avoid placing asserts in test-only tasks.</p>
+</blockquote>
+<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=bb316eb8bf6ab51602bfaedb2a841e70">Full Example</a></p>
+<h1 id="ruling-out-deadlocks-with-bounded-channels"><a href="#bounded-mpsc-footgun" name="bounded-mpsc-footgun"></a>Ruling out Deadlocks with Bounded Channels<a class="zola-anchor" href="#ruling-out-deadlocks-with-bounded-channels" aria-label="Anchor link for: ruling-out-deadlocks-with-bounded-channels">🔗</a></h1>
+<p>Attempting to send a message on a tokio bounded mpsc channel is <code>async</code>, because the channel might be filled to the bound.
+In that case, sending will "suspend" until space becomes available.
+This is great, because it introduces <em>backpressure</em>.</p>
+<p>In normal operation, the mpsc queue compensates flow rate differences between sending and receiving.
+However, imagine a situation where actor A sends actor B messages, while actor B sends actor A messages:</p>
+<p><img src="https://barafael.github.io/posts/more-actors-with-tokio/actor-cycle.drawio.svg" alt="Cyclic Actors" /></p>
+<p>With both channels being bounded, the queue from A to B could become filled-to-the-bound.
+Then, A would be blocked until B processes the next message, meaning A would process no messages.
+If B now sends messages to A, they would not be processed, filling the channel to the bound.
+Yikes! Deadlock.</p>
+<p>This situation is bad in another way, <em>even if the deadlock never arises</em>.
+The actor cycle prevents natural actor shutdown of A and B, because there always exists a handle to each receiver.
+A and B are engaged in a sort of toxic nepotistic double binding.</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> Strive for your channel topology to be a <strong>Directed Acyclic Graph</strong> (see below).</p>
+</blockquote>
+<h2 id="message-enums-are-great">Message <code>enum</code>s are great<a class="zola-anchor" href="#message-enums-are-great" aria-label="Anchor link for: message-enums-are-great">🔗</a></h2>
+<p>I have not changed a thing about the message type in the original recipe, because it's timeless.
+Remember to make your messages own your data - don't borrow.</p>
+<blockquote>
+<p><strong><em>Note</em></strong>: A message is a way to transfer ownership from one actor to another, thereby transferring the responsibility to handle the data. Borrowing indicates time-coupling of components, which would defeat the purpose of autonomously running actors, so don't do it. Don't worry, if you do it, you'll end in lifetime soup and back out, anyway.</p>
+</blockquote>
+<blockquote>
+<p><strong><em>More Note</em></strong>: Sounds like a V-Table? <a href="https://barafael.github.io/posts/more-actors-with-tokio/#ooop">Not a coincidence</a>.</p>
+</blockquote>
+<h2 id="on-call-and-response">On Call-and-Response<a class="zola-anchor" href="#on-call-and-response" aria-label="Anchor link for: on-call-and-response">🔗</a></h2>
+<p>Most actors in my experience do not require and should not employ the call-response pattern demonstrated in this example. It's a sort of sync-async crossover anyway, and blocks the "calling" actor (when implemented naively). Look at the original post under the "No responses to messages" heading.<strong>Most actors I have seen simply take "Commands", i.e. messages carrying the plain-old-data to be processed.</strong>
+The most fun designs I have been with did not use the pattern at all, and data flowed only left-to-right. This is good for a number of reasons, notably it <a href="https://barafael.github.io/posts/more-actors-with-tokio/#bounded-mpsc-footgun">prevents the biggest footgun of bounded mpsc channels</a> and <a href="https://barafael.github.io/posts/more-actors-with-tokio/#automatic-application-shutdown">facilitates automatic application shutdown</a>.</p>
+<h2 id="i-like-natural-actor-shutdown"><a href="#automatic-application-shutdown" name="automatic-application-shutdown"></a>I like "Natural Actor Shutdown"<a class="zola-anchor" href="#i-like-natural-actor-shutdown" aria-label="Anchor link for: i-like-natural-actor-shutdown">🔗</a></h2>
+<p>The actor scheme presented here still employs one of the most important aspects of the original design, which is "natural actor shutdown":</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">while let </span><span style="color:#a535ae;">Some</span><span>(message) </span><span style="color:#ff5600;">=</span><span> rx.</span><span style="color:#a535ae;">recv</span><span>().await {
+</span><span>    self.</span><span style="color:#a535ae;">handle_message</span><span>(message);
+</span><span>}
+</span></code></pre>
+<p>We exit when <code>recv</code>ing on the channel yields <code>None</code>.
+As per <a href="https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Receiver.html#method.recv">the docs</a>, this happens when
+there are no more messages in the <code>mpsc::Receiver</code> queue, <strong>and</strong>
+there are no more <code>mpsc::Sender</code>s.
+In this situation, all messages have been handled, and no more senders can ever be created.
+After exiting the event loop, but before returning from the function, an actor may run asynchronous cleanup logic
+(such as unsubscribing from a message broker or closing a websocket connection).
+After cleaning up, the event loop shall <a href="https://barafael.github.io/posts/more-actors-with-tokio/#automatic-application-shutdown">drop all runtime resources</a>.
+Other actors may then realize this situation and perform their own natural shutdown.</p>
+<p>If your entire system topology is a DAG, you can achieve graceful shutdown by dropping the "top-level handle".</p>
+<p><img src="https://barafael.github.io/posts/more-actors-with-tokio/actor-dag.drawio.svg" alt="DAG actor topology" /></p>
+<blockquote>
+<p><strong><em>Note:</em></strong> If the task was spawned and isn't being joined somewhere, all actor resources are dropped. This includes channel handles of other actors.</p>
+</blockquote>
+<blockquote>
+<p><strong><em>More Note:</em></strong> Sounds like garbage collection? <a href="https://barafael.github.io/posts/more-actors-with-tokio/#ooop">Not a coincidence</a>.</p>
+</blockquote>
+<h3 id="what-about-explicit-shutdown">What about Explicit Shutdown?<a class="zola-anchor" href="#what-about-explicit-shutdown" aria-label="Anchor link for: what-about-explicit-shutdown">🔗</a></h3>
+<p>An actor should generally detect the condition where it is no longer needed and shut down by breaking out of its event loop.
+I prefer this over explicitly shutting down an actor.
+Ideally, shutdown naturally happens gracefully when each actor finishes processing and drops its actor handles.
+Some designs do require distributing a <a href="https://docs.rs/tokio-util/latest/tokio_util/sync/struct.CancellationToken.html"><code>tokio_util::sync::CancellationToken</code></a> among the components, though.</p>
+<h2 id="there-is-no-rust-actor-framework-and-it-s-called-tokio">There is no Rust Actor Framework, and it's called <code>tokio</code><a class="zola-anchor" href="#there-is-no-rust-actor-framework-and-it-s-called-tokio" aria-label="Anchor link for: there-is-no-rust-actor-framework-and-it-s-called-tokio">🔗</a></h2>
+<p>As a personal opinion of mine, and perhaps a spicy take: don't use an actor framework.
+The ones I have seen are bad abstractions over <code>tokio::spawn</code> and overly restrictive.</p>
+<h2 id="don-t-make-a-heartbeat-actor">Don't make a <code>Heartbeat</code> Actor<a class="zola-anchor" href="#don-t-make-a-heartbeat-actor" aria-label="Anchor link for: don-t-make-a-heartbeat-actor">🔗</a></h2>
+<p>If your actor has the sole purpose of periodically announcing itself to the world, something is wrong.
+If all other actors in the system are stuck or bogged down slow, should that heartbeat actor still run free? No.</p>
+<h2 id="the-only-thing-better-than-an-actor-no-actor">The only thing better than an actor: no actor<a class="zola-anchor" href="#the-only-thing-better-than-an-actor-no-actor" aria-label="Anchor link for: the-only-thing-better-than-an-actor-no-actor">🔗</a></h2>
+<p>If you can avoid an actor, do so. Try to delete as many actors from your design as possible.
+Too many times I have observed that after an initial design, by deleting stuff from it, one can arrive at a beautiful final design.
+If a region of your design doesn't feel right or look nice, <strong>trust your gut</strong>: try to find the root cause of the strangeness, then try to eliminate it.
+You may, like me, uncover corners that are incidentally complex and can be fixed.
+Refuse to start implementation until you understand the problem (mind the "unreasonable effectiveness of <strong>understanding the problem</strong>").</p>
+<h1 id="original-oop-ooop"><a href="#ooop" name="ooop"></a>"Original OOP" (OOOP)<a class="zola-anchor" href="#original-oop-ooop" aria-label="Anchor link for: original-oop-ooop">🔗</a></h1>
+<p>Famously, Alan Kay "didn't have C++ in mind" when coining the term "OOP" (Object Oriented Programming).
+This means inheritance, overloading, and a <code>class</code> keyword are completely besides the point!
+But what <em>did</em> he have in mind?</p>
+<blockquote>
+<p>OOP to me means only messaging, local retention and protection and hiding of state-process, and extreme late-binding of all things.</p>
+<p><cite>Alan Kay</cite> in <a href="https://www.purl.org/stefan_ram/pub/doc_kay_oop_en">Dr. Alan Kay on the Meaning of “Object-Oriented Programming”</a>.</p>
+</blockquote>
+<ul>
+<li>Messaging: Passing data items along channels.</li>
+<li>local retention of state-process: in the event loop future, it's impossible to access any state. The message handler cannot be called from the outside once the event loop is running (not even if it were public).</li>
+<li>local protection of state-process: a tokio task is a panic boundary. An actor may crash, and the crash is observable from the outside, but it is recoverable. A panic cannot poison another actors' data because a message cannot contain (non-static) references.</li>
+<li>hiding of state-process: actor state and message handler are private (not <code>pub</code>).</li>
+<li>extreme late-binding of all things: actors are bound at spawn-time to other actors via channel handles. As discussed, a sender handle with a certain message type is like a v-table. Whatever is behind it only must know the message type. This is more late-bound than even <code>Box&lt;dyn ...&gt;</code>, probably as late-bound as you can get in Rust.</li>
+</ul>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

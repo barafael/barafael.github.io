@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         How the Rust Compiler prevents mistakes
+        
+    </title>
+
+        
+            <meta property="og:title" content="How the Rust Compiler prevents mistakes" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        How the Rust Compiler prevents mistakes<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2018-06-04</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 1636 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#let-s-start-simple-dereferencing-null-pointers">Let&#x27;s start simple: Dereferencing Null Pointers</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#and-now-for-something-more-interesting-free-of-use-after-free">And now for something more interesting: Free of &#x27;use-after-free&#x27;</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#but-what-about-std-move">But what about std::move?</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#the-many-kinds-of-dangling-pointers">The Many Kinds Of Dangling Pointers</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#dangling-pointer-into-heap">Dangling Pointer Into Heap</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#capturing-closures">Capturing Closures</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#more-dangling-pointers">More dangling pointers</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#crossing-boundaries-or-yet-another-billion-dollar-mistake">Crossing Boundaries or: yet another &#x27;Billion Dollar Mistake&#x27;</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#the-real-fun-stuff-access-to-shared-data">The Real Fun Stuff: Access to Shared Data</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#more-examples">More examples</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-the-rust-compiler-prevents-mistakes/#a-solution-for-c-and-c-great-linters">A solution for C and C++: great linters</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>When learning about Rust for the first time, one is confronted with words like 'double free', 'data race', and 'dangling pointer'.
+Without an understanding of these problems, the safety aspects of Rust are perhaps difficult to appreciate.
+However, Rust aims to appeal not only to systems programmers(where these kinds of problems are well-known), but developers from any background! It is perfectly fine to write high-level Rust code without knowing what a data race is (that is the freedom Rust grants) but understanding the underlying issue makes the compiler error messages more understandable.</p>
+<p>To explain some of the problems Rust solves, I have collected examples to show and explain specific problems and see what <code>rustc</code>("the Rust complainer") has to say about them.</p>
+<h2 id="let-s-start-simple-dereferencing-null-pointers">Let's start simple: Dereferencing Null Pointers<a class="zola-anchor" href="#let-s-start-simple-dereferencing-null-pointers" aria-label="Anchor link for: let-s-start-simple-dereferencing-null-pointers">🔗</a></h2>
+<p>When Tony Hoare finished implementing ALGOL 60 in 1965, he couldn't know that he would be apologizing for one of its concepts 44 years later: at '09 QCon in London, he called null pointers a 'billion dollar mistake.'</p>
+<p>Languages since have picked up variations of the concept. For example, Java has no pointers accessible to the programmer, yet it has a <code>NullPointerException</code>.</p>
+<p>Let's look at a simple C example of a null pointer dereference:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;stdio.h&gt;
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#919191;">// Reading and writing to a NULL pointer results in undefined behavior.
+</span><span>    </span><span style="color:#ff5600;">int *</span><span>ptr </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">NULL</span><span>;
+</span><span>    </span><span style="color:#ff5600;">*</span><span>ptr     </span><span style="color:#ff5600;">= </span><span>10;
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;%d&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>ptr);
+</span><span>}
+</span></code></pre>
+<p>We create a pointer to an int with the value of <code>NULL</code>. When we try to write to that location, a SIGSEGV happens to happen on my machine and setup, but dereferencing a NULL pointer is undefined behavior, meaning that anything could happen.</p>
+<p>How does this look in Rust? Simply put, safe Rust has no null references. There is no way to express this in safe Rust.</p>
+<p>There is always <code>unsafe</code>:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">use </span><span>std::ptr;
+</span><span>
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let</span><span> pointer: </span><span style="color:#ff5600;">*mut u32 = </span><span>ptr::null_mut();
+</span><span>    </span><span style="color:#ff5600;">unsafe </span><span>{
+</span><span>        </span><span style="color:#ff5600;">*</span><span>pointer </span><span style="color:#ff5600;">= </span><span>10;
+</span><span>    }
+</span><span>    </span><span style="color:#ff5600;">unsafe </span><span>{
+</span><span>        println!(</span><span style="color:#00a33f;">&quot;{}&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>pointer);
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>With this code, I happen to get a SIGSEGV, too.</p>
+<h2 id="and-now-for-something-more-interesting-free-of-use-after-free">And now for something more interesting: Free of 'use-after-free'<a class="zola-anchor" href="#and-now-for-something-more-interesting-free-of-use-after-free" aria-label="Anchor link for: and-now-for-something-more-interesting-free-of-use-after-free">🔗</a></h2>
+<p>Unlike many other languages, we have to explicitly request and release our memory from/to the operating system when working with C.
+Those actions still happen when using Java, Python, or Haskell, but they happen automatically in the background. This is safe (because it is automatic), and it is very comfortable for the programmer. However, such garbage collection has a cost, which is out of scope for this article but frequently discussed.</p>
+<p>Managing memory manually (like it is done in most systems programming languages) is a difficult problem because we have to ensure that:</p>
+<ul>
+<li>all allocated memory is <code>free()</code>'d (no memory leaks)</li>
+<li>memory that was <code>free()</code>'d before is never reused (no use-after-free)</li>
+<li>memory is <code>free()</code>'d exactly once in all code paths of the program (no double free)</li>
+</ul>
+<p>If we fail to do this, our program might crash, or worse, it might corrupt data anywhere or present opportunities to attackers.</p>
+<p>The <code>free</code> function in C deallocates previously allocated blocks of memory, but it does not invalidate our pointer to that memory - we can still use it:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;stdio.h&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;stdlib.h&gt;
+</span><span>
+</span><span style="color:#ff5600;">#define </span><span>BUF_SIZE 16
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#a535ae;">puts</span><span>(</span><span style="color:#00a33f;">&quot;Enter your name!&quot;</span><span>);
+</span><span>    </span><span style="color:#ff5600;">char *</span><span>buffer </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">malloc</span><span>(BUF_SIZE);
+</span><span>
+</span><span>    </span><span style="color:#a535ae;">fgets</span><span>(buffer, BUF_SIZE, stdin);
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;buffer: %s\n&quot;</span><span>, buffer);
+</span><span>    </span><span style="color:#a535ae;">free</span><span>(buffer);
+</span><span>
+</span><span>    </span><span style="color:#919191;">// reusing dangling pointer into heap
+</span><span>    </span><span style="color:#a535ae;">fgets</span><span>(buffer, BUF_SIZE, stdin);
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;buffer after free: %s\n&quot;</span><span>, buffer);
+</span><span>}
+</span></code></pre>
+<p>We allocate a 16-byte block, which we then pass to the <code>fgets</code> function to read user input. After printing that input, we free the buffer.
+Nothing in the C language stops us from using that pointer again!</p>
+<p>Let's see what this would look like in Rust:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">use </span><span>std::io::BufRead;
+</span><span>
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;Enter your name!&quot;</span><span>);
+</span><span>    </span><span style="color:#ff5600;">let</span><span> stdin </span><span style="color:#ff5600;">= </span><span>std::io::stdin();
+</span><span>    </span><span style="color:#ff5600;">let</span><span> buffer </span><span style="color:#ff5600;">=</span><span> stdin.</span><span style="color:#a535ae;">lock</span><span>().</span><span style="color:#a535ae;">lines</span><span>().</span><span style="color:#a535ae;">next</span><span>().</span><span style="color:#a535ae;">unwrap</span><span>().</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span>    </span><span style="color:#a535ae;">drop</span><span>(buffer);
+</span><span>
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;buffer: {}&quot;</span><span>, buffer);
+</span><span>}
+</span></code></pre>
+<p>All the Rust compiler has to say is:</p>
+<pre style="background-color:#ffffff;color:#000000;"><code><span>error[E0382]: use of moved value: `buffer`
+</span><span>  --&gt; use_after_free.rs:10:28
+</span><span>   |
+</span><span>8  |     drop(buffer);
+</span><span>   |                    ------ value moved here
+</span><span>9  |
+</span><span>10 |     println!(&quot;buffer: {}&quot;, buffer);
+</span><span>   |                            ^^^^^^ value used here after move
+</span><span>   |
+</span><span>   = note: move occurs because `buffer` has type `std::string::String`, which does not implement the `Copy` trait
+</span></code></pre>
+<p>The error message uses some Rust-specific language (move? Copy trait?), but it is pretty clear: ownership of the buffer is moved into <code>drop()</code>, after which the buffer is not usable.</p>
+<p>It is important to note that the <code>drop</code> function is used rarely in Rust. That is because every object is destructed automatically at the point where its owner's scope ends (which is known at compile time).</p>
+<p>Regardless, the function exists, and it is one of the most beautiful functions in the standard library:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">pub fn </span><span style="color:#21439c;">drop</span><span>&lt;T&gt;(_x: T) { }
+</span></code></pre>
+<p>That's all they wrote: take ownership of an <code>_x</code> of an unconstrained type T, and go out of scope, resulting in the deterministic deconstruction of <code>_x</code>.</p>
+<h2 id="but-what-about-std-move">But what about <code>std::move</code>?<a class="zola-anchor" href="#but-what-about-std-move" aria-label="Anchor link for: but-what-about-std-move">🔗</a></h2>
+<p>Modern C++ introduced moving ownership. The move constructor invalidates the old owner in some agreed-upon way, even if the object is const. After the move, the old pointer may still be used (but that is not a good idea!).</p>
+<pre data-lang="cpp" style="background-color:#ffffff;color:#000000;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;iostream&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;string&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;vector&gt;
+</span><span>
+</span><span style="color:#ff5600;">using namespace</span><span> std;
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    string origin </span><span style="color:#ff5600;">= </span><span style="color:#00a33f;">&quot;This is a string.&quot;</span><span>;
+</span><span>
+</span><span>    vector&lt;std::string&gt; vec;
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Copy origin and append to vec
+</span><span>    vec.push_back(origin);
+</span><span>
+</span><span>    cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;After pushing origin copy onto vec, origin is unchanged: \&quot;&quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> origin </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;\&quot;\n&quot;</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Move origin into vec, invalidating origin variable (at runtime)
+</span><span>    vec.push_back(std::move(origin));
+</span><span>
+</span><span>    cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;After move into vec, origin is invalidated: \&quot;&quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> origin </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;\&quot;\n&quot;</span><span>;
+</span><span>
+</span><span>    cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;Contents of vec: \&quot;&quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> vec[0] </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;\&quot;, \&quot;&quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> vec[1] </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;\&quot;\n&quot;</span><span>;
+</span><span>}
+</span></code></pre>
+<p>Note that a moved-from object (that is not trivially destructible) still has to be destroyed: http://www.drdobbs.com/cpp/why-moving-an-object-does-not-destroy-th/231601451</p>
+<p>Rust has moves and ownership baked deep into the language:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> origin: </span><span style="color:#a535ae;">String </span><span style="color:#ff5600;">= </span><span style="color:#00a33f;">&quot;This is a string&quot;</span><span>.</span><span style="color:#a535ae;">into</span><span>();
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> moved </span><span style="color:#ff5600;">=</span><span> origin;
+</span><span>
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;origin after move: {}&quot;</span><span>, origin);
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;moved  after move: {}&quot;</span><span>, moved);
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Binding that was moved out from can be reassigned
+</span><span>    origin </span><span style="color:#ff5600;">= </span><span style="color:#00a33f;">&quot;Hello, I&#39;m back!&quot;</span><span>.</span><span style="color:#a535ae;">into</span><span>();
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;origin after reassignment: {}&quot;</span><span>, origin);
+</span><span>}
+</span></code></pre>
+<p>The Rust compiler comments:</p>
+<pre style="background-color:#ffffff;color:#000000;"><code><span>error[E0382]: use of moved value: `origin`
+</span><span> --&gt; use_after_move_var.rs:6:39
+</span><span>  |
+</span><span>4 |     let moved = origin;
+</span><span>  |         ----- value moved here
+</span><span>5 |
+</span><span>6 |     println!(&quot;origin after move: {}&quot;, origin);
+</span><span>  |                                       ^^^^^^ value used here after move
+</span><span>  |
+</span><span>  = note: move occurs because `origin` has type `std::string::String`, which does not implement the `Copy` trait
+</span></code></pre>
+<p>Types implementing the <code>Copy</code>-trait are similar to 'primitive datatypes' in java. They are passed by value (or 'by copy').
+But copying is a quick operation only for a few basic types! For any other type, the explicit <code>clone</code> method can be used, if the type implements the <code>Clone</code> trait. This is unlike C++, where an implicit copy of an object often occurs, without any special syntax.</p>
+<h1 id="the-many-kinds-of-dangling-pointers">The Many Kinds Of Dangling Pointers<a class="zola-anchor" href="#the-many-kinds-of-dangling-pointers" aria-label="Anchor link for: the-many-kinds-of-dangling-pointers">🔗</a></h1>
+<h3 id="dangling-pointer-into-heap">Dangling Pointer Into Heap<a class="zola-anchor" href="#dangling-pointer-into-heap" aria-label="Anchor link for: dangling-pointer-into-heap">🔗</a></h3>
+<p>In C-like languages, we can use the addresses of objects on the heap or stack directly. This is powerful, but it means we have to be cautious about the memory at the other end of a pointer:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&quot;stdlib.h&quot;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&quot;stdio.h&quot;
+</span><span>
+</span><span style="color:#ff5600;">#define </span><span>BUFFER_SIZE 16
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">int *</span><span>array </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">malloc</span><span>(BUFFER_SIZE </span><span style="color:#ff5600;">* sizeof</span><span>(</span><span style="color:#ff5600;">int</span><span>));
+</span><span>    </span><span style="color:#ff5600;">for </span><span>(</span><span style="color:#a535ae;">size_t</span><span> index </span><span style="color:#ff5600;">= </span><span>0; index </span><span style="color:#ff5600;">&lt;</span><span> BUFFER_SIZE; index</span><span style="color:#ff5600;">++</span><span>) {
+</span><span>        array[index] </span><span style="color:#ff5600;">=</span><span> index;
+</span><span>    }
+</span><span>    </span><span style="color:#919191;">// Take a pointer into the heap-allocated array
+</span><span>    </span><span style="color:#ff5600;">int *</span><span>ptr </span><span style="color:#ff5600;">= &amp;</span><span>array[6];
+</span><span>
+</span><span>    </span><span style="color:#919191;">// at this point, ptr becomes a dangling pointer
+</span><span>    </span><span style="color:#a535ae;">free</span><span>(array);
+</span><span>
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;%d&#39;s array has been set free!\n&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>ptr);
+</span><span>    </span><span style="color:#ff5600;">*</span><span>ptr </span><span style="color:#ff5600;">= </span><span>3;
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;array[6] was modified to %d after being free&#39;d!\n&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>ptr);
+</span><span>}
+</span></code></pre>
+<p>This program allocates a buffer on the heap, creates a pointer into that buffer, then frees the buffer. However, the pointer still exists! That is a dangling pointer into the heap. Let's reconstruct this in Rust:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> array </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">Vec</span><span>::new();
+</span><span>    </span><span style="color:#ff5600;">for</span><span> index </span><span style="color:#ff5600;">in </span><span>0</span><span style="color:#ff5600;">..</span><span>10 {
+</span><span>        array.</span><span style="color:#a535ae;">push</span><span>(index </span><span style="color:#ff5600;">as u32</span><span>);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Take a pointer into the heap-allocated array
+</span><span>    </span><span style="color:#ff5600;">let</span><span> reference </span><span style="color:#ff5600;">= &amp;mut</span><span> array[6];
+</span><span>
+</span><span>    </span><span style="color:#919191;">// at this point, reference would become a dangling pointer
+</span><span>    </span><span style="color:#a535ae;">drop</span><span>(array);
+</span><span>
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;{}&#39;s array has been set free!&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>reference);
+</span><span>    </span><span style="color:#ff5600;">*</span><span>reference </span><span style="color:#ff5600;">= </span><span>3;
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;array[6] was modified to {} after being free&#39;d!&quot;</span><span>, </span><span style="color:#ff5600;">*</span><span>reference);
+</span><span>}
+</span></code></pre>
+<p>The compiler interjects! Error message:</p>
+<pre style="background-color:#ffffff;color:#000000;"><code><span>error[E0505]: cannot move out of `array` because it is borrowed
+</span><span>  --&gt; dangling_pointer_heap.rs:11:20
+</span><span>   |
+</span><span>8  |     let reference = &amp;mut array[6];
+</span><span>   |                          ----- borrow of `array` occurs here
+</span><span>...
+</span><span>11 |     drop(array);
+</span><span>   |                    ^^^^^ move out of `array` occurs here
+</span></code></pre>
+<p>The message is clear. How dare we move the ownership of the variable array to <code>drop</code> if we still have borrowed it to <code>reference</code>?</p>
+<h1 id="capturing-closures">Capturing Closures<a class="zola-anchor" href="#capturing-closures" aria-label="Anchor link for: capturing-closures">🔗</a></h1>
+<p>Closures are anonymous functions which can capture variables from their originating scope.
+Therefore, if we create a string variable <code>some_string</code> and a closure <code>some_closure</code> in one scope, we can use <code>some_string</code> from <code>some_closure</code>.
+Closures would be pointless if we could not pass them around different scopes! That is dangerous, though:</p>
+<pre data-lang="cpp" style="background-color:#ffffff;color:#000000;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;iostream&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;functional&gt;
+</span><span>
+</span><span style="color:#ff5600;">using namespace</span><span> std;
+</span><span>
+</span><span>function&lt;</span><span style="color:#ff5600;">int</span><span>(</span><span style="color:#ff5600;">int</span><span>)&gt; </span><span style="color:#21439c;">get_lambda_with_local_reference</span><span>(</span><span style="color:#ff5600;">int </span><span>index) {
+</span><span>    </span><span style="color:#ff5600;">int</span><span> local_arr[] </span><span style="color:#ff5600;">= </span><span>{ 1, 2, 3, 4, 5 };
+</span><span>    </span><span style="color:#ff5600;">return </span><span>[</span><span style="color:#ff5600;">&amp;</span><span>](</span><span style="color:#ff5600;">int</span><span> value) { </span><span style="color:#ff5600;">return</span><span> value </span><span style="color:#ff5600;">+</span><span> local_arr[index]; };
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#919191;">// This function returns a lambda which internally keeps a pointer to a local array.
+</span><span>    </span><span style="color:#919191;">// Of course, when using the returned lambda, the array does not exist anymore.
+</span><span>    function&lt;</span><span style="color:#ff5600;">int</span><span>(</span><span style="color:#ff5600;">int</span><span>)&gt; function </span><span style="color:#ff5600;">= </span><span>get_lambda_with_local_reference(2);
+</span><span>    cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;lambda uses stack-local reference:&quot; </span><span style="color:#ff5600;">&lt;&lt; </span><span>function(6) </span><span style="color:#ff5600;">&lt;&lt;</span><span> endl;
+</span><span>}
+</span></code></pre>
+<p>The function <code>get_lambda_with_local_reference</code> will return a <code>function&lt;int(int)&gt;</code>, which is a lambda that takes and returns an int.
+That function is defined in the last line of <code>get_lambda_with_local_reference</code> as returning the sum of its argument and the element at index <code>index</code> of an array defined in the same (stack frame) scope.
+When we return the lambda, this array goes out of scope. When we call it, the lambda dereferences some random value from the stack (at best).</p>
+<p>Same story in Rust:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#919191;">// This function returns a closure with a pointer to a stack-local array.
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">get_lambda_with_local_reference</span><span>(index: </span><span style="color:#ff5600;">usize</span><span>) -&gt; impl Fn(</span><span style="color:#ff5600;">i32</span><span>) -&gt; </span><span style="color:#ff5600;">i32 </span><span>{
+</span><span>    </span><span style="color:#ff5600;">let</span><span> local_arr </span><span style="color:#ff5600;">= </span><span>[1, 2, 3];
+</span><span>    |value| value </span><span style="color:#ff5600;">+</span><span> local_arr[index]
+</span><span>}
+</span><span>
+</span><span style="color:#919191;">// Moving the stack-local array into the returned closure is fine.
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">get_lambda_with_moved_reference</span><span>(index: </span><span style="color:#ff5600;">usize</span><span>) -&gt; impl Fn(</span><span style="color:#ff5600;">i32</span><span>) -&gt; </span><span style="color:#ff5600;">i32 </span><span>{
+</span><span>    </span><span style="color:#ff5600;">let</span><span> local_arr </span><span style="color:#ff5600;">= </span><span>[1, 2, 3];
+</span><span>    </span><span style="color:#ff5600;">move |</span><span>value</span><span style="color:#ff5600;">|</span><span> value </span><span style="color:#ff5600;">+</span><span> local_arr[index]
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let</span><span> function </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">get_lambda_with_local_reference</span><span>(2);
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;lambda uses stack-local reference: {}&quot;</span><span>, </span><span style="color:#a535ae;">function</span><span>(6));
+</span><span>}
+</span></code></pre>
+<p>The Rust Complainer says NO:</p>
+<pre style="background-color:#ffffff;color:#000000;"><code><span>error[E0373]: closure may outlive the current function, but it borrows `local_arr`, which is owned by the current function
+</span><span> --&gt; dangling_pointer_closure.rs:5:5
+</span><span>  |
+</span><span>5 |     |value| value + local_arr[index]
+</span><span>  |     ^^^^^^^         --------- `local_arr` is borrowed here
+</span><span>  |     |
+</span><span>  |     may outlive borrowed value `local_arr`
+</span><span>help: to force the closure to take ownership of `local_arr` (and any other referenced variables), use the `move` keyword
+</span><span>  |
+</span><span>5 |     move |value| value + local_arr[index]
+</span><span>  |     ^^^^^^^^^^^^
+</span></code></pre>
+<p><code>rustc</code> also suggests how to fix the problem, as seen in the function <code>get_lambda_with_moved_reference</code>.</p>
+<h3 id="more-dangling-pointers">More dangling pointers<a class="zola-anchor" href="#more-dangling-pointers" aria-label="Anchor link for: more-dangling-pointers">🔗</a></h3>
+<p>You can find more examples of less interesting dangling pointers <a href="https://github.com/barafael/errare-humanum-est/tree/master/examples">here</a>.</p>
+<h1 id="crossing-boundaries-or-yet-another-billion-dollar-mistake">Crossing Boundaries or: yet another 'Billion Dollar Mistake'<a class="zola-anchor" href="#crossing-boundaries-or-yet-another-billion-dollar-mistake" aria-label="Anchor link for: crossing-boundaries-or-yet-another-billion-dollar-mistake">🔗</a></h1>
+<p>For performance reasons, the creators of the C language used raw pointers to memory blocks as array types. After creating an array, it's size has to be tracked manually, often by something like <code>#define BUF_SIZE 256</code>. Array access by index, like <code>arr[115]</code>, happens without checking bounds. One could check manually.
+Similarly, strings (which are just char pointers) always end with a <code>\0</code>-byte. The performance benefits come with a price - it is incredibly easy to make a mistake:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#define </span><span>BUFFER_SIZE 15
+</span><span>
+</span><span style="color:#919191;">/* Compile with -fno-stack-protector for real fun */
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">int</span><span> buffer[BUFFER_SIZE];
+</span><span>    </span><span style="color:#ff5600;">for </span><span>(</span><span style="color:#ff5600;">int</span><span> index </span><span style="color:#ff5600;">= </span><span>0; index </span><span style="color:#ff5600;">&lt;=</span><span> BUFFER_SIZE; index</span><span style="color:#ff5600;">++</span><span>) {
+</span><span>        buffer[index] </span><span style="color:#ff5600;">=</span><span> index;
+</span><span>        </span><span style="color:#919191;">// or equivalently, but more explicit:
+</span><span>        </span><span style="color:#ff5600;">*</span><span>(buffer </span><span style="color:#ff5600;">+</span><span> index) </span><span style="color:#ff5600;">=</span><span> index;
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Just one character too much - the '=' in the for loop exit condition causes our index to reach one element past the buffer boundaries.
+This is easy to catch. But there are other possible buffer overruns which are even in the C library:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;stdio.h&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;string.h&gt;
+</span><span>
+</span><span style="color:#ff5600;">#define </span><span>BUFFER_SIZE 16
+</span><span>
+</span><span style="color:#919191;">/* Compile with -fno-stack-protector for full effect */
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#919191;">// gets is a hazardous function, and gcc even warns when using it.
+</span><span>    </span><span style="color:#919191;">// Here, gets overwrites a part of the stack when a long text is entered on stdin,
+</span><span>    </span><span style="color:#919191;">// possibly corrupting a variable that comes after the input buffer on the stack.
+</span><span>    </span><span style="color:#ff5600;">char</span><span> buffer[BUFFER_SIZE];
+</span><span>    </span><span style="color:#ff5600;">int</span><span> password </span><span style="color:#ff5600;">= </span><span>0;
+</span><span>
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Enter password:\n&quot;</span><span>);
+</span><span>    </span><span style="color:#a535ae;">gets</span><span>(buffer);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">if </span><span>(</span><span style="color:#a535ae;">strcmp</span><span>(buffer, </span><span style="color:#00a33f;">&quot;pass123&quot;</span><span>) </span><span style="color:#ff5600;">== </span><span>0) {
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Correct password\n&quot;</span><span>);
+</span><span>        password </span><span style="color:#ff5600;">= </span><span>1;
+</span><span>    } </span><span style="color:#ff5600;">else </span><span>{
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Wrong password\n&quot;</span><span>);
+</span><span>    }
+</span><span>    </span><span style="color:#ff5600;">if </span><span>(password) {
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Privileged access granted!!!\n&quot;</span><span>);
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Writing a string into the buffer that is larger than the buffer can corrupt the password flag and grant us privileged access!
+And yes, you should not use <code>gets</code>, as the compiler may tell us here. So, let's use fgets, but hide a mistake in our code:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;stdio.h&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;string.h&gt;
+</span><span>
+</span><span style="color:#ff5600;">#define </span><span>BUFFER_SIZE 16
+</span><span>
+</span><span style="color:#919191;">/* Compile with -fno-stack-protector */
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#919191;">// fgets is somewhat better than gets. But one can still use it wrong.
+</span><span>    </span><span style="color:#ff5600;">char</span><span> buffer[BUFFER_SIZE </span><span style="color:#ff5600;">- </span><span>5];
+</span><span>    </span><span style="color:#ff5600;">int</span><span> password </span><span style="color:#ff5600;">= </span><span>0;
+</span><span>
+</span><span>    </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Enter password:\n&quot;</span><span>);
+</span><span>    </span><span style="color:#a535ae;">fgets</span><span>(buffer, BUFFER_SIZE, stdin);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">if </span><span>(</span><span style="color:#a535ae;">strcmp</span><span>(buffer, </span><span style="color:#00a33f;">&quot;pass123&quot;</span><span>) </span><span style="color:#ff5600;">== </span><span>0) {
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Correct password\n&quot;</span><span>);
+</span><span>        password </span><span style="color:#ff5600;">= </span><span>1;
+</span><span>    } </span><span style="color:#ff5600;">else </span><span>{
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Wrong password\n&quot;</span><span>);
+</span><span>    }
+</span><span>    </span><span style="color:#ff5600;">if </span><span>(password) {
+</span><span>        </span><span style="color:#a535ae;">printf</span><span>(</span><span style="color:#00a33f;">&quot;Privileged access granted!!!\n&quot;</span><span>);
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>The fundamental problem is that the array size is unknown. There may be a performance advantage to not having those runtime index bounds checks, but modern LLVM is good at optimizing those away. Either way, bounds checks should be an opt-out feature for critical loops, not an opt-in by manually coding them in my opinion.</p>
+<p>Obligatory Rust example:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">use </span><span>std::io::{self, BufRead};
+</span><span>
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let</span><span> array </span><span style="color:#ff5600;">= </span><span>[1, 2, 3, 4, 5, 6, 7, 8, 9];
+</span><span>    </span><span style="color:#ff5600;">for</span><span> index </span><span style="color:#ff5600;">in </span><span>0</span><span style="color:#ff5600;">..</span><span>10 {
+</span><span>        println!(</span><span style="color:#00a33f;">&quot;{}&quot;</span><span>, array[index]);
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>This code panics with 'index out of bounds' at runtime. Rust cannot catch that kind of bug at compile time (it is hard to catch in the general case)!</p>
+<h1 id="the-real-fun-stuff-access-to-shared-data">The Real Fun Stuff: Access to Shared Data<a class="zola-anchor" href="#the-real-fun-stuff-access-to-shared-data" aria-label="Anchor link for: the-real-fun-stuff-access-to-shared-data">🔗</a></h1>
+<p>Data races can happen if these 3 conditions are met: (1) multiple parts of a program have access to the same memory (sharing), (2) at least one of them writes to the shared data (mutation), and (3) there is no mechanism in place to ensure proper order of transactions (synchronization).</p>
+<p>To wrap everything in mutexes and semaphores is one viable option, but Rust offers a safer and faster option: ensuring the first 2 conditions are never true at the same time. This is what "Sharing XOR mutation" means: either many processes read, or at most one writes. It turns out the borrow checker that ensures memory errors never happen also prevents many issues arising from shared access to resources because there is always a clear owner and it is known if and how data is shared.</p>
+<p>Here is what a multithreaded C++ program could look like:</p>
+<pre data-lang="cpp" style="background-color:#ffffff;color:#000000;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;iostream&gt;
+</span><span style="color:#ff5600;">#include </span><span style="color:#00a33f;">&lt;thread&gt;
+</span><span>
+</span><span style="color:#ff5600;">struct </span><span>Account {
+</span><span>    </span><span style="color:#ff5600;">int </span><span>balance{ 100 };
+</span><span>};
+</span><span>
+</span><span style="color:#ff5600;">void </span><span style="color:#21439c;">transferMoney</span><span>(</span><span style="color:#ff5600;">int </span><span>amount, Account </span><span style="color:#ff5600;">&amp;</span><span>from, Account </span><span style="color:#ff5600;">&amp;</span><span>to) {
+</span><span>    </span><span style="color:#ff5600;">using namespace</span><span> std::chrono_literals;
+</span><span>    </span><span style="color:#ff5600;">if </span><span>(from.balance </span><span style="color:#ff5600;">&gt;=</span><span> amount) {
+</span><span>        from.balance </span><span style="color:#ff5600;">-=</span><span> amount;
+</span><span>        std::this_thread::sleep_for(1</span><span style="color:#ff5600;">ns</span><span>);
+</span><span>        to.balance </span><span style="color:#ff5600;">+=</span><span> amount;
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">void </span><span style="color:#21439c;">printSum</span><span>(Account </span><span style="color:#ff5600;">&amp;</span><span>a1, Account </span><span style="color:#ff5600;">&amp;</span><span>a2) {
+</span><span>    std::cout </span><span style="color:#ff5600;">&lt;&lt; </span><span>(a1.balance </span><span style="color:#ff5600;">+</span><span> a2.balance) </span><span style="color:#ff5600;">&lt;&lt;</span><span> std::endl;
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    Account     account1;
+</span><span>    Account     account2;
+</span><span>    std::thread thr1(transferMoney, 50, std::ref(account1), std::ref(account2));
+</span><span>    std::thread thr2(transferMoney, 130, std::ref(account2), std::ref(account1));
+</span><span>
+</span><span>    thr1.join();
+</span><span>    thr2.join();
+</span><span>
+</span><span>    std::cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;account1.balance: &quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> account1.balance </span><span style="color:#ff5600;">&lt;&lt;</span><span> std::endl;
+</span><span>    std::cout </span><span style="color:#ff5600;">&lt;&lt; </span><span style="color:#00a33f;">&quot;account2.balance: &quot; </span><span style="color:#ff5600;">&lt;&lt;</span><span> account2.balance </span><span style="color:#ff5600;">&lt;&lt;</span><span> std::endl;
+</span><span>
+</span><span>    std::cout </span><span style="color:#ff5600;">&lt;&lt;</span><span> std::endl;
+</span><span>}
+</span></code></pre>
+<p>We give the data race some time to occur. What happens is not deterministic, but the second transaction is sometimes just swallowed by the void.
+We have met all 3 of the above conditions!</p>
+<p>To fix the problem, we might use an <code>atomic</code> type for <code>balance</code>, however, not even cppcheck or clang-tidy warn us here.</p>
+<p>Translating the same to Rust:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[derive(Debug)]
+</span><span style="color:#ff5600;">struct </span><span>Account {
+</span><span>    balance: </span><span style="color:#ff5600;">u32</span><span>,
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">impl </span><span>Account {
+</span><span>    </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">transfer_money_to</span><span>(</span><span style="color:#ff5600;">&amp;mut </span><span>self, amount: </span><span style="color:#ff5600;">u32</span><span>, </span><span style="color:#ff5600;">mut </span><span>to: Account) {
+</span><span>        </span><span style="color:#ff5600;">if </span><span>self.balance </span><span style="color:#ff5600;">&gt;=</span><span> amount {
+</span><span>            self.balance </span><span style="color:#ff5600;">-=</span><span> amount;
+</span><span>            std::thread::sleep(std::time::Duration::from_millis(1));
+</span><span>            to.balance </span><span style="color:#ff5600;">+=</span><span> amount;
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">new</span><span>(initial: </span><span style="color:#ff5600;">u32</span><span>) -&gt; </span><span style="color:#ff5600;">Self </span><span>{
+</span><span>        Account {
+</span><span>            balance: initial,
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">main</span><span>() {
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> account1 </span><span style="color:#ff5600;">= </span><span>Account::new(100);
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> account2 </span><span style="color:#ff5600;">= </span><span>Account::new(100);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> child1 </span><span style="color:#ff5600;">= </span><span>std::thread::spawn(|| {
+</span><span>        account1.</span><span style="color:#a535ae;">transfer_money_to</span><span>(50, account2)
+</span><span>    });
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">let</span><span> child2 </span><span style="color:#ff5600;">= </span><span>std::thread::spawn(|| {
+</span><span>        account2.</span><span style="color:#a535ae;">transfer_money_to</span><span>(130, account1)
+</span><span>    });
+</span><span>
+</span><span>    child1.</span><span style="color:#a535ae;">join</span><span>();
+</span><span>    child2.</span><span style="color:#a535ae;">join</span><span>();
+</span><span>
+</span><span>    println!(</span><span style="color:#00a33f;">&quot;{:?}\n{:?}&quot;</span><span>, account1, account2);
+</span><span>}
+</span></code></pre>
+<p>The error message here is quite long because there are so many mistakes from the Rust compiler's point of view.</p>
+<h1 id="more-examples">More examples<a class="zola-anchor" href="#more-examples" aria-label="Anchor link for: more-examples">🔗</a></h1>
+<p>A few more examples can be found <a href="https://github.com/barafael/errare-humanum-est/tree/master/examples">here</a>.</p>
+<h1 id="a-solution-for-c-and-c-great-linters">A solution for C and C++: great linters<a class="zola-anchor" href="#a-solution-for-c-and-c-great-linters" aria-label="Anchor link for: a-solution-for-c-and-c-great-linters">🔗</a></h1>
+<p>The <code>cppcheck</code> and <code>clang-tidy</code> have heuristics for many of the problems listed here. Often, their explanation of the problem is excellent, as well.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

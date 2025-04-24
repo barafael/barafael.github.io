@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         A Platform-Agnostic Driver for EBYTE-E32 LoRa Modules
+        
+    </title>
+
+        
+            <meta property="og:title" content="A Platform-Agnostic Driver for EBYTE-E32 LoRa Modules" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        A Platform-Agnostic Driver for EBYTE-E32 LoRa Modules<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2022-05-10</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 440 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#rust-driver">Rust Driver</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#demo-project-bare-metal-stm32f411-black-pill">Demo Project (bare metal, STM32F411 Black Pill)</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#cli-and-graphical-user-interfaces-for-testing">CLI and graphical user interfaces for testing</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#blocking-operation">Blocking Operation</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#module-graph">Module Graph</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#reduced-dependency-graph">Reduced Dependency Graph</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/#prior-work">Prior Work</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>Radio communication is not easy, right? Well, unless it's complexities are hidden from us. That's why the nice people of <a href="https://www.cdebyte.com/">Ebyte</a> have built the <a href="https://www.ebyte.com/en/product-view-news.html?id=108">E32 Modules</a>. These modules allow for easy serial-based LoRa communication. Under the hood, they use the SX1278 modules which give us lots of power. Wouldn't it be nice to have a Rust driver for those easy to use modules?</p>
+<h1 id="rust-driver">Rust Driver<a class="zola-anchor" href="#rust-driver" aria-label="Anchor link for: rust-driver">🔗</a></h1>
+<p>Pretty bog-standard implementation of a driver that uses <code>embedded-hal</code>. Provided with a couple GPIOs and a serial port, this driver will expose the functions <code>read</code> and <code>write</code> from <code>embedded-hal</code>.</p>
+<p>For checking if you wired everything up correctly, you can get the model data as a nice rusty struct. For configuration, there are some nice data structures for all the different parameters and options the chip provides (different baud rates for UART and radio transmission, error correction, transmission power, of course channel and address, and some more). You can just inspect the settings of the chip, or store new ones temporarily or persistently.</p>
+<p>The implementation is scrutinized with mocking, proptests, and mutation tests. Also, it includes my first load-bearing usage of declarative macros.</p>
+<p><a href="https://github.com/barafael/ebyte-e32-rs">Ebyte E32 Rust Driver on GitHub</a></p>
+<h2 id="demo-project-bare-metal-stm32f411-black-pill">Demo Project (bare metal, STM32F411 Black Pill)<a class="zola-anchor" href="#demo-project-bare-metal-stm32f411-black-pill" aria-label="Anchor link for: demo-project-bare-metal-stm32f411-black-pill">🔗</a></h2>
+<p><a href="https://github.com/barafael/ebyte-e32-demo">To be found here</a></p>
+<h2 id="cli-and-graphical-user-interfaces-for-testing">CLI and graphical user interfaces for testing<a class="zola-anchor" href="#cli-and-graphical-user-interfaces-for-testing" aria-label="Anchor link for: cli-and-graphical-user-interfaces-for-testing">🔗</a></h2>
+<p><a href="https://github.com/barafael/ebyte-e32-ui">Project here</a></p>
+<p>The parameter types inside the driver optionally implement the <code>clap::ValueEnum</code> derive macro behind the feature gate <code>"value_enum"</code> (which also requires <code>std</code>). This means, the enums can be used as part of a CLI! And, using the super powers of <a href="https://github.com/MichalGniadek/klask">klask</a>, this CLI can be turned into a GUI. See <a href="https://github.com/barafael/ebyte-e32-ui">this project</a> for how that goes! (I should probably blog about it).</p>
+<p>Sneak peek:
+<img src="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/ebyte-e32-gui.png" alt="Image of GUI" /></p>
+<h2 id="blocking-operation">Blocking Operation<a class="zola-anchor" href="#blocking-operation" aria-label="Anchor link for: blocking-operation">🔗</a></h2>
+<p>All operations are blocking, of course... Should be changed when <code>embedded-hal</code> becomes <code>async</code> or somehow supports non-blocking operation better than with <code>nb</code> (technically, you could do non-blocking implementation now - <code>nb::Result</code> gives you a <code>WouldBlock</code> which you could work with).</p>
+<h2 id="module-graph">Module Graph<a class="zola-anchor" href="#module-graph" aria-label="Anchor link for: module-graph">🔗</a></h2>
+<p>{% set data = resize_image(path = "ebyte-e32-rs-mods.png", op = "fit") %}
+<img src={{data.url}}></p>
+<p><img src="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/ebyte-e32-rs-mods.png" alt="Image of Module Graph" /></p>
+<h2 id="reduced-dependency-graph">Reduced Dependency Graph<a class="zola-anchor" href="#reduced-dependency-graph" aria-label="Anchor link for: reduced-dependency-graph">🔗</a></h2>
+<p><img src="https://barafael.github.io/posts/a-platform-agnostic-driver-for-ebyte-e32-lora-modules/ebyte-e32-rs-deps.png" alt="Image of Dependency Graph" /></p>
+<h2 id="prior-work">Prior Work<a class="zola-anchor" href="#prior-work" aria-label="Anchor link for: prior-work">🔗</a></h2>
+<ul>
+<li>
+<p><a href="https://www.mischianti.org/2019/10/21/lora-e32-device-for-arduino-esp32-or-esp8266-library-part-2/">Renzo Mischiantis Ebyte E32 Library</a></p>
+</li>
+<li>
+<p><a href="https://github.com/xreef/LoRa_E32_Series_Library">Same library on GitHub</a></p>
+</li>
+</ul>
+<p>Thanks for your inspiration!</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

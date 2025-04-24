@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Fourier Transform of Cosine Function
+        
+    </title>
+
+        
+            <meta property="og:title" content="Fourier Transform of Cosine Function" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Fourier Transform of Cosine Function<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2018-08-08</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 717 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#prerequisites-and-notation">Prerequisites and Notation</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#transforming-the-cosine-function">Transforming the Cosine Function</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#plugging-the-cosine-into-the-definition-of-the-fourier-transform">Plugging the Cosine into the definition of the Fourier Transform</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#but-what-is-the-fourier-transform-of-1">But what is the fourier transform of 1?</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#final-result">Final Result</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/fourier-transform-of-cosine-function/#what-about-cosine-functions-with-different-frequencies">What about Cosine Functions with different Frequencies?</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>The Fourier transform maps a signal to its frequency spectrum, denoting exactly at which amplitude a given frequency appears in the signal.
+The underlying assumption is that any signal out there can be decomposed in to an infinite sum of trigonometric functions with varying amplitude, phase, and frequency.
+But what happens if one of the most basic functions, the cosine itself, is transformed?</p>
+<h2 id="prerequisites-and-notation">Prerequisites and Notation<a class="zola-anchor" href="#prerequisites-and-notation" aria-label="Anchor link for: prerequisites-and-notation">🔗</a></h2>
+<p>I will use <script type="math/tex">\widehat{f}</script> to refer to the Fourier Transform of <script type="math/tex">f</script>.</p>
+<p>I will use the following definition of the Fourier transform:</p>
+<p>Let <script type="math/tex">f \in L_2(\mathbb{R})</script> be a signal. Then:</p>
+<script type="math/tex;mode=display">\widehat{f}(\xi) = \int_{-\infty}^{\infty}f(t)e^{-i\xi t}dt</script><h2 id="transforming-the-cosine-function">Transforming the Cosine Function<a class="zola-anchor" href="#transforming-the-cosine-function" aria-label="Anchor link for: transforming-the-cosine-function">🔗</a></h2>
+<h3 id="plugging-the-cosine-into-the-definition-of-the-fourier-transform">Plugging the Cosine into the definition of the Fourier Transform<a class="zola-anchor" href="#plugging-the-cosine-into-the-definition-of-the-fourier-transform" aria-label="Anchor link for: plugging-the-cosine-into-the-definition-of-the-fourier-transform">🔗</a></h3>
+<script type="math/tex;mode=display">\widehat{(cos)}(\xi) = 
+\int_{-\infty}^{\infty}cos(t)e^{-i\xi t}dt =
+\int_{-\infty}^{\infty}\frac{e^{it}+e^{-it}}{2}e^{-i\xi t}dt =
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it}e^{-i\xi t}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it}e^{-i\xi t}dt =
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it(1-\xi)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =
+\frac{1}{2}\int_{-\infty}^{\infty}e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =
+\frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(1-\xi)}dt =
+\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi)</script>
+<p>So we see that the spectrum of the cosine is comprised of two other certain spectra, which are shifted in time.</p>
+<h3 id="but-what-is-the-fourier-transform-of-1">But what is the fourier transform of 1?<a class="zola-anchor" href="#but-what-is-the-fourier-transform-of-1" aria-label="Anchor link for: but-what-is-the-fourier-transform-of-1">🔗</a></h3>
+<p>This can be approached using intuition. Given that the value of the spectrum of a function at frequency <script type="math/tex">\xi = 0</script> is equal to the mean of the function:</p>
+<script type="math/tex;mode=display">\widehat{1}(0) = \int_{-\infty}^{\infty}1dt = \infty</script>
+<p>We can conclude that our spectrum is infinite at 0. But what about the rest of the function?</p>
+<p>The 1-function does not have any other spectral components - it is boring and flat, completely defined without any frequency components other than 0.</p>
+<p>A function that is infinite at 0 and 0 everywhere else - sounds familiar? The Dirac Impulse function!</p>
+<script type="math/tex;mode=display">\delta(t) =
+\begin{cases}
+0,  & t \lt 0
+\infty,  & t = 0
+0,  & t \gt 0
+\end{cases}</script>
+<p>So, now that we have the transform of the 1-function (albeit the derivation was rather hand-wavy), we can state the fourier transform of the cosine function.</p>
+<h3 id="final-result">Final Result<a class="zola-anchor" href="#final-result" aria-label="Anchor link for: final-result">🔗</a></h3>
+<script type="math/tex;mode=display">\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi) =
+\frac{1}{2}\delta(\xi-1) + \frac{1}{2}\delta(1-\xi)</script>
+<p>The result: Two Impulses, one at 1, one at -1, suffice to describe the spectrum of the cosine function!</p>
+<h2 id="what-about-cosine-functions-with-different-frequencies">What about Cosine Functions with different Frequencies?<a class="zola-anchor" href="#what-about-cosine-functions-with-different-frequencies" aria-label="Anchor link for: what-about-cosine-functions-with-different-frequencies">🔗</a></h2>
+<p>A cosine can be given for any frequency by scaling it: <script type="math/tex">cos(a*t)</script> where <script type="math/tex">a \in \mathbb{R}</script> denotes the desired frequency.
+We can write this using the scaling operator <script type="math/tex">\sigma_{a} f(\cdot) = f(a\cdot)</script>. If we scale a function like that, we can try to imagine what will happen to the spectrum of the function: if we increase the frequency (<script type="math/tex">a \gt 1</script>), we stretch the spectrum to accomodate the higher spectral components, and if we decrease the frequency (<script type="math/tex">a \lt 1</script>), we compress the spectrum because there are now lower spectral components. Stated mathematically:</p>
+<script type="math/tex;mode=display">\sigma_{a}\widehat{f} = \frac{1}{a}\widehat{f}(\frac{\xi}{a})</script>
+<p>Applying this to the Cosine yields:</p>
+<script type="math/tex;mode=display">\sigma_{a}\widehat{cos} = \frac{1}{a}\widehat{cos}(\frac{\xi}{a}) =
+\frac{1}{a}\frac{1}{2}\delta(\frac{\xi-1}{a}) + \frac{1}{a}\frac{1}{2}\delta(\frac{1-\xi}{a})</script>
+<p>As one might expect, transforming cosines of differing frequencies shifts the impulses around to the corresponding spectral frequencies.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

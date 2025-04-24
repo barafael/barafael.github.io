@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         How to Communicate Failure in Rust
+        
+    </title>
+
+        
+            <meta property="og:title" content="How to Communicate Failure in Rust" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        How to Communicate Failure in Rust<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2022-05-05</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 359 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#boxed-errors">Boxed Errors</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#error-enums">Error Enums</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#apps-vs-libs">Apps vs. Libs?</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#gee-that-s-lots-of-typing-for-both-approaches-it-doesn-t-have-to-be">Gee, that&#x27;s lots of typing for both approaches. It doesn&#x27;t have to be!</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#example-application-with-gui">Example Application (with GUI!)</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/how-to-communicate-failure-in-rust/#more-realistic-examples-please">More Realistic Examples Please!</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>Basics explained well in this blog post: <a href="https://www.sheshbabu.com/posts/rust-error-handling/">Rust Error Handling</a>.</p>
+<p>The linked blog post shows how to manually create boxed errors and error enums.</p>
+<h1 id="boxed-errors">Boxed Errors<a class="zola-anchor" href="#boxed-errors" aria-label="Anchor link for: boxed-errors">🔗</a></h1>
+<p>Use boxed errors if you have a very wide set of sources which could produce errors (wide as in, many crates or many modules). Why? Because boxing an error is simple, but makes it harder to handle for the layer above you.</p>
+<h1 id="error-enums">Error Enums<a class="zola-anchor" href="#error-enums" aria-label="Anchor link for: error-enums">🔗</a></h1>
+<p>A custom error enum is the way to go if you want the user of the code you are working on to be able to check what exactly failed. You do have to create an enum variant for all the different error conditions. These could carry data, like source errors, backtraces, or even the input that caused the error (see e.g. <a href="https://docs.rs/tokio/latest/tokio/sync/mpsc/error/struct.SendError.html">SendError</a>).</p>
+<h1 id="apps-vs-libs">Apps vs. Libs?<a class="zola-anchor" href="#apps-vs-libs" aria-label="Anchor link for: apps-vs-libs">🔗</a></h1>
+<p>In many cases, applications use boxed errors and libs use error enums. But there are also counterexamples. I personally like error enums quite a bit, but this is a question of ergonomics, API design, and maybe taste.</p>
+<h1 id="gee-that-s-lots-of-typing-for-both-approaches-it-doesn-t-have-to-be">Gee, that's lots of typing for both approaches. It doesn't have to be!<a class="zola-anchor" href="#gee-that-s-lots-of-typing-for-both-approaches-it-doesn-t-have-to-be" aria-label="Anchor link for: gee-that-s-lots-of-typing-for-both-approaches-it-doesn-t-have-to-be">🔗</a></h1>
+<p>The <a href="https://docs.rs/anyhow/latest/anyhow/">anyhow</a> is even nicer than the "Boxed-Error" pattern and not too expensive to use.</p>
+<p>For error enums, the <a href="https://docs.rs/thiserror/latest/thiserror/">thiserror</a> crate does all the manual work for you, and you get a nice way to declare your error codes that is completely invisible from outside of your crate or module.</p>
+<h1 id="example-application-with-gui">Example Application (with GUI!)<a class="zola-anchor" href="#example-application-with-gui" aria-label="Anchor link for: example-application-with-gui">🔗</a></h1>
+<p>See <a href="https://github.com/barafael/error-safari">error-safari</a> for some examples of both approaches.</p>
+<h1 id="more-realistic-examples-please">More Realistic Examples Please!<a class="zola-anchor" href="#more-realistic-examples-please" aria-label="Anchor link for: more-realistic-examples-please">🔗</a></h1>
+<p>A realistic usage of anyhow: <a href="https://github.com/barafael/achat">achat</a>, a simple demo of different ways to implement network applications with tokio.</p>
+<p>Some realistic usages of thiserror can be found here:</p>
+<ul>
+<li><a href="https://github.com/barafael/pils/blob/main/src/error.rs">pils</a>, a simple lisp implementation inspired by <a href="https://www.buildyourownlisp.com">Build Your Own LISP</a></li>
+<li>(Silly code) <a href="https://github.com/barafael/famous-last-words">famous-last-words</a></li>
+<li>(Silly code) <a href="https://github.com/barafael/deutsche-bahn-delay-reasons">Deutsche Bahn Delay Reasons</a></li>
+</ul>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

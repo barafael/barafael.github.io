@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Statements and Expressions in Rust
+        
+    </title>
+
+        
+            <meta property="og:title" content="Statements and Expressions in Rust" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Statements and Expressions in Rust<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2018-06-16</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 493 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#terms-and-conditions">Terms and Conditions</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#what-s-in-a-block">What&#x27;s in a &#x27;{}&#x27;-Block?</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#retiring-the-ternary-operator">Retiring the Ternary Operator</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#the-point-of-no-return">The Point of &#x27;No Return&#x27;</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#unary-incr-decrement-confusion">Unary incr&#x2F;decrement Confusion</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#switch-case-is-no-match-for-patterns">Switch-Case is no Match for Patterns</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/statements-and-expressions-in-rust/#let-s-if-let">Let&#x27;s if let</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>In this post, we will explore how Rust distinguishes between expressions and statements.
+Even though this distinction seems very theoretical, it has wide-ranging implications on the Rust language and (in my opinion) is a beautiful detail of Rust.</p>
+<h2 id="terms-and-conditions">Terms and Conditions<a class="zola-anchor" href="#terms-and-conditions" aria-label="Anchor link for: terms-and-conditions">🔗</a></h2>
+<p>What do I mean by expressions and statements?</p>
+<p>Arithmetic terms like <code>(a + 3) / 2</code>, or a condition <code>(a &amp; !b) | (!a &amp; b)</code> are expressions. Evaluating them yields some (non-empty-)value like <code>3</code> or <code>true</code>. This is what functional programmers mean when they say their whole program is basically one large mathematical term which is evaluated. It is important to note that evaluating an expression in this mode of thinking has no effect on the outside world, or 'context'.</p>
+<p>To interact with the world, we need statements. A statement could be <code>motor.drive(100)</code>, where <code>drive(int)</code> is a void function which changes the context such that something in the real world reflects this effect (like writing to an output port).</p>
+<h2 id="what-s-in-a-block">What's in a '{}'-Block?<a class="zola-anchor" href="#what-s-in-a-block" aria-label="Anchor link for: what-s-in-a-block">🔗</a></h2>
+<p>Languages like C and Java use curly braces to denote scope. In Rust, curly braces mark a scope too, but they can also evaluate to a value. This value can be empty '()', though. Let's see some examples:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#919191;">// Standard C if statement
+</span><span style="color:#ff5600;">if </span><span>(some_condition) {
+</span><span>    some_action();
+</span><span>}
+</span></code></pre>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#919191;">// Slightly different syntax for Rust
+</span><span style="color:#ff5600;">if</span><span> some_condition {
+</span><span>    </span><span style="color:#a535ae;">some_action</span><span>();
+</span><span>}
+</span></code></pre>
+<p>The syntax appears very similar, but this is a false lookalike: we can evaluate expressions in blocks.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let</span><span> a </span><span style="color:#ff5600;">= if</span><span> some_condition {
+</span><span>    </span><span style="color:#a535ae;">some_action</span><span>()
+</span><span>} </span><span style="color:#ff5600;">else </span><span>{
+</span><span>    3
+</span><span>};
+</span></code></pre>
+<p>This is a very structured solution to the frequent problem of conditionally assigning/binding values to variables.</p>
+<p>It should be noted that a semicolon suppresses the value of an expression. This is why we do not have semicola after <code>3</code> or <code>some_action()</code>, but after the last curly brace.</p>
+<h3 id="retiring-the-ternary-operator">Retiring the Ternary Operator<a class="zola-anchor" href="#retiring-the-ternary-operator" aria-label="Anchor link for: retiring-the-ternary-operator">🔗</a></h3>
+<p>This C shorthand for an if-else-block as expression:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">int</span><span> val </span><span style="color:#ff5600;">= </span><span>5;
+</span><span style="color:#ff5600;">int</span><span> result </span><span style="color:#ff5600;">=</span><span> val </span><span style="color:#ff5600;">&lt; </span><span>10 </span><span style="color:#ff5600;">? </span><span>10 </span><span style="color:#ff5600;">:</span><span> val;
+</span></code></pre>
+<p>does not require special syntax in Rust.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let</span><span> val </span><span style="color:#ff5600;">= </span><span>5;
+</span><span style="color:#ff5600;">let</span><span> result </span><span style="color:#ff5600;">= if</span><span> val </span><span style="color:#ff5600;">&lt; </span><span>10 { 10 } </span><span style="color:#ff5600;">else </span><span>{ val };
+</span></code></pre>
+<p>Note that in the Rust snippet, each branch of the if statement evaluates to a number.</p>
+<h2 id="the-point-of-no-return">The Point of 'No Return'<a class="zola-anchor" href="#the-point-of-no-return" aria-label="Anchor link for: the-point-of-no-return">🔗</a></h2>
+<p>Using the <code>return</code> keyword is discouraged sometimes in the Rust community. It makes no difference for the program, but omitting it fits better with the 'Everything is an Expression' mode of thinking. This becomes apparent when looking at the following examples, which may look scary for some C programmers.</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#919191;">// C function that simply returns some value
+</span><span style="color:#ff5600;">int </span><span style="color:#21439c;">some_function</span><span>(</span><span style="color:#ff5600;">int </span><span>x) {
+</span><span>    </span><span style="color:#ff5600;">return</span><span> x </span><span style="color:#ff5600;">+ </span><span>3;
+</span><span>}
+</span></code></pre>
+<p>The exit point of a C function often is a 'return', reminding us that in the background, the stack is restored and control is given to the caller.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#919191;">// In Rust, the &#39;return&#39; is unnecessary, since the function body is an expression.
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">some_function</span><span>(x: </span><span style="color:#ff5600;">u32</span><span>) -&gt; </span><span style="color:#ff5600;">u32 </span><span>{
+</span><span>    x </span><span style="color:#ff5600;">+ </span><span>3
+</span><span>}
+</span><span>
+</span><span style="color:#919191;">// A void function in Rust
+</span><span style="color:#919191;">// Note: function actually returns &#39;()&#39;, which is value of expression &#39;x + 3;&#39;
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">some_void_func</span><span>(x: </span><span style="color:#ff5600;">u32</span><span>) {
+</span><span>    x </span><span style="color:#ff5600;">+ </span><span>3; </span><span style="color:#919191;">// &lt; note the semicolon
+</span><span>}
+</span><span>
+</span><span style="color:#919191;">// Note: the &#39;return&#39; keyword can still be used for early returns
+</span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">early_return</span><span>(num: </span><span style="color:#ff5600;">u8</span><span>) -&gt; </span><span style="color:#ff5600;">u8 </span><span>{
+</span><span>    </span><span style="color:#ff5600;">if</span><span> num </span><span style="color:#ff5600;">== </span><span>3 {
+</span><span>        </span><span style="color:#ff5600;">return </span><span>0
+</span><span>    }
+</span><span>    </span><span style="color:#ff5600;">...
+</span><span>}
+</span></code></pre>
+<h2 id="unary-incr-decrement-confusion">Unary incr/decrement Confusion<a class="zola-anchor" href="#unary-incr-decrement-confusion" aria-label="Anchor link for: unary-incr-decrement-confusion">🔗</a></h2>
+<p>The standard way to increment a variable in C:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">int</span><span> x </span><span style="color:#ff5600;">= </span><span>10;
+</span><span style="color:#919191;">// Both expression (evaluates to 10) and statement (increments x).
+</span><span>x</span><span style="color:#ff5600;">++</span><span>;
+</span><span style="color:#919191;">// Same here, except expression evaluates to 12 now.
+</span><span style="color:#ff5600;">++</span><span>x;
+</span></code></pre>
+<p>In Rust, this works differently:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let mut</span><span> x </span><span style="color:#ff5600;">= </span><span>10;
+</span><span style="color:#919191;">//x++ // not possible
+</span><span>x </span><span style="color:#ff5600;">+= </span><span>1;
+</span></code></pre>
+<p>This prevents such C chaos:</p>
+<pre data-lang="c" style="background-color:#ffffff;color:#000000;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#ff5600;">int</span><span> c </span><span style="color:#ff5600;">= </span><span>0;
+</span><span style="color:#919191;">// What does this evaluate to?
+</span><span style="color:#ff5600;">int</span><span> d </span><span style="color:#ff5600;">= ++</span><span>c </span><span style="color:#ff5600;">+</span><span> c</span><span style="color:#ff5600;">++</span><span>;
+</span><span style="color:#919191;">// and this?
+</span><span style="color:#ff5600;">int</span><span> e </span><span style="color:#ff5600;">= ++</span><span>c </span><span style="color:#ff5600;">+</span><span> c</span><span style="color:#ff5600;">++ +</span><span> c;
+</span></code></pre>
+<h2 id="switch-case-is-no-match-for-patterns">Switch-Case is no Match for Patterns<a class="zola-anchor" href="#switch-case-is-no-match-for-patterns" aria-label="Anchor link for: switch-case-is-no-match-for-patterns">🔗</a></h2>
+<p>Pattern matching in Rust takes advantage of expression blocks quite beautifully:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let</span><span> choice </span><span style="color:#ff5600;">= </span><span>17;
+</span><span style="color:#ff5600;">let</span><span> is_sparta </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">true</span><span>;
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> result </span><span style="color:#ff5600;">= match</span><span> choice {
+</span><span>    0 </span><span style="color:#ff5600;">=&gt; </span><span style="color:#00a33f;">&quot;zero for u&quot;</span><span>,
+</span><span>    1</span><span style="color:#ff5600;">...</span><span>9 </span><span style="color:#ff5600;">=&gt; </span><span style="color:#00a33f;">&quot;choice not great&quot;</span><span>,
+</span><span>    i </span><span style="color:#ff5600;">if</span><span> i </span><span style="color:#ff5600;">% </span><span>2 </span><span style="color:#ff5600;">== </span><span>1 </span><span style="color:#ff5600;">=&gt; </span><span style="color:#00a33f;">&quot;larger than or equal 11, and odd&quot;</span><span>,
+</span><span>    42 </span><span style="color:#ff5600;">=&gt; </span><span style="color:#00a33f;">&quot;u r n4rd&quot;</span><span>,
+</span><span>    300 </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#ff5600;">if</span><span> is_sparta {
+</span><span>            </span><span style="color:#00a33f;">&quot;This is Sparta!&quot;
+</span><span>        } </span><span style="color:#ff5600;">else </span><span>{
+</span><span>            </span><span style="color:#00a33f;">&quot;This is not Sparta!&quot;
+</span><span>        }
+</span><span>    }
+</span><span>    </span><span style="color:#ff5600;">_ =&gt; </span><span style="color:#00a33f;">&quot;larger than or equal 10, and even&quot;</span><span>,
+</span><span>}; </span><span style="color:#919191;">// &lt; semicolon needed, because this expression binds to &#39;result&#39;
+</span></code></pre>
+<p>Every match arm must evaluate to the same type (&amp;str here). The match arm can be any expression in a block that eventually evaluates to a &amp;str.
+The patterns must be exhaustive!
+This is like switch/case on steroids.</p>
+<h2 id="let-s-if-let">Let's if let<a class="zola-anchor" href="#let-s-if-let" aria-label="Anchor link for: let-s-if-let">🔗</a></h2>
+<p>To destructure enums using <code>if let</code> is useful for ergonomic error handling with algebraic error types(Option, Result):</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>    </span><span style="color:#ff5600;">let</span><span> number: </span><span style="color:#a535ae;">Option</span><span>&lt;</span><span style="color:#ff5600;">i32</span><span>&gt; </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">Some</span><span>(8);
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Some</span><span>(8) </span><span style="color:#ff5600;">=</span><span> number {
+</span><span>        println!(</span><span style="color:#00a33f;">&quot;Option contained an eight!&quot;</span><span>);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Some</span><span>(i) </span><span style="color:#ff5600;">=</span><span> number {
+</span><span>        println!(</span><span style="color:#00a33f;">&quot;Matched {:?}!&quot;</span><span>, i);
+</span><span>    } </span><span style="color:#ff5600;">else </span><span>{
+</span><span>        println!(</span><span style="color:#00a33f;">&quot;Option contained None!&quot;</span><span>);
+</span><span>    };
+</span></code></pre>
+<p>This works with any pattern, on enums, structs, and tuples.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

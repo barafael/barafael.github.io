@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Impulse Response and Transfer Function
+        
+    </title>
+
+        
+            <meta property="og:title" content="Impulse Response and Transfer Function" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Impulse Response and Transfer Function<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2018-07-08</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 1251 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/impulse-response-and-transfer-function/#prerequisites-and-notation">Prerequisites and Notation</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/impulse-response-and-transfer-function/#what-s-a-filter">What&#x27;s a Filter?</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/impulse-response-and-transfer-function/#properties-of-filters">Properties of Filters</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/impulse-response-and-transfer-function/#the-unit-impulse-and-why-it-is-important">The Unit Impulse and why it is important</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/impulse-response-and-transfer-function/#convolution-and-filter-application">Convolution and Filter Application</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>Applying filters to signals is one of the most important applications of mathematics in signal processing.
+But with all the Fourier transforms, Convolutions, and various properties like causality, time-invariance, linearity...  It can get confusing.
+In this post, I want to clarify the relationship between a filter, it's impulse response and transfer function, and why applying a filter is the same as convoluting a transformed signal with an impulse response.
+Don't worry, it will sound less intimidating in the end.</p>
+<h2 id="prerequisites-and-notation">Prerequisites and Notation<a class="zola-anchor" href="#prerequisites-and-notation" aria-label="Anchor link for: prerequisites-and-notation">🔗</a></h2>
+<p>I will use <script type="math/tex">\widehat{c}</script> to refer to the Fourier Transform of <script type="math/tex">c</script> (and <script type="math/tex">(c + d)\hat{ }</script> for the transform of larger terms).
+Conversely, I will use the inverted hat for the inverse of the Fourier Transform: <script type="math/tex">c(t) = (\widehat{c}(\cdot))\vee(t)</script>.</p>
+<p>To denote the Convolution of signals <script type="math/tex">c</script> and <script type="math/tex">d</script>, I will use <script type="math/tex">c \ast d</script>.</p>
+<p>The raw definitions are (incomplete for brevity):</p>
+<p>Let <script type="math/tex">c \in l_2(\mathbb{Z})</script> be a signal. Then:</p>
+<script type="math/tex;mode=display">\widehat{c}(\xi) = \sum_{k \in \mathbb{Z}}c(k)e^{-i\xi k}</script>
+<p>Let <script type="math/tex">c, d \in l_2(\mathbb{Z})</script>. Then:</p>
+<script type="math/tex;mode=display">(c \ast d)(\tau) = \sum_{k \in \mathbb{Z}}c(\tau - k)d(k)</script>
+<p>A fundamental theorem in Signal Processing is the Convolution Theorem:</p>
+<p>Let <script type="math/tex">c, d \in l_2(\mathbb{Z})</script>. Then:</p>
+<script type="math/tex;mode=display">\widehat{(c \ast d)}(\xi) = \widehat{c}(\xi)\widehat{d}(\xi)</script>
+<p>The proof is included here for completeness, however it is <strong>not particularly important for the rest of the post, so feel free to skip it</strong>:</p>
+<script type="math/tex;mode=display">\def\colonequals{:=}
+\widehat{(c \ast d)}(\xi) = \\
+\sum_{k \in \mathbb{Z}}(c \ast d)(k)e^{-i\xi k}= \\
+\sum_{k \in \mathbb{Z}}\sum_{s\in\mathbb{Z}}c(k-s)d(s) e^{-i\xi k}=\\ \sum_{k \in \mathbb{Z}}\sum_{s\in\mathbb{Z}}c(k-s)d(s) e^{-i\xi (k-s+s)}=\\
+\sum_{k \in \mathbb{Z}}\sum_{s\in\mathbb{Z}}c(k-s)d(s) e^{-i\xi (k-s)}e^{-i\xi s}=\\
+\sum_{k \in \mathbb{Z}}\sum_{s\in\mathbb{Z}}c(k-s)e^{-i\xi (k-s)}d(s) e^{-i\xi s}=\\
+\sum_{s \in \mathbb{Z}}\sum_{k\in\mathbb{Z}}c(k-s)e^{-i\xi (k-s)}d(s) e^{-i\xi s}=\\
+\sum_{s \in \mathbb{Z}}d(s) e^{-i\xi s}\sum_{k\in\mathbb{Z}}c(k-s)e^{-i\xi (k-s)}\\
+\kappa\colonequals k-s;\\
+\sum_{s \in \mathbb{Z}}d(s) e^{-i\xi s}\sum_{\kappa\in\mathbb{Z}}c(\kappa)e^{-i\xi \kappa}=\\
+\sum_{\kappa\in\mathbb{Z}}c(\kappa)e^{-i\xi \kappa}\sum_{s \in \mathbb{Z}}d(s) e^{-i\xi s}=\\
+\widehat{c}(\xi)\widehat{d}(\xi)</script><h2 id="what-s-a-filter">What's a Filter?<a class="zola-anchor" href="#what-s-a-filter" aria-label="Anchor link for: what-s-a-filter">🔗</a></h2>
+<p>A filter is just a vector of some length N (or function on some interval), where we interpret the values as coefficients of the filter. The vector of filter coefficients will be called a "filter window" from here on.</p>
+<p>Filtering a signal can be achieved like this:</p>
+<pre style="background-color:#ffffff;color:#000000;"><code><span>for each sample:
+</span><span>    place the window on the signal, such that the sample is at the window center
+</span><span>    for each value of the window:
+</span><span>        multiply the value with the corresponding signal sample
+</span><span>        add the result to an accumulator A
+</span><span>    
+</span><span>    set the value of the center sample to the value of A
+</span></code></pre>
+<p>(This explanation is probably very engineer-like and insufficient for mathematicians. What can I do.)</p>
+<p>A simple example: set all values of the filter to <script type="math/tex">1/N</script>. Then a sample in a filtered signal is the arithmetic mean of the samples around it, removing high-frequency content.</p>
+<h2 id="properties-of-filters">Properties of Filters<a class="zola-anchor" href="#properties-of-filters" aria-label="Anchor link for: properties-of-filters">🔗</a></h2>
+<p>Notice the filter coefficients in the previous example where <script type="math/tex">1/N</script>. Otherwise, we might modify the energy of the signal. Obviously, you don't want a filtered signal to be amplified or diminished. This kind of filter is called "Energy-Preserving".</p>
+<p>There are many more properties, one of which is linearity. A linear filter has the property that you can apply it to a sum of signals and get the same result as applying it to each  signal individually and then summing the result. Put in another way:</p>
+<p>Let <script type="math/tex">c, d \in l_2(\mathbb{Z})</script> and <script type="math/tex">a, b \in \mathbb{R}</script> . Then:</p>
+<script type="math/tex;mode=display">F(ac+bd) = aFc + bFd</script>
+<p>This property will become important later.</p>
+<h2 id="the-unit-impulse-and-why-it-is-important">The Unit Impulse and why it is important<a class="zola-anchor" href="#the-unit-impulse-and-why-it-is-important" aria-label="Anchor link for: the-unit-impulse-and-why-it-is-important">🔗</a></h2>
+<p>The Unit Impulse function (or dirac delta) is... not actually a function, but a distribution. However, we will treat it as the following function here:</p>
+<script type="math/tex;mode=display">\delta(t) =
+\begin{cases}
+0,  & t \lt 0 \\
+1,  & t = 0 \\
+0,  & t \gt 0
+\end{cases}</script>
+<p>The impulse contains frequencies from every wavelength with the same amplitude.
+Intuitively, it is a "bang", like a gunshot. It's Fourier Transform is... just <script type="math/tex">1</script>:</p>
+<script type="math/tex;mode=display">\widehat{\delta}(\xi) = \int_{-\infty}^{\infty}\delta (t)e^{-i\xi t}dt = 1</script>
+<p>In other words, we can get a unit impulse by summing up cosines of ever-increasing frequency.
+So what happens if we apply a filter to a unit impulse?
+Well, by the linearity property stated above, that would be the same as applying the filter to each of the frequencies the unit impulse is comprised of - which is, all of them.
+You read that right - with the unit impulse, we can see what a filter does to ANY frequency.
+Does it diminish high frequency? Only the low frequencies from the impulse get through.
+Is there a band that the filter attenuates? Those frequencies will be dimmed in the result. By the way, the result of applying a filter to a unit impulse is aptly called the "Impulse Response".</p>
+<p>Now, let's think about the Fourier Transform of an impulse response.
+The impulse response contains every frequency with the amplitude that the filter permits for this frequency.
+So it's spectral content directly displays how the filter behaves for a given frequency.</p>
+<p>I will denote the impulse response <script type="math/tex">F\delta</script> of a filter <script type="math/tex">F</script> with <script type="math/tex">f</script>.</p>
+<h2 id="convolution-and-filter-application">Convolution and Filter Application<a class="zola-anchor" href="#convolution-and-filter-application" aria-label="Anchor link for: convolution-and-filter-application">🔗</a></h2>
+<p>Now let's clarify why applying filters can be achieved by Convolution. The best explanation I found is rather mathematical, but somewhat easy to understand.</p>
+<p>First, let's look at a signal <script type="math/tex">c</script> in a slightly contrived way:</p>
+<script type="math/tex;mode=display">c(\cdot) = \sum_{k \in \mathbb{Z}}c(k)\delta(\cdot-k)</script>
+<p>Equivalently, where <script type="math/tex">\tau_{s}c(\cdot) = c(\cdot + s)</script>:</p>
+<script type="math/tex;mode=display">c(\cdot) = \sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta</script>
+<p>Which is to say: you can picture a signal at a point as a unit impulse shifted to exactly that point multiplied with the entire signal.</p>
+<p>Now let's see what happens if we apply a filter <script type="math/tex">F</script> to that signal and simplify the result.</p>
+<script type="math/tex;mode=display">Fc(\cdot) = F\Big[\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}\delta\Big] = \\
+\sum_{k \in \mathbb{Z}}c(k)F[\tau_{-k}\delta] = \\
+\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}F\delta = \\
+\sum_{k \in \mathbb{Z}}c(k)\tau_{-k}f = \\
+\sum_{k \in \mathbb{Z}}c(k)f(\cdot - k) = \\
+(c \ast f)(\cdot)</script>
+<p>And there you have it! Applying a filter to a signal is the same as multiplying the transformed signal with the transfer function and taking the inverse Fourier Transform of the result:</p>
+<script type="math/tex;mode=display">Fc(t) = (c \ast f)(t) = (\hat{c}\hat{f})\vee(t)</script>
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>
