@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         A Platform-Agnostic driver for the HC12 serial radio module
+        
+    </title>
+
+        
+            <meta property="og:title" content="A Platform-Agnostic driver for the HC12 serial radio module" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        A Platform-Agnostic driver for the HC12 serial radio module<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2021-03-21</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 253 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-hc12-serial-radio-module/#usage-example">Usage example</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-hc12-serial-radio-module/#configuration">Configuration</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>If only a serial port could be used without having to deal with cables!
+The HC12 serial radio module enables just this super power.
+It connects to a normal serial port, sending and receiving data to/from another hc12 module.</p>
+<p>The baud rate, transmission power, channel, and some other properties can be configured over the same serial interface, using simple AT commands.
+To disambiguate the normal mode from the configuration mode, a digital signal is used.</p>
+<p>In this blog post, I introduce a simple embedded-hal driver for the hc12 module.
+It requires a serial interface, a delay implementation, and a digital pin.</p>
+<p>Type-state is used to disambiguate the modes of operation: normal mode, configuration mode, and sleeping mode.
+In normal mode, the driver instance can simply be used like any other serial device (with the Read and Write methods of the embedded-hal Serial trait).</p>
+<h2 id="usage-example">Usage example<a class="zola-anchor" href="#usage-example" aria-label="Anchor link for: usage-example">🔗</a></h2>
+<p>Full code <a href="https://github.com/barafael/hc12-at-rs/tree/main/hc12-example-raspi">here</a>.
+This example makes a driver instance, queries a few parameters, then sends a basic string over the hc12 repeatedly.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let</span><span> uart </span><span style="color:#ff5600;">= </span><span>Uart::new(9600, Parity::None, 8, 1).</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> set_pin </span><span style="color:#ff5600;">= </span><span>Gpio::new().</span><span style="color:#a535ae;">unwrap</span><span>().</span><span style="color:#a535ae;">get</span><span>(18).</span><span style="color:#a535ae;">unwrap</span><span>().</span><span style="color:#a535ae;">into_output</span><span>();
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> hc12 </span><span style="color:#ff5600;">= </span><span>hc12_at::hc12::Hc12::new(uart, set_pin, linux_embedded_hal::Delay);
+</span><span>
+</span><span style="color:#ff5600;">let mut</span><span> hc12 </span><span style="color:#ff5600;">= match</span><span> hc12.</span><span style="color:#a535ae;">into_configuration_mode</span><span>().</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span>assert!(hc12.</span><span style="color:#a535ae;">is_ok</span><span>());
+</span><span>
+</span><span style="color:#ff5600;">let mut</span><span> buffer </span><span style="color:#ff5600;">= </span><span>[0</span><span style="color:#ff5600;">u8</span><span>; 64];
+</span><span style="color:#ff5600;">let</span><span> result </span><span style="color:#ff5600;">=</span><span> hc12.</span><span style="color:#a535ae;">get_version</span><span>(</span><span style="color:#ff5600;">&amp;mut</span><span> buffer);
+</span><span>println!(</span><span style="color:#00a33f;">&quot;{:?}&quot;</span><span>, std::str::from_utf8(</span><span style="color:#ff5600;">&amp;</span><span>result).</span><span style="color:#a535ae;">unwrap</span><span>());
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> params </span><span style="color:#ff5600;">=</span><span> hc12.</span><span style="color:#a535ae;">get_parameters</span><span>().</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span>println!(</span><span style="color:#00a33f;">&quot;{:#?}&quot;</span><span>, params);
+</span><span>
+</span><span>println!(</span><span style="color:#00a33f;">&quot;{:?}&quot;</span><span>, params.</span><span style="color:#a535ae;">get_air_baud_rate</span><span>());
+</span><span>
+</span><span>println!(
+</span><span>    </span><span style="color:#00a33f;">&quot;{:?}&quot;</span><span>,
+</span><span>    params.</span><span style="color:#a535ae;">get_air_baud_rate</span><span>().</span><span style="color:#a535ae;">get_wireless_sensitivity_dbm</span><span>()
+</span><span>);
+</span><span>
+</span><span style="color:#ff5600;">let mut</span><span> hc12 </span><span style="color:#ff5600;">= match</span><span> hc12.</span><span style="color:#a535ae;">into_normal_mode</span><span>().</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>
+</span><span style="color:#ff5600;">loop </span><span>{
+</span><span>    hc12.</span><span style="color:#a535ae;">write_buffer</span><span>(</span><span style="color:#ff5600;">b</span><span style="color:#00a33f;">&quot;hello hc12\r\n&quot;</span><span>).</span><span style="color:#a535ae;">unwrap</span><span>();
+</span><span>    thread::sleep(Duration::from_millis(500));
+</span><span>}
+</span></code></pre>
+<h2 id="configuration">Configuration<a class="zola-anchor" href="#configuration" aria-label="Anchor link for: configuration">🔗</a></h2>
+<p>The baudrate, radio channel, radio mode, and transmission power can be configured using AT commands.
+To get the current configuration, the API function get_params can be used.</p>
+<p>Only some combinations of settings are valid though - the API should protect from misconfiguration.</p>
+<p>To get the air baud rate and the wireless sensitivity as specified in the <a href="https://www.elecrow.com/download/HC-12.pdf">datasheet</a>, API functions get_air_baud_rate and get_wireless_sensitivity_dbm can be used.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Stop Worrying and Learn to Loop-Select
+        
+    </title>
+
+        
+            <meta property="og:title" content="Stop Worrying and Learn to Loop-Select" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Stop Worrying and Learn to Loop-Select<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2025-02-21</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 1365 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#hang-on-what-s-select-again">Hang on - what&#x27;s select!, again?</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#example-1-explicit-shutdown-requires-loop-select">Example 1: Explicit shutdown requires loop-select!</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#example-2-loop-select-enables-implicit-shutdown">Example 2: loop-select! enables Implicit Shutdown</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#footguns-hiding-in-the-dark">Footguns hiding in the dark</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#issue-1-cancellation-safety">Issue #1: Cancellation Safety</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#issue-2-a-hidden-panic">Issue #2: A hidden panic</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#issue-3-easy-to-create-an-infinite-busy-loop">Issue #3: Easy to create an infinite busy loop</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/#issue-4-tooling">Issue #4: Tooling</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>I can't seem to break from employing the <code>loop-select!</code> pattern.
+But what should merely be an intra-task concurrency primitive combining pattern matching and futures has sparked heated discussions.
+While I begrudgingly acknowledge there are some footguns, here I'll advocate that actor-style programming <em>likes</em> the <code>loop-select!</code> (and so should you).</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> In my previous post, I have looked at actor-style programming from the <em>outside</em>. I have described my view of the preferrable public API of an actor, the influence of channels on the system architecture, and how to structure actors and full applications for "natural actor shutdown". These relate to this article, wherein I peek into the inner workings of what an actor can look like in tokio/rust.</p>
+</blockquote>
+<h2 id="hang-on-what-s-select-again">Hang on - what's <code>select!</code>, again?<a class="zola-anchor" href="#hang-on-what-s-select-again" aria-label="Anchor link for: hang-on-what-s-select-again">🔗</a></h2>
+<p>The <a href="https://docs.rs/tokio/latest/tokio/macro.select.html"><code>tokio::select!</code></a> macro facilitates running several processes concurrently <strong>within one task</strong>.
+These processes can have completely different objectives, but because they run concurrently,
+they may share or even mutate the local variables among each other without any locks.</p>
+<p>While the <a href="https://docs.rs/tokio/latest/tokio/macro.select.html">docs on the <code>tokio::select!</code> macro</a> have improved massively in the last few releases,
+here is another attempt at a simplified description:</p>
+<ol>
+<li>Start several processes, and</li>
+<li>oversee their progress.</li>
+<li>Whenever one finishes, determine if its output matches our expectations for it, then
+<ul>
+<li>3a: if it did not, ignore the process, and go back to 2;</li>
+<li>3b: else, stop.</li>
+</ul>
+</li>
+</ol>
+<p>These processes, as you might imagine, are futures (1). Not tasks! Futures.</p>
+<p>The select macro will <a href="https://doc.rust-lang.org/std/future/trait.Future.html">(informedly) poll</a> each future under its supervision (2).
+When a future is signalled to be woken, the macro will poll it (2).
+This is not special, it is simply how futures are run.</p>
+<p>Finally, when a future returns <a href="https://doc.rust-lang.org/std/task/enum.Poll.html#variant.Ready"><code>Poll::Ready(T)</code></a>,
+the resulting value is matched on a user-supplied pattern (3).
+If the pattern does not match (3a), the macro disregards that process but continues monitoring the remaining ones.
+Else, all other processes (futures) are canceled (3b) and the macro evaluates to the value yielded by the future.</p>
+<h1 id="example-1-explicit-shutdown-requires-loop-select">Example 1: Explicit shutdown requires <code>loop-select!</code><a class="zola-anchor" href="#example-1-explicit-shutdown-requires-loop-select" aria-label="Anchor link for: example-1-explicit-shutdown-requires-loop-select">🔗</a></h1>
+<p>Imagine an actor which periodically sends a message into the world.
+This actor shall stop running only when you tell it to, via a cancellation token.
+No need to resort to aborting a task using <a href="https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html#method.abort"><code>JoinHandle::abort</code></a>!</p>
+<p>The core of the <code>Beacon</code> actor could look like this:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>&lt;S&gt;(</span><span style="color:#ff5600;">mut </span><span>self, token: CancellationToken, </span><span style="color:#ff5600;">mut </span><span>sink: S) -&gt; </span><span style="color:#ff5600;">Self
+</span><span style="color:#ff5600;">where
+</span><span>    S: Sink&lt;</span><span style="color:#ff5600;">u8</span><span>&gt; + Unpin,
+</span><span>    </span><span style="color:#ff5600;">S::</span><span>Error: std::fmt::Debug,
+</span><span>{
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> interval </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">interval</span><span>(Duration::from_secs(1));
+</span><span>    </span><span style="color:#ff5600;">loop </span><span>{
+</span><span>        </span><span style="color:#919191;">// First: get the next message.
+</span><span>        </span><span style="color:#ff5600;">let</span><span> message </span><span style="color:#ff5600;">= </span><span>select! {
+</span><span>            _cancellation </span><span style="color:#ff5600;">=</span><span> token.</span><span style="color:#a535ae;">cancelled</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ff5600;">break</span><span>;
+</span><span>            }
+</span><span>            </span><span style="color:#ff5600;">_ =</span><span> interval.</span><span style="color:#a535ae;">tick</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                self.0
+</span><span>            }
+</span><span>        };
+</span><span>        </span><span style="color:#919191;">// Second: handle it.
+</span><span>        </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Err</span><span>(error) </span><span style="color:#ff5600;">=</span><span> sink.</span><span style="color:#a535ae;">send</span><span>(message).await {
+</span><span>            tracing::warn</span><span style="color:#ff5600;">!</span><span>(</span><span style="color:#ff5600;">?</span><span>error, </span><span style="color:#00a33f;">&quot;Sink closed&quot;</span><span>);
+</span><span>            </span><span style="color:#ff5600;">break</span><span>;
+</span><span>        }
+</span><span>        self.0 </span><span style="color:#ff5600;">+= </span><span>1;
+</span><span>    }
+</span><span>    self
+</span><span>}
+</span></code></pre>
+<p>Because the cancellation token and the interval are monitored concurrently, triggering the cancellation token will simply break the loop.
+If it gets cancelled while the "business logic" is running, no problem - it will simply yield immediately on the next loop iteration.</p>
+<blockquote>
+<p><strong><em>Note</em></strong>: This test pauses time. That's an incredibly neat feature of tests in tokio - they run in stop-time (faster than light, sometimes)!. It works by skipping over any operations which are explicitly "sleeping" (such as <a href="https://docs.rs/tokio/latest/tokio/time/struct.Interval.html#method.tick"><code>Interval::tick</code></a>) <strong>if they are the only remaining operations right now</strong>.</p>
+</blockquote>
+<blockquote>
+<p><strong><em>Note</em></strong>: The trait bounds allow us to abstract over the kind of I/O resource we are actually using. It could be a TCP socket, websocket, webtransport socket, (wrapped) channel sender, or any other <a href="https://docs.rs/futures/latest/futures/sink/trait.Sink.html#implementors">implementor of the <code>futures::Sink</code> trait</a>. One frequent pattern is to wrap an I/O resource implementing the <a href="https://docs.rs/tokio/latest/tokio/io/trait.AsyncWrite.html"><code>AsyncWrite</code></a> trait by some type which then implements the <a href="https://docs.rs/futures/latest/futures/sink/trait.Sink.html"><code>Sink</code></a> trait. The <a href="https://docs.rs/tokio-util/latest/tokio_util/codec/index.html"><code>codec</code></a> module of <a href="https://docs.rs/tokio-util/"><code>tokio-util</code></a> simplifies this pattern.</p>
+</blockquote>
+<p><a href="https://github.com/barafael/barafael.github.io/tree/master/projects/explicit-actor-shutdown">Full example</a></p>
+<h1 id="example-2-loop-select-enables-implicit-shutdown">Example 2: <code>loop-select!</code> enables Implicit Shutdown<a class="zola-anchor" href="#example-2-loop-select-enables-implicit-shutdown" aria-label="Anchor link for: example-2-loop-select-enables-implicit-shutdown">🔗</a></h1>
+<p>I don't think explicit shutdown is an anti-pattern, however usually I prefer implicit shutdown.
+Imagine an actor similar to the previous one, which collects messages from a channel and sinks them into a TCP socket.
+Additionally, it shall sink a specific (unchanging) message into the socket once per second.</p>
+<p>The core of the <code>Forwarder</code> actor could look like this:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>&lt;S&gt;(self, </span><span style="color:#ff5600;">mut </span><span>rx: mpsc::Receiver&lt;</span><span style="color:#ff5600;">u8</span><span>&gt;, </span><span style="color:#ff5600;">mut </span><span>sink: S) -&gt; </span><span style="color:#ff5600;">Self
+</span><span style="color:#ff5600;">where
+</span><span>    S: Sink&lt;</span><span style="color:#ff5600;">u8</span><span>&gt; + Unpin,
+</span><span>    </span><span style="color:#ff5600;">S::</span><span>Error: std::fmt::Debug,
+</span><span>{
+</span><span>    </span><span style="color:#ff5600;">let mut</span><span> interval </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">interval</span><span>(Duration::from_secs(1));
+</span><span>    </span><span style="color:#ff5600;">loop </span><span>{
+</span><span>        </span><span style="color:#919191;">// First: get the next message.
+</span><span>        </span><span style="color:#ff5600;">let</span><span> message </span><span style="color:#ff5600;">= </span><span>select! {
+</span><span>            message </span><span style="color:#ff5600;">=</span><span> rx.</span><span style="color:#a535ae;">recv</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ff5600;">let </span><span style="color:#a535ae;">Some</span><span>(message) </span><span style="color:#ff5600;">=</span><span> message </span><span style="color:#ff5600;">else </span><span>{
+</span><span>                    </span><span style="color:#ff5600;">break</span><span>;
+</span><span>                };
+</span><span>                message
+</span><span>            }
+</span><span>            </span><span style="color:#ff5600;">_ =</span><span> interval.</span><span style="color:#a535ae;">tick</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                PING
+</span><span>            }
+</span><span>        };
+</span><span>        </span><span style="color:#919191;">// Second: handle it.
+</span><span>        </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Err</span><span>(error) </span><span style="color:#ff5600;">=</span><span> sink.</span><span style="color:#a535ae;">send</span><span>(message).await {
+</span><span>            tracing::warn</span><span style="color:#ff5600;">!</span><span>(</span><span style="color:#ff5600;">?</span><span>error, </span><span style="color:#00a33f;">&quot;Sink closed&quot;</span><span>);
+</span><span>            </span><span style="color:#ff5600;">break</span><span>;
+</span><span>        }
+</span><span>    }
+</span><span>    self
+</span><span>}
+</span></code></pre>
+<p>I have <a href="https://barafael.github.io/More-Actors-with-Tokio/">previously argued</a> that "natural actor shutdown" is "best actor shutdown".
+Here, we exit whenever the channel is closed naturally or in the unhappy case where our socket (sink) was closed remotely,
+in which case we also have no more work to do.
+The other actors sending us messages may react to this, as they will observe the forwarders absence eventually (certainly when they try to send it something).</p>
+<p><a href="https://github.com/barafael/barafael.github.io/tree/master/projects/implicit-actor-shutdown">Full example</a></p>
+<h1 id="footguns-hiding-in-the-dark">Footguns hiding in the dark<a class="zola-anchor" href="#footguns-hiding-in-the-dark" aria-label="Anchor link for: footguns-hiding-in-the-dark">🔗</a></h1>
+<p>You may have noticed I have papered over the details.</p>
+<h2 id="issue-1-cancellation-safety">Issue #1: Cancellation Safety<a class="zola-anchor" href="#issue-1-cancellation-safety" aria-label="Anchor link for: issue-1-cancellation-safety">🔗</a></h2>
+<p>I stated that the futures in the competing concurrent branches of <code>select!</code> are simply dropped when another arm "wins".
+If a future already internally commits some transaction (memory, network, database, whatever) before becoming <code>Poll::Ready</code>, and is then dropped,
+the transaction will of course not be reverted.
+Or worse, if part of the transaction has happened, and the future is then dropped, the system may remain in an inconsistent state.
+Most futures in tokio are marked cancellation safe in the docs. In the ecosystem, that annotation is less pervasive.
+I haven't personally had problems with Cancellation Safety Violations (or am unaware), but it is something to keep in mind.</p>
+<h2 id="issue-2-a-hidden-panic">Issue #2: A hidden panic<a class="zola-anchor" href="#issue-2-a-hidden-panic" aria-label="Anchor link for: issue-2-a-hidden-panic">🔗</a></h2>
+<p>In the examples above, we used <code>select!</code> to produce a value of type <code>T</code>.
+And in the sequence, I have outlined how an arm will get disabled when it resolves but the pattern does not match.
+So what happens if all arms become disabled? A <code>panic!</code>.</p>
+<blockquote>
+<p><strong><em>Note</em></strong>: That's because a <code>panic!</code> is one way to create a value of type <code>T</code>, by creating a value of type <code>!</code> (the never type). The never type is the only subtype in Rust, and it's a subtype of every other type. There is even an <code>impl From&lt;!&gt; for T</code> somewhere, among other fun shenanigans.</p>
+</blockquote>
+<p>Here's a simple example:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>    #[tokio::test]
+</span><span>    #[should_panic(expected </span><span style="color:#ff5600;">= </span><span style="color:#00a33f;">&quot;all branches are disabled and there is no else branch&quot;</span><span>)]
+</span><span>    async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">select_nothing</span><span>() {
+</span><span>        </span><span style="color:#ff5600;">let</span><span> _nonono </span><span style="color:#ff5600;">= </span><span>tokio::select</span><span style="color:#ff5600;">! </span><span>{
+</span><span>            </span><span style="color:#a535ae;">Some</span><span>(n) </span><span style="color:#ff5600;">=</span><span> async { </span><span style="color:#a535ae;">None </span><span>} </span><span style="color:#ff5600;">=&gt; </span><span>{ n },
+</span><span>        };
+</span><span>    }
+</span></code></pre>
+<p>To fix it in this case, you can just add a <code>break</code> as a <code>select!</code> arm:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let</span><span> zero </span><span style="color:#ff5600;">= </span><span>tokio::select</span><span style="color:#ff5600;">! </span><span>{
+</span><span>    </span><span style="color:#a535ae;">Some</span><span>(n) </span><span style="color:#ff5600;">=</span><span> async { </span><span style="color:#a535ae;">None </span><span>} </span><span style="color:#ff5600;">=&gt; </span><span>{ n },
+</span><span>    </span><span style="color:#ff5600;">else =&gt; </span><span>0,
+</span><span>};
+</span></code></pre>
+<p>I like to <code>match</code> or <code>let-else</code> on the <code>mpsc</code>-arm of the <code>select</code> (there usually is one) and break there.
+In other cases, one may want to break from the <code>loop-select</code> when <a href="https://docs.rs/tokio/latest/tokio/io/trait.AsyncReadExt.html#method.read"><code>read</code></a>ing an <a href="https://docs.rs/tokio/latest/tokio/io/trait.AsyncRead.html"><code>AsyncRead</code></a> returns <code>0</code> (no more bytes to be had).</p>
+<p><a href="https://github.com/barafael/barafael.github.io/tree/master/projects/select-examples">Full example</a></p>
+<h2 id="issue-3-easy-to-create-an-infinite-busy-loop">Issue #3: Easy to create an infinite busy loop<a class="zola-anchor" href="#issue-3-easy-to-create-an-infinite-busy-loop" aria-label="Anchor link for: issue-3-easy-to-create-an-infinite-busy-loop">🔗</a></h2>
+<p>Imagine having an actor to collect messages from three mpsc channels (for sake of example, it's not terribly important).
+One could (I did) write such an event loop:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>(
+</span><span>    </span><span style="color:#ff5600;">mut </span><span>self,
+</span><span>    </span><span style="color:#ff5600;">mut </span><span>rx1: mpsc::Receiver&lt;</span><span style="color:#ff5600;">u8</span><span>&gt;,
+</span><span>    </span><span style="color:#ff5600;">mut </span><span>rx2: mpsc::Receiver&lt;</span><span style="color:#ff5600;">u8</span><span>&gt;,
+</span><span>    </span><span style="color:#ff5600;">mut </span><span>rx3: mpsc::Receiver&lt;</span><span style="color:#ff5600;">u8</span><span>&gt;,
+</span><span>) -&gt; </span><span style="color:#ff5600;">Self </span><span>{
+</span><span>    </span><span style="color:#ff5600;">loop </span><span>{
+</span><span>        tracing::info</span><span style="color:#ff5600;">!</span><span>(</span><span style="color:#00a33f;">&quot;waiting for message&quot;</span><span>);
+</span><span>        </span><span style="color:#919191;">// First: get the next message.
+</span><span>        </span><span style="color:#ff5600;">let</span><span> message </span><span style="color:#ff5600;">= </span><span>select! {
+</span><span>            message </span><span style="color:#ff5600;">=</span><span> rx1.</span><span style="color:#a535ae;">recv</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                message
+</span><span>            }
+</span><span>            message </span><span style="color:#ff5600;">=</span><span> rx2.</span><span style="color:#a535ae;">recv</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                message
+</span><span>            }
+</span><span>            message </span><span style="color:#ff5600;">=</span><span> rx3.</span><span style="color:#a535ae;">recv</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                message
+</span><span>            }
+</span><span>        };
+</span><span>        </span><span style="color:#919191;">// Second: handle it.
+</span><span>        tracing::info</span><span style="color:#ff5600;">!</span><span>(value </span><span style="color:#ff5600;">= ?</span><span>message, </span><span style="color:#00a33f;">&quot;got message&quot;</span><span>);
+</span><span>        self.0 </span><span style="color:#ff5600;">+= </span><span>1;
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>Once all channel handles have been dropped, every pattern always matches (even though it will always be <code>None</code>).
+Then, we get our useless tracing output, and finally, we start from top.
+I decided to include this example because busy loops like this are especially bad in an <code>async</code> world.
+The only solace offered here is that the loop is <code>async-busy</code>, that is, at least it does not permanently hog the CPU.
+It is busy in the sense that it can always run, but at least <code>tokio</code> won't let it suffocate the other tasks.</p>
+<p><a href="https://github.com/barafael/barafael.github.io/tree/master/projects/infinite-busy-loop-via-select">Full example</a></p>
+<h2 id="issue-4-tooling">Issue #4: Tooling<a class="zola-anchor" href="#issue-4-tooling" aria-label="Anchor link for: issue-4-tooling">🔗</a></h2>
+<p><code>Rustfmt</code> simply does not touch anything within a <code>select</code>, and Rust Analyzer also struggles with it.
+That's not surprising, as the syntax is obviously invalid Rust to it.</p>
+<p>I like to take it as an incentive to create functions for all event handlers.
+Here's my recommended approach: in your <code>select</code>, only bother with message/event collection and shutdown.
+The <code>select</code>, at the start of the event loop, shall only produce a value of a type <code>Event</code> or similar.
+Then, after collecting the event, a method <code>on_event</code> can be called.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>(</span><span style="color:#ff5600;">mut </span><span>self, </span><span style="color:#ff5600;">mut </span><span>rx: mpsc::Receiver&lt;Message&gt;) -&gt; </span><span style="color:#ff5600;">Self </span><span>{
+</span><span>    </span><span style="color:#ff5600;">loop </span><span>{
+</span><span>        </span><span style="color:#919191;">// Collect some event.
+</span><span>        </span><span style="color:#ff5600;">let</span><span> event </span><span style="color:#ff5600;">= </span><span>select! {
+</span><span>            message </span><span style="color:#ff5600;">=</span><span> rx.</span><span style="color:#a535ae;">recv</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                </span><span style="color:#ff5600;">let </span><span style="color:#a535ae;">Some</span><span>(message) </span><span style="color:#ff5600;">=</span><span> message </span><span style="color:#ff5600;">else </span><span>{
+</span><span>                    </span><span style="color:#ff5600;">break</span><span>;
+</span><span>                };
+</span><span>                Event::Message(message)
+</span><span>            }
+</span><span>            </span><span style="color:#a535ae;">Some</span><span>((id, status)) </span><span style="color:#ff5600;">= </span><span>self.tasks.</span><span style="color:#a535ae;">next</span><span>() </span><span style="color:#ff5600;">=&gt; </span><span>{
+</span><span>                Event::TaskStatus(id, status)
+</span><span>            }
+</span><span>        };
+</span><span>
+</span><span>        </span><span style="color:#919191;">// Process the event.
+</span><span>        </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Err</span><span>(error) </span><span style="color:#ff5600;">= </span><span>self.</span><span style="color:#a535ae;">on_event</span><span>(event) {
+</span><span>            warn!(</span><span style="color:#ff5600;">?</span><span>error, </span><span style="color:#00a33f;">&quot;Error processing event&quot;</span><span>);
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#919191;">// Await completion of remaining tasks.
+</span><span>    </span><span style="color:#ff5600;">while let </span><span style="color:#a535ae;">Some</span><span>((id, status)) </span><span style="color:#ff5600;">= </span><span>self.tasks.</span><span style="color:#a535ae;">next</span><span>().await {
+</span><span>        </span><span style="color:#ff5600;">if let </span><span style="color:#a535ae;">Err</span><span>(error) </span><span style="color:#ff5600;">= </span><span>self.</span><span style="color:#a535ae;">on_task_status</span><span>(id, status) {
+</span><span>            warn!(</span><span style="color:#ff5600;">?</span><span>error, </span><span style="color:#00a33f;">&quot;Error processing task status&quot;</span><span>);
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    self
+</span><span>}
+</span></code></pre>
+<p><a href="https://github.com/barafael/barafael.github.io/tree/master/projects/nice-loop-select">Full example</a></p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

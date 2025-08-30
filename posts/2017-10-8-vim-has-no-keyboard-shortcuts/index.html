@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         VIM has no keyboard shortcuts
+        
+    </title>
+
+        
+            <meta property="og:title" content="VIM has no keyboard shortcuts" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        VIM has no keyboard shortcuts<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2017-10-08</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 524 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/2017-10-8-vim-has-no-keyboard-shortcuts/#shortcuts-and-vim">&#x27;Shortcuts&#x27; and Vim</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/2017-10-8-vim-has-no-keyboard-shortcuts/#actions-and-macros">Actions and Macros</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/2017-10-8-vim-has-no-keyboard-shortcuts/#why-all-the-ramble-about-macros">Why all the ramble about Macros?</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>In <a href="https://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim">this StackOverflow
+post</a>,
+a question about the 'Most productive Vim keyboard shortcut' sparks a long
+discussion about Vim and productivity. In <a href="https://stackoverflow.com/a/1220118">this
+answer</a>, titled <em>'Your problem with Vim is
+that you don't grok vi.'</em> which is easily one of the most influential pieces of
+Vim documentation and intro material on the internet, user Jim Dennis takes the
+question apart and shows how Vim is not about shortcuts but about a language
+for manipulating text. If you read and understood this answer, you probably
+don't need to read this post here, since it is just my personal take on the
+Vim philosophy.</p>
+<h2 id="shortcuts-and-vim">'Shortcuts' and Vim<a class="zola-anchor" href="#shortcuts-and-vim" aria-label="Anchor link for: shortcuts-and-vim">🔗</a></h2>
+<p>A shortcut in any other program is like a certain event that causes the program
+to do a certain action. Like <code>F5</code> in a browser or <code>CTRL+D</code> in most
+terminals.</p>
+<p>In Sublime Text, there is a shortcut to delete a line: <code>CTRL+UP+K</code>. This
+cannot be remembered easily, involves <code>CTRL</code>, is generally hard to do and
+impossible with just one hand (yes, I know there is also <code>CTRL+X</code>). In Vim,
+the same action happens on <code>dd</code>. This seems arbitrary too, but actually it
+fits well into the rest of the vim language, where 'd' means to delete
+something and a double tap means to apply an action on an entire line.
+Moreover, this command can be combined with others as in a real programming
+language and has the side effect of storing the line in some register. This is
+not a shortcut, but an action from the language that makes up the way you
+manipulate text in vim.</p>
+<h2 id="actions-and-macros">Actions and Macros<a class="zola-anchor" href="#actions-and-macros" aria-label="Anchor link for: actions-and-macros">🔗</a></h2>
+<p>The fact that actions in vim can be randomly made up on the fly indefinitely,
+and combined with each other, is already very powerful. But there are even more
+benefits: since a text edit is just a sequence of characters constituting the
+action, the use of a macro is simply recording and playing back such a sequence
+of characters. Because vim is awesome, it stores a macro in some register
+(bearing the name you gave to the macro) so you can easily access, save for
+later, or modify the actions a macro does. You can also call a macro from
+itself for multi-line edits - to vim it is simply a long chain of characters
+that it must interpret. Macros can be nested - you can call a macro b from
+within macro a since macro invocation is only a sequence of characters.
+Finally, it is easy to parameterize macros with register contents.</p>
+<p>For example, you might have a macro 'a' that finds a word matching a certain
+pattern and yanks it to register 'w', and then calls a macro 'b' which finds
+another word and substitutes the contents of the 'w' register. This could be
+done with regex back references, but to do it with macros in vim feels much
+cleaner to me - it is like programming with functions.</p>
+<h2 id="why-all-the-ramble-about-macros">Why all the ramble about Macros?<a class="zola-anchor" href="#why-all-the-ramble-about-macros" aria-label="Anchor link for: why-all-the-ramble-about-macros">🔗</a></h2>
+<p>Because all the other text editors which use shortcuts cannot really do this
+and that is precisely the benefit of not having shortcuts, duh!</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Negating the minimum representable number in twos complement
+        
+    </title>
+
+        
+            <meta property="og:title" content="Negating the minimum representable number in twos complement" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Negating the minimum representable number in twos complement<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2017-03-10</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 502 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/2017-10-3-negating-minimum-representable-number-in-twos-complement/#what-s-the-issue">What&#x27;s the issue?!</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2017-10-3-negating-minimum-representable-number-in-twos-complement/#two-s-complement">Two&#x27;s Complement</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2017-10-3-negating-minimum-representable-number-in-twos-complement/#negating-a-number-in-two-s-complement-and-ranges-of-representable-numbers">Negating a Number in Two&#x27;s Complement and Ranges of Representable Numbers</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2017-10-3-negating-minimum-representable-number-in-twos-complement/#bringing-it-together">Bringing it together</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>Usually, we expect that negating a number yields a number which is of the same
+absolute value, but with a flipped sign. However, there is a curious behaviour
+in many programming languages where this property does not hold for one special
+case. You might have come across this if you (like me) tried to (mis)use a
+constant Integer.MIN_VALUE (or somesuch) to simulate something like negative
+infinity. For example, this could be useful in a min-max algorithm with
+alpha-beta pruning.</p>
+<h2 id="what-s-the-issue">What's the issue?!<a class="zola-anchor" href="#what-s-the-issue" aria-label="Anchor link for: what-s-the-issue">🔗</a></h2>
+<p>If you negate the lowest representable int in (for example) java, you could
+expect it to become Integer.MAX_VALUE. This however, is literally far from the
+truth! Instead, you get... Integer.MIN_VALUE again. How the flip did that
+happen?</p>
+<p>In order to explain this behaviour, we have to dig a bit deeper into the way
+signed integer numbers are represented in memory:</p>
+<h3 id="two-s-complement">Two's Complement<a class="zola-anchor" href="#two-s-complement" aria-label="Anchor link for: two-s-complement">🔗</a></h3>
+<p>If you already know how Two's Complement works, just skip this. If not, here is
+a short explanation:</p>
+<p>In order to represent both positive and negative numbers, we need to somehow
+account for the sign of the number we are representing.  This can be done in
+multiple ways, but Two's Complement has emerged as the most successful
+approach. Basically, numbers are still just binary strings of bits, but the
+Most Significant Bit (MSB) (the bit representing the largest power of 2) counts
+negatively. For example, if we have the 8-bit binary number <code>0001 0011</code>, 19
+in decimal, everything is normal because the MSB is zero.  The number <code>1001 0011</code> however would be interpreted as (-128) + 16 + 2 + 1, -109 in decimal.</p>
+<p>Determining the sign of a number becomes very simple: if the MSB is set, the
+number is negative. Zero is represented as <code>0000 0000</code>, negative one as
+<code>1111 1111</code> (the other 7 bits are needed to offset the large 'negative
+weight'), and the largest positive number is <code>0111 1111</code>.</p>
+<h3 id="negating-a-number-in-two-s-complement-and-ranges-of-representable-numbers">Negating a Number in Two's Complement and Ranges of Representable Numbers<a class="zola-anchor" href="#negating-a-number-in-two-s-complement-and-ranges-of-representable-numbers" aria-label="Anchor link for: negating-a-number-in-two-s-complement-and-ranges-of-representable-numbers">🔗</a></h3>
+<p>The lowest representable number in Two's Complement is 2^(Place of MSB), while
+the largest number is only 2^(Place of MSB) - 1. That is because the positive
+numbers also need to include zero.</p>
+<p>Negating a number in Two's Complement is easy using this 'hand rule': start at
+the right (Least Significant Bit LSB) and copy all zeroes and the first one.
+Then, invert the rest.</p>
+<h3 id="bringing-it-together">Bringing it together<a class="zola-anchor" href="#bringing-it-together" aria-label="Anchor link for: bringing-it-together">🔗</a></h3>
+<p>Now we have everything that is needed to understand the behaviour shown above
+where <code>-a = a</code> (with 'a' being some negative number).  There are actually
+at least two ways to understand it, the first one involving the display range
+and the other involving the 'hand rule'.</p>
+<p>If you invert the lowest representable number with the hand rule, you don't
+find a '1' until the very end. That means, you copy it and don't invert
+anything! Or, using number ranges: the positive range is one less than the
+negative range, which means that the lowest number simply cannot be inverted
+without exactly one overflow! Which means, we end up at the place we started.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

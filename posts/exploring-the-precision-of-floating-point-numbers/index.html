@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Exploring the precision of floating-point numbers
+        
+    </title>
+
+        
+            <meta property="og:title" content="Exploring the precision of floating-point numbers" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Exploring the precision of floating-point numbers<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2017-10-10</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 512 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/exploring-the-precision-of-floating-point-numbers/#one-reason-unions-are-useful">One reason Unions are useful</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/exploring-the-precision-of-floating-point-numbers/#printing-any-memory-content-as-binary-print-any-content-pointer-size">Printing any memory content as binary [print_any(content pointer, size)]</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/exploring-the-precision-of-floating-point-numbers/#floating-point-numbers-are-discrete-too-increase-float-content">Floating point numbers are discrete, too... [increase_float(content)]</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/exploring-the-precision-of-floating-point-numbers/#putting-it-together-how-accuracy-declines-with-growing-exponent-print-accuracy-low-high">Putting it together: How accuracy declines with growing exponent [print_accuracy(low, high)]</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>In <a href="https://fabiensanglard.net/floating_point_visually_explained/">this
+blogpost</a>, Fabien
+Sanglard explains how floating point numbers are generally displayed in modern
+computers (using the <code>IEEE754</code> Norm). His alternative perspective using
+buckets and offsets is brilliant and explains a fact that may be
+overlooked when using the standard explanation: the accuracy of floating point
+numbers declines with a factor of 2 by each bucket!  That is because the same
+'amount' of numbers is dispersed in any bucket, but the size of the bucket
+doubles every time.</p>
+<p>I wanted to empirically show this and wrote this short C program:</p>
+<script src="https://gist.github.com/barafael/49d58525be9ff7738d6a8dc281649642.js"></script>
+<h2 id="one-reason-unions-are-useful">One reason Unions are useful<a class="zola-anchor" href="#one-reason-unions-are-useful" aria-label="Anchor link for: one-reason-unions-are-useful">🔗</a></h2>
+<p>This program uses a C union. Unions allow you to use the same memory for
+multiple members, and every time you write one member, it also changes the
+others. This may seem useless, but it is not. In this case, it allows you to
+write to memory using the memory representation of <code>float</code>, while reading the
+same content of memory as individual bits. The union has 2 members, one
+allowing to write and read a float, the other resembling the bit pattern of a
+float as defined in the <code>IEEE754</code> Norm. After writing to the float, you can
+read and manipulate the exponent and mantissa from the embedded struct.</p>
+<h2 id="printing-any-memory-content-as-binary-print-any-content-pointer-size">Printing any memory content as binary [print_any(content pointer, size)]<a class="zola-anchor" href="#printing-any-memory-content-as-binary-print-any-content-pointer-size" aria-label="Anchor link for: printing-any-memory-content-as-binary-print-any-content-pointer-size">🔗</a></h2>
+<p>Casting the pointer to the memory content to a byte pointer (<code>uint8_t *</code>)
+allows us to index individual bytes. To access individual bits, we need to
+generate a bit mask for each of them. We simply start at <code>0b1000 0000</code> and
+keep shifting left while using the index to access a single bit and print it.
+Since the bit at position <code>n</code> will still be interpreted as being of value <code>2^n</code>
+we need to check if it is set and print a <code>1</code> if this is the case, hence the
+ternary operator.</p>
+<p>We need this function to inspect a floating point number.</p>
+<h2 id="floating-point-numbers-are-discrete-too-increase-float-content">Floating point numbers are discrete, too... [increase_float(content)]<a class="zola-anchor" href="#floating-point-numbers-are-discrete-too-increase-float-content" aria-label="Anchor link for: floating-point-numbers-are-discrete-too-increase-float-content">🔗</a></h2>
+<p>We imagine floats as being very fine-grained. That is exactly what they are -
+they do not allow for arbitrary accuracy, they are not what mathematicians
+would call <em>dense</em>.</p>
+<p>That means, we can take a float and increase it by exactly one tiny amount,
+yielding the next-larger float in that bucket! That is what the function
+<code>increase_float</code> does.</p>
+<p>We construct a <code>float_parts</code> union using the float as content. Then, we look
+at the mantissa: if it is filled to the brim, we reset it to 0 and increase the
+exponent by one. Otherwise, we simply increase the mantissa.</p>
+<h2 id="putting-it-together-how-accuracy-declines-with-growing-exponent-print-accuracy-low-high">Putting it together: How accuracy declines with growing exponent [print_accuracy(low, high)]<a class="zola-anchor" href="#putting-it-together-how-accuracy-declines-with-growing-exponent-print-accuracy-low-high" aria-label="Anchor link for: putting-it-together-how-accuracy-declines-with-growing-exponent-print-accuracy-low-high">🔗</a></h2>
+<p>Here we keep increasing a float, and when the 'step size' changes, we log it.
+We also print the factor between the last and the current step size.</p>
+<p>This function runs way faster than I expected for some reason - it visits every
+float there is between <code>low</code> and <code>high</code>.</p>
+<p>There you have it! Empirical demonstration of how inaccurate floats (and
+doubles, just later) really are.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

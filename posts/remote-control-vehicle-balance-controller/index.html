@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Remote Control vehicle balance controller
+        
+    </title>
+
+        
+            <meta property="og:title" content="Remote Control vehicle balance controller" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Remote Control vehicle balance controller<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2017-11-05</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 1971 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#why-use-pid-for-balance-control">Why use PID for balance control?</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#cascaded-pid">Cascaded PID</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#hardware">Hardware</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#four-simple-steps">Four simple steps</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#reading-input-from-the-receiver">Reading input from the receiver</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#race-copters-not-conditions">Race Copters, Not Conditions</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#read-sensor-values-from-imu">Read sensor values from IMU</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#calculate-pid-response">Calculate PID response</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#write-result-to-connected-actuators">Write result to connected actuators</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#give-me-the-code">Give me the Code!</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/remote-control-vehicle-balance-controller/#further-ideas-inspiration">Further Ideas&#x2F;Inspiration</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>In this article, I want to present a PID-based multi-purpose balance controller
+that runs on the Teensy 3.2 board using Arduino libraries. It can control
+PWM-based actuators like servos or LEDs and electronic speed controllers
+driving brushless motors. This control is based on an external signal like the
+output from an RC receiver, and the output of an inertial measurement unit.</p>
+<p>That means you can use this controller to stabilise or balance small vehicles
+like planes, multicopters, VTOLs, hydrofoils, hovercraft, or rockets...</p>
+<p>To get the most use out of this article, you should have a basic understanding
+about PID, standard RC components like ESCs (electronic speed controllers),
+brushless motors, RX/TX, and some C/C++ programming skills.</p>
+<h2 id="why-use-pid-for-balance-control">Why use PID for balance control?<a class="zola-anchor" href="#why-use-pid-for-balance-control" aria-label="Anchor link for: why-use-pid-for-balance-control">🔗</a></h2>
+<p>A PID controller governs a system so that the difference between a setpoint and
+a measured value is minimized, effectively driving our system to where we want
+it to be. Note that anything measurable and 'steerable' (that is at least
+somewhat linear) can be fed into a PID controller, like temperature, position,
+altitude, force... Using an IMU (Inertial Measurement Unit) to give us our
+measurement, we can generate an output signal that depends on the attitude and
+angular velocity of our system.</p>
+<p>In quadcopters, planes, and many other vehicle types, we have to constantly
+monitor and manipulate the attitude, thrust, velocity and similar parameters to
+achieve the desired result. To influence those parameters, there are control
+surfaces, levers or propellers/jets which inflict forces on our craft in any
+necessary degree of freedom.</p>
+<p>Those propellers and levers generally control rates too - rate of rotation,
+rate of climb, etc. That makes them ideal for being governed by a PID
+controller.</p>
+<h3 id="cascaded-pid">Cascaded PID<a class="zola-anchor" href="#cascaded-pid" aria-label="Anchor link for: cascaded-pid">🔗</a></h3>
+<p>It is useful to use not only one but two PID controllers because the sensor
+output from the gyroscope is way faster than the output from the sensor fusion
+algorithm that fuses gyroscope and accelerometer data and produces an accurate
+attitude estimation. Gyroscope data drifts only over time, whereas
+accelerometer data does not drift but is subject to high-frequency noise. We
+can cascade the controllers: the first loop receives the setpoint interpreted
+as attitude and the currently most accurate estimation of the attitude and
+produces a needed angular rate as a result. This rate is fed into another loop
+as setpoint, and this rate loop receives the faster angular rate readings from
+the gyroscope directly. If the second loop executes more often, then it will
+ensure that the overall loop rate is fast and not limited by the time it takes
+to fuse the IMU data.</p>
+<p>The setpoint can either be interpreted as a desired absolute angle or as a
+desired angular rate. In the first case, the PID controller will attempt to
+stabilize the craft to this angle, whereas in the second case, it will try to
+rotate the vehicle at the given rate. This is known as 'rate mode' or 'acro
+mode' in some flight controllers.</p>
+<p>To achieve 'rate mode', the attitude loop simply needs to be ignored. A
+constant input on the roll stick of a plane in rate mode would result in a
+continuous roll, or a multicopter yaw stick would control the rate of
+z-rotation of the copter. In 'stabilize mode', a constant stick deviation is
+mapped to a constant vehicle deviation.</p>
+<h2 id="hardware">Hardware<a class="zola-anchor" href="#hardware" aria-label="Anchor link for: hardware">🔗</a></h2>
+<p>I am using a Teensy 3.2 as the brains. It has an ARM Cortex M4 chip that can
+be overclocked to 120MHz which is more than sufficient for this control task.
+The board also has plenty of GPIO pins and can tolerate a wide range of supply
+voltages (such as 5V from a standard RC electronic speed controller) with its
+internal voltage regulator.</p>
+<p>As IMU sensor, I previously used the widely available and familiar MPU6050. This
+sensor offers measurement of absolute orientation as well as angular rates from
+the gyroscope and provides data moderately quickly using the I2C protocol.
+But now I am using
+<a href="https://www.tindie.com/products/onehorse/ultimate-sensor-fusion-solution/">Kris Winers EM-SENtral-based 'Ultimate Fusion Solution'</a>
+which has proven to be extremely fast and accurate, if a bit expensive. The
+sample rate for accelerometers and gyroscopes is set 1kHz for now. The
+proprietary sensor fusion in the SENtral processor reacts extremely quick to
+changes in angular position. I chose to let the sensors do their fusion for now
+because it is initially very simple, but I would like to use one of the newer
+Invensense sensors (ICM-20608, ICM-40602) and implement my own Kalman/Madgwick
+filter at some point. The ICM-40602 improves on the previous generation mostly
+in energy consumption, which is completely irrelevant in this case.</p>
+<p>As basic peripheral hardware (actuators), any standard ESCs, servos and TX/RX
+combo using PWM should work.</p>
+<h2 id="four-simple-steps">Four simple steps<a class="zola-anchor" href="#four-simple-steps" aria-label="Anchor link for: four-simple-steps">🔗</a></h2>
+<p>Here are the steps that need to be done to stabilize and control:</p>
+<ul>
+<li>Read input from the RC receiver</li>
+<li>Read sensor values from IMU</li>
+<li>Calculate PID response with those measurements as input</li>
+<li>Write the result to the connected actuators, using predefined weights</li>
+</ul>
+<h3 id="reading-input-from-the-receiver">Reading input from the receiver<a class="zola-anchor" href="#reading-input-from-the-receiver" aria-label="Anchor link for: reading-input-from-the-receiver">🔗</a></h3>
+<p>The receiver sends pulses of varying on-time corresponding to the stick
+positions to our board. Using interrupts, we can measure the time passing
+between a rising edge and a falling edge of one signal, which should always be
+roughly within 1000us and 2000us (RC standard). We can simply hook an interrupt
+to each input pin, log the system time on a rising flank, and calculate the
+duration in microseconds since rising flank when the signal is falling again.
+The code for this is in <code>src/PWMReceiver.cpp</code>. PPM, which is conceptually
+similar but needs only one wire, is also implemented in
+<code>src/PPMReceiver.cpp</code>. All receiver interfaces should implement virtual
+functions in <code>include/Receiver.h</code>.</p>
+<h2 id="race-copters-not-conditions">Race Copters, Not Conditions<a class="zola-anchor" href="#race-copters-not-conditions" aria-label="Anchor link for: race-copters-not-conditions">🔗</a></h2>
+<p>The duration measurement from our interrupt routines is written each time the
+interrupt routine executes on a falling edge. That means, we have to be
+careful when reading those values! I used shared volatile variables which are
+written to by the interrupts to store the measurements. The main loop copies
+the data to variables which it can use undisturbed. This way, it is always
+clear that the interrupt writes while the main loop reads the shared variables.
+When the variables are read, no interrupts are allowed since they might
+overwrite the values while reading them, violating the 'sharing XOR mutability'
+principle and thus inviting race conditions.</p>
+<p>For a really good description on how to read RC receiver PPM output, have look
+at
+<a href="https://ryanboland.com/blog/reading-rc-receiver-values/">this excellent article by Ryan Boland</a>.
+He explains it better than I will ever be able to - and with oscilloscope
+screenshots!</p>
+<h3 id="read-sensor-values-from-imu">Read sensor values from IMU<a class="zola-anchor" href="#read-sensor-values-from-imu" aria-label="Anchor link for: read-sensor-values-from-imu">🔗</a></h3>
+<p>Reading the measurements and computation results from the 'Ultimate IMU
+Solution' is done in a similar way like in Kris Winers example program, however
+I adapted large parts to skip software sensor fusion and provide an
+object-oriented interface to the sensor.</p>
+<h3 id="calculate-pid-response">Calculate PID response<a class="zola-anchor" href="#calculate-pid-response" aria-label="Anchor link for: calculate-pid-response">🔗</a></h3>
+<p>This is where the magic happens, but it is actually very simple. The PID
+algorithm in this discrete form (really the one everyone uses) is short and
+sweet, using the "poor man's derivative (-)" and the "poor man's integral (+)".
+Some smoothing is applied to the D term (if enabled), but I am unsure if this
+is actually beneficial.</p>
+<p>I adapted some ideas presented in
+<a href="https://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/">Brett Beauregard's series "Improving the beginners PID"</a></p>
+<p>Eventually, PID coefficients will depend on the currently chosen mode (if I get
+to the implementation).</p>
+<h3 id="write-result-to-connected-actuators">Write result to connected actuators<a class="zola-anchor" href="#write-result-to-connected-actuators" aria-label="Anchor link for: write-result-to-connected-actuators">🔗</a></h3>
+<p>The output is basically finished. It only needs to be scaled a bit and then
+written out using the various output methods defined in
+<code>src/ESCOutput.cpp</code>, <code>src/ServoOutput.cpp</code> and
+<code>src/FastPWMOutput.cpp</code>.  Eventually, this will need more work: depending
+on the current flight mode, output mixer volumes will have to be chosen for
+each output channel. Possible parameters for the output channel mixers are
+throttle, roll/pitch/yaw attitude PID output, roll/pitch/yaw rate output,
+rate/stabilize mode, and even motor type (servo/ESC).</p>
+<p>This is basically a Matrix-vector multiplication. Each output is the weighted
+sum of the RC inputs and the PID controlling values in each axis. Since we have
+8 outputs and 8+3 (currently) values that influence them, there are 8 rows and
+11 columns in our matrix.  The input vector consists of 8 receiver inputs + 3
+PID control values. The i-th row of the matrix consists of the weights for each
+output for the j-th control value.</p>
+<p>This is a bit complex, but essentially it allows us to say: "This output reacts
+to the throttle stick with a factor of 0.8, and to the yaw pid value with a
+factor of 0.1." Additionally, we can store a matrix for each flight mode, and
+transition from one matrix to the next smoothly while transitioning flight
+modes.</p>
+<p>Where is the catch? Well, none of this is implemented... The matrix
+multiplication part can be done in
+<a href="https://forum.pjrc.com/threads/49479-Fixed-point-known-size-matrix-multiplication-on-teensy-3-2-3-5">under a microsecond(!) on the teensy 3.5</a>
+using the capabilities of the Cortex M4. That is an interesting challenge and I
+hope I will get to it.</p>
+<p>All of this depends on getting the PID and IMU and Output implementations to
+work with 16 bit fixed-point numbers, and never floats.</p>
+<h2 id="give-me-the-code">Give me the Code!<a class="zola-anchor" href="#give-me-the-code" aria-label="Anchor link for: give-me-the-code">🔗</a></h2>
+<p>The code can be found at
+<a href="https://github.com/barafael/raPID">https://github.com/barafael/raPID</a></p>
+<h2 id="further-ideas-inspiration">Further Ideas/Inspiration<a class="zola-anchor" href="#further-ideas-inspiration" aria-label="Anchor link for: further-ideas-inspiration">🔗</a></h2>
+<p>I am thinking about allowing for several different flight/operation modes which
+consist mostly of a set of PID-coefficients and settings for mixers on each
+actuator output. A mixer would control how much impact each PID output should
+have on each actuator output.</p>
+<p>Transitioning between flight modes could interpolate the values of the two
+mixers so that modes transition smoothly into each other.</p>
+<p>If this transitional flight mode interpolation sounds familiar to you, it might
+be because of
+<a href="https://www.rcgroups.com/forums/showthread.php?1972686-OpenAeroVTOL-with-transitional-mixers-(perfect-for-VTOLs)">OpenAeroVTOL</a>.
+It runs (really well) on the
+<a href="https://hobbyking.com/de_de/hobbyking-kk2-1-5-multi-rotor-lcd-flight-control-board-with-6050mpu-and-atmel-644pa.html?___store=de_de">Hobbyking KK2.1.5 Multi-Rotor LCD Flight Control Board</a>.</p>
+<p>There is active and friendly support on the RCgroups forums, and it is often
+stated that this board is able to stabilize almost anything small-scale.
+However, development is confined by the hardware used (who knows for how long
+HK will be making the kk-board), the development style (code drops on release
+by the single author every couple months), and the word 'VTOL' in the name. It
+would be nice to really have a general controller not for just one niche,
+sacrificing some features (Tailsitter option, Heli-style rotor control) for a
+more general approach (also with more than the 3 flight modes which OAV has).
+Additionally, OAV does not support a derivative gain (the D in PID), arguing
+that this form of feedback is unnecessary for vehicles that naturally have a
+high damping factor due to having a higher mass or large wings. The accuracy of
+this statement is debatable, and to provide a more general approach a D gain is
+nice to have (if only for meta-stable systems or niche cases like multicopters).</p>
+<p>Another feature of OAV is that it can entirely be configured via the onboard
+LCD screen (that is a miracle, really). Since version 1.5, you may also use
+(exclusively) Microsoft Excel to configure it, using a macro-based GUI in .xlsx
+format (yes, really). I am not at the point to even think about this by a long
+shot, but it would be nice to have a graphical configuration interface on a
+computer that can set options on the board over a serial or even wireless
+connection.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

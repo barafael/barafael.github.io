@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         A Platform-Agnostic Driver for the CD74HC4067
+        
+    </title>
+
+        
+            <meta property="og:title" content="A Platform-Agnostic Driver for the CD74HC4067" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        A Platform-Agnostic Driver for the CD74HC4067<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2021-03-21</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 408 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-cd74hc4067/#why-make-such-a-simple-driver">Why make such a simple driver?</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-cd74hc4067/#example-usage">Example usage</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-cd74hc4067/#advantages-of-typestate-programming">Advantages of Typestate Programming</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-cd74hc4067/#cumbersome-usage-due-to-typestate-programming">Cumbersome usage due to Typestate Programming</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-cd74hc4067/#line-coverage-and-phantomdata">Line Coverage and PhantomData</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>To read 16 analog values, one might use 16 pins with ADCs.
+But depending on the required update rates and the available pins, this might be impossible.</p>
+<p>Instead, a simple 74HC4067 could be used.
+It connects 1 of 16 analog IO lines to 1 signal line, depending on the 4 select pins.
+The only thing to look out for is to disable the chip with the disable signal before changing the select pins to avoid activating an unwanted line during switching.</p>
+<p>The <a href="https://github.com/barafael/cd74hc4067-rs">74HC4067 driver</a> described in this post requires just a couple embedded-hal GPIO pins.
+It ensures that the multiplexer is disabled during the changing of the channel and makes no assumptions about what happens with the I/O pin.</p>
+<h2 id="why-make-such-a-simple-driver">Why make such a simple driver?<a class="zola-anchor" href="#why-make-such-a-simple-driver" aria-label="Anchor link for: why-make-such-a-simple-driver">🔗</a></h2>
+<p>It is a simple driver for very simple hardware, yes. But any repetition saved is code and bugs saved!</p>
+<p>Additionally, this code serves as a good demonstration of testing using embedded-hal-mock and measuring test coverage using tarpaulin. And it serves as an example of type-state programming, it's advantages, and also ergonomics pitfalls.</p>
+<h2 id="example-usage">Example usage<a class="zola-anchor" href="#example-usage" aria-label="Anchor link for: example-usage">🔗</a></h2>
+<p>This code will activate random inputs. Working code for this on <code>stm32f0</code> target can be found <a href="https://github.com/barafael/cd74hc4067-rs/tree/main/stm32f0-example">here</a>.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">let mut</span><span> delay </span><span style="color:#ff5600;">= </span><span>Delay::new(</span><span style="color:#919191;">/* snip */</span><span>);
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> gpioa </span><span style="color:#ff5600;">=</span><span> dp.GPIOA.</span><span style="color:#a535ae;">split</span><span>(</span><span style="color:#919191;">/* snip */</span><span>);
+</span><span>
+</span><span style="color:#ff5600;">let </span><span>(pin_0, pin_1, pin_2, pin_3, pin_enable) </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">disable_interrupts</span><span>(|cs| {
+</span><span>    (
+</span><span>        gpioa.pa0.</span><span style="color:#a535ae;">into_push_pull_output</span><span>(cs).</span><span style="color:#a535ae;">downgrade</span><span>(),
+</span><span>        gpioa.pa1.</span><span style="color:#a535ae;">into_push_pull_output</span><span>(cs).</span><span style="color:#a535ae;">downgrade</span><span>(),
+</span><span>        gpioa.pa4.</span><span style="color:#a535ae;">into_push_pull_output</span><span>(cs).</span><span style="color:#a535ae;">downgrade</span><span>(),
+</span><span>        gpioa.pa8.</span><span style="color:#a535ae;">into_push_pull_output</span><span>(cs).</span><span style="color:#a535ae;">downgrade</span><span>(),
+</span><span>        gpioa.pa7.</span><span style="color:#a535ae;">into_push_pull_output</span><span>(cs).</span><span style="color:#a535ae;">downgrade</span><span>(),
+</span><span>    )
+</span><span>});
+</span><span>
+</span><span style="color:#ff5600;">let mut </span><span style="color:#21439c;">on_for </span><span style="color:#ff5600;">= </span><span>|duration: </span><span style="color:#ff5600;">u32</span><span>,
+</span><span>                  pin: </span><span style="color:#ff5600;">u8</span><span>,
+</span><span>                  </span><span style="color:#ff5600;">mut</span><span> hc: Cd74hc4067&lt;
+</span><span>    Pin&lt;Output&lt;PushPull&gt;&gt;,
+</span><span>    Pin&lt;Output&lt;PushPull&gt;&gt;,
+</span><span>    DisabledState,
+</span><span>&gt;</span><span style="color:#ff5600;">| </span><span>{
+</span><span>    hc.</span><span style="color:#a535ae;">set_channel_active</span><span>(pin </span><span style="color:#ff5600;">as u8</span><span>).</span><span style="color:#a535ae;">debugless_unwrap</span><span>();
+</span><span>    </span><span style="color:#ff5600;">let</span><span> enabled </span><span style="color:#ff5600;">=</span><span> hc.</span><span style="color:#a535ae;">enable</span><span>().</span><span style="color:#a535ae;">debugless_unwrap</span><span>();
+</span><span>
+</span><span>    delay.</span><span style="color:#a535ae;">delay_ms</span><span>(duration);
+</span><span>
+</span><span>    enabled.</span><span style="color:#a535ae;">disable</span><span>().</span><span style="color:#a535ae;">debugless_unwrap</span><span>()
+</span><span>};
+</span><span>
+</span><span style="color:#ff5600;">let mut</span><span> disabled </span><span style="color:#ff5600;">=
+</span><span>    cd74hc4067::Cd74hc4067::new(pin_0, pin_1, pin_2, pin_3, pin_enable).</span><span style="color:#a535ae;">debugless_unwrap</span><span>();
+</span><span>
+</span><span style="color:#ff5600;">let mut</span><span> rng </span><span style="color:#ff5600;">= </span><span>RNG::&lt;WyRand, </span><span style="color:#ff5600;">u8</span><span>&gt;::new(0xDEADBEEF);
+</span><span>
+</span><span style="color:#ff5600;">let</span><span> delay_time_ms: </span><span style="color:#ff5600;">u32 = </span><span>2000;
+</span><span style="color:#ff5600;">loop </span><span>{
+</span><span>    </span><span style="color:#ff5600;">let</span><span> generated: </span><span style="color:#ff5600;">u8 =</span><span> rng.</span><span style="color:#a535ae;">generate_range</span><span>(0, 15);
+</span><span>    disabled </span><span style="color:#ff5600;">= </span><span style="color:#a535ae;">on_for</span><span>(delay_time_ms, generated, disabled);
+</span><span>}
+</span></code></pre>
+<h2 id="advantages-of-typestate-programming">Advantages of Typestate Programming<a class="zola-anchor" href="#advantages-of-typestate-programming" aria-label="Anchor link for: advantages-of-typestate-programming">🔗</a></h2>
+<ul>
+<li>The chip starts out in disabled mode</li>
+<li>The select pins can only be changed while the chip is disabled</li>
+<li>Once the chip is enabled, it must be disabled before anything can be done to it</li>
+</ul>
+<h2 id="cumbersome-usage-due-to-typestate-programming">Cumbersome usage due to Typestate Programming<a class="zola-anchor" href="#cumbersome-usage-due-to-typestate-programming" aria-label="Anchor link for: cumbersome-usage-due-to-typestate-programming">🔗</a></h2>
+<p>The driver implementation relies on typestate programming for implementing the state transitions.
+There are only 2 states, and the driver toggles between them as required.
+In the <code>EnabledState</code>, the multiplexer is active, and the active output channel cannot be changed.
+In the <code>DisabledState</code>, the multiplexer is not active, and the output channel can be selected.</p>
+<p>This makes the usage a little bit cumbersome, but it ensures that the driver can only be used safely while remaining efficient.</p>
+<h2 id="line-coverage-and-phantomdata">Line Coverage and PhantomData<a class="zola-anchor" href="#line-coverage-and-phantomdata" aria-label="Anchor link for: line-coverage-and-phantomdata">🔗</a></h2>
+<p>While writing unit tests while keeping an eye on the line coverage, I noticed that some lines would not be covered - and for a really good reason!
+PhantomData markers are used in the code to disambiguate disabled and enabled states.
+These markers are compile-time-only constructs - hence, line coverage cannot ever include them.
+Neat.</p>
+<p>See here: <a href="https://github.com/barafael/cd74hc4067-rs/blob/main/cd74hc4067/coverage.pdf">coverage.pdf</a>.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

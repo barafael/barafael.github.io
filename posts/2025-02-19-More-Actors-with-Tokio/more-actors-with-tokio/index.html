@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         More Actors with Tokio
+        
+    </title>
+
+        
+            <meta property="og:title" content="More Actors with Tokio" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=8a2ff8418d4e423a245b"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        More Actors with Tokio<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+
+                    
+
+                    
+
+                    
+                        :: 710 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#more-actors">More Actors</a>
+                            
+                                <ul>
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#with-tokio">with Tokio</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#actor-my-street-definition">Actor: (my) Street Definition</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#architecture">Architecture</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#an-actor-should-be-its-data">An Actor should be its data</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#the-core-idea-is-messaging">The Core Idea is messaging</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#graceful-shutdown">Graceful shutdown</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#is-rust-oop-or-not">Is Rust OOP or not?</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#questions">Questions?</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#aside-deterministic-unit-tests">Aside: Deterministic Unit Tests</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#the-event-loop">The Event Loop</a>
+                                        </li>
+
+                                        
+                                    
+                                        <li>
+                                            <a href="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/#event-loop-returns-self-considered-ok-hand">event_loop returns Self considered :ok_hand:</a>
+                                        </li>
+
+                                        
+                                    
+                                </ul>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <style>
+    code {
+        line-height: 1.4;
+    }
+</style>
+<!--
+footer: " "
+ -->
+<!--
+paginate: true
+ -->
+<!--
+_footer: ''
+_paginate: false
+ -->
+<!-- _class: lead -->
+<h1 id="more-actors">More Actors</h1>
+<div style="margin-top: 30px; margin-bottom: 30px">
+    <img style="width: 200px; height: auto; display: block; margin: auto;" src="images/tokio-logo/tokio-horizontal.svg">
+</div>
+<h3 id="with-tokio">with Tokio</h3>
+<p><img src="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/images/Routing_Diagram_for_Materials_and_for_Printing_Forms_in_a_Manufacturing_Plant/Routing_Diagram_for_Materials_and_for_Printing_Forms_in_a_Manufacturing_Plant,_1914.jpg" alt="bg right:66%" /></p>
+<hr />
+<!-- header: ' ' -->
+<iframe width="100%" height="90%" src="https://ryhl.io/blog/actors-with-tokio/">
+</iframe>
+<p><a href="https://ryhl.io/blog/actors-with-tokio">ryhl.io/blog/actors-with-tokio</a> (2021)</p>
+<hr />
+<iframe width="100%" height="90%" src="https://barafael.github.io/posts/more-actors-with-tokio">
+</iframe>
+<p><a href="https://barafael.github.io/posts/more-actors-with-tokio">barafael.github.io/posts/more-actors-with-tokio</a> (2025)</p>
+<hr />
+<h3 id="actor-my-street-definition">Actor: (my) Street Definition</h3>
+<style scoped>
+div.twocols {
+  margin-top: 35px;
+  column-count: 2;
+}
+div.twocols p:first-child,
+div.twocols h1:first-child,
+div.twocols h2:first-child,
+div.twocols ul:first-child,
+div.twocols ul li:first-child,
+div.twocols ul li p:first-child {
+  margin-top: 0 !important;
+}
+div.twocols p.break {
+  break-before: column;
+  margin-top: 0;
+}
+</style>
+<div class="twocols">
+<ul>
+<li>Autonomous unit
+isolates state/process</li>
+<li>Communicates with others
+via message passing (channels)</li>
+<li>Channel kinds outline system topology</li>
+</ul>
+<p class="break"></p>
+<p><img src="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/actor-dag.drawio.svg" alt="sepia" /></p>
+</div>
+<p>Inspired by Alan Kay <a href="https://www.quora.com/profile/Rafael-Bachmann-2/https-www-quora-com-What-does-Alan-Kay-mean-when-he-said-OOP-to-me-means-only-messaging-local-retention-and-protection">on Quora</a>, the real one had <a href="https://wiki.c2.com/?AlanKaysDefinitionOfObjectOriented">similar ideas</a>.</p>
+<hr />
+<h3 id="architecture">Architecture</h3>
+<ul>
+<li>Birds-eye-view:
+complex but manageable</li>
+<li>Only actors and channels!</li>
+<li>Fun and useful to follow messages along channels.</li>
+</ul>
+<p><a href="https://github.com/barafael/protohackers/tree/main/speedd">Protohackers Exercise 6 :arrow_right:</a></p>
+<p><img src="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/images/speedd.drawio.svg" alt="bg fit right" /></p>
+<h4 align="center">Architecture is concerned with distributing responsibility</h4>
+<hr />
+<h3 id="an-actor-should-be-its-data">An Actor should <em>be</em> its data</h3>
+<p>Adapted from <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=1e60fb476843fb130db9034e8ead210c">Alices original example</a>:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[derive(Debug, PartialEq, Eq)]
+</span><span style="color:#ff5600;">pub struct </span><span>UniqueIdService {
+</span><span>    next_id: </span><span style="color:#ff5600;">u32</span><span>,
+</span><span>}
+</span></code></pre>
+<p>No  runtime resources (sockets, channel handles, etc.) here!
+They <em>should</em> belong to the actor <strong>event loop</strong> future.</p>
+<h3 align="center">Responsibility is Ownership</h3>
+<hr />
+<h3 id="the-core-idea-is-messaging">The Core Idea is <em>messaging</em></h3>
+<style scoped>
+table {
+    width: 100%;
+}
+table, tbody, tr, th, td {
+    background-color: rgba(0, 0, 0, 0.0) !important;
+    border-width: 0px;
+}
+</style>
+<table>
+<tr>
+<td>
+<ul>
+<li><code>enum</code> is perfect for this</li>
+<li>Type of actual actor is <em>erased</em></li>
+<li>Mocking is not required</li>
+</ul>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">type </span><span style="color:#21439c;">Handle </span><span style="color:#ff5600;">= </span><span>mpsc::Sender&lt;Message&gt;;
+</span></code></pre>
+</td>
+<td style="width: 450px;" >
+<p><a href="https://github.com/barafael/protohackers/blob/02966f7e913b545d81fb521913fa09cb05e6f550/speedd_codecs/src/client/mod.rs#L8-L14">Message</a> definition:</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[derive(...)]
+</span><span style="color:#ff5600;">pub enum </span><span>Message {
+</span><span>    Plate(PlateRecord),
+</span><span>    WantHeartbeat(Duration),
+</span><span>    IAmCamera(Camera),
+</span><span>    IAmDispatcher(</span><span style="color:#a535ae;">Vec</span><span>&lt;</span><span style="color:#ff5600;">u16</span><span>&gt;),
+</span><span>}
+</span></code></pre>
+</td>
+</tr>
+</table>
+<h3 align="center">Channels are a tool for transferring ownership</h3>
+<hr />
+<h3 id="graceful-shutdown">Graceful shutdown</h3>
+<p>An actor should shut down when its primary means of communication goes away:</p>
+<ul>
+<li>Socket closes</li>
+<li>Channel becomes empty and there are no more senders</li>
+<li>Timeout occurs</li>
+</ul>
+<p>When an actor exits, it drops its handles toward other actors - signaling them to exit, too.</p>
+<hr />
+<h3 id="is-rust-oop-or-not">Is Rust OOP or not?</h3>
+<style scoped>
+{
+  font-size: 32px
+}
+</style>
+<blockquote>
+<p>OOP to me means only messaging, local retention and protection and hiding of state-process, and extreme late-binding of all things.</p>
+</blockquote>
+<blockquote>
+<p>You could be dumb enough to use these ideas to simulate older, more fragile, less scalable ideas — like “procedures and data” — but who would be so bound to the past to make that enormous blunder?</p>
+<p>— <cite>Alan Kay</cite></p>
+</blockquote>
+<p><strong>Maybe Rust + actors is OOOP (original object oriented programming).</strong></p>
+<hr />
+<h3 id="questions">Questions?</h3>
+<!--
+_paginate: false
+ -->
+<iframe style="margin-top:5%" width="100%" height="80%" src="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&code=fn+main%28%29+%7B%7D%0A">
+</iframe>
+<p><img src="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/images/gorch-fock-takelage/Takelage_(Gorch_Fock_II).jpeg" alt="bg right:20% grayscale" /></p>
+<hr />
+<p><img src="https://barafael.github.io/posts/2025-02-19-More-Actors-with-Tokio/more-actors-with-tokio/images/system_architecture.drawio.svg" alt="bg 80%" /></p>
+<hr />
+<h3 id="aside-deterministic-unit-tests">Aside: Deterministic <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=bb316eb8bf6ab51602bfaedb2a841e70">Unit Tests</a></h3>
+<p>Playbook:
+Construct Data :arrow_right: Enqueue Messages :arrow_right: <strong>drop sender</strong> :arrow_right:
+Run event loop to completion :arrow_right: assert on results</p>
+<ul>
+<li>Avoid spawning.</li>
+<li>Avoid defining actor mocks - channels suffice.</li>
+<li>Avoid <strong>at all cost</strong> having to wait 1s to reach a state :shaking_face:.</li>
+</ul>
+<p>Use the type system to inject resources (<code>Stream</code>, <code>AsyncRead</code>, etc.).
+<strong>System becomes protocol-agnostic</strong>.</p>
+<hr />
+<h3 id="the-event-loop">The Event Loop</h3>
+<style scoped>
+{
+  font-size: 34px
+}
+</style>
+<p><code>async fn</code> which consumes <code>self</code> and runtime resources.</p>
+<pre data-lang="rust" style="background-color:#ffffff;color:#000000;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#ff5600;">impl </span><span>UniqueIdService {
+</span><span>    </span><span style="color:#ff5600;">pub</span><span> async </span><span style="color:#ff5600;">fn </span><span style="color:#21439c;">event_loop</span><span>(</span><span style="color:#ff5600;">mut </span><span>self, </span><span style="color:#ff5600;">mut </span><span>rx: mpsc::Receiver&lt;Message&gt;) -&gt; </span><span style="color:#ff5600;">Self </span><span>{
+</span><span>        </span><span style="color:#ff5600;">loop </span><span>{
+</span><span>            select! {
+</span><span>                </span><span style="color:#ff5600;">...
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span></code></pre>
+<p><a href="https://barafael.github.io/posts/stop-worrying-and-learn-to-loop-select/">Loop-select is a real superpower</a>.</p>
+<hr />
+<h3 id="event-loop-returns-self-considered-ok-hand"><code>event_loop</code> returns <code>Self</code> considered :ok_hand:</h3>
+<p>Read the blog post for details :shrug:</p>
+<p>Advantages:</p>
+<ul>
+<li>Tests: can assert on the guts.</li>
+<li>Shutdown: can act on leftovers.</li>
+<li>Restart: can inject in fresh instance.</li>
+<li>Distributed actors: can move data elsewhere and restart.</li>
+</ul>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>
