@@ -14,13 +14,11 @@ theme = "apollo"
 taxonomies = [{ name = "tags" }]
 
 [markdown.highlighting]
-light_theme = "github-light"
-dark_theme = "github-dark"
+light_theme = "light-plus"
+dark_theme = "gruvbox-dark-medium"
 
 [extra]
-math = true
 katex_enable = true
-katex_auto_render = true
 
 toc = true
 
