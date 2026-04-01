@@ -86,7 +86,7 @@ I feel they obscure what is actually happening and prevent us from doing _cool s
 
 In short, [all the methods implemented on the `mpsc::Sender`](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html) are there for good reasons, but our handle is hiding them.
 
-My suggestion if you really want to reduce boilerplate anyway is to use associated functions on the actor (`UniqueIdService`) type:
+If you want to reduce boilerplate anyway: use associated functions on the actor (`UniqueIdService`) type.
 
 ```rust
 /// Query for a unique id.
@@ -101,7 +101,10 @@ pub async fn get_unique_id(sender: &mpsc::Sender<Message>) -> Option<oneshot::Re
 }
 ```
 
+Alternatively, an extension trait on `mpsc::Sender<Message>` achieves the same ergonomics while keeping the full sender API accessible.
+
 I recommend to not fold in the `oneshot::Receiver` like in the original handle implementation!
+
 By holding the receiver, you can collect and await it at your convenience.
 For an example, see the [unit test](#simple-unit-test).
 
