@@ -25,12 +25,12 @@ Let {% katex(block=false) %}f \in L_2(\mathbb{R}){% end %} be a signal. Then:
 
 {% katex(block=true) %}
 \widehat{(cos)}(\xi) = 
-\int_{-\infty}^{\infty}cos(t)e^{-i\xi t}dt =
-\int_{-\infty}^{\infty}\frac{e^{it}+e^{-it}}{2}e^{-i\xi t}dt =
-\frac{1}{2}\int_{-\infty}^{\infty}e^{it}e^{-i\xi t}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it}e^{-i\xi t}dt =
-\frac{1}{2}\int_{-\infty}^{\infty}e^{it(1-\xi)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =
-\frac{1}{2}\int_{-\infty}^{\infty}e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt =
-\frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(1-\xi)}dt =
+\int_{-\infty}^{\infty}cos(t)e^{-i\xi t}dt = \\
+\int_{-\infty}^{\infty}\frac{e^{it}+e^{-it}}{2}e^{-i\xi t}dt = \\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it}e^{-i\xi t}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it}e^{-i\xi t}dt = \\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{it(1-\xi)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt = \\
+\frac{1}{2}\int_{-\infty}^{\infty}e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}e^{-it(1-\xi)}dt = \\
+\frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(\xi-1)}dt + \frac{1}{2}\int_{-\infty}^{\infty}1 e^{-it(1-\xi)}dt = \\
 \frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi)
 {% end %}
 
@@ -53,8 +53,8 @@ A function that is infinite at 0 and 0 everywhere else - sounds familiar? The Di
 {% katex(block=true) %}
 \delta(t) =
 \begin{cases}
-0,  & t \lt 0
-\infty,  & t = 0
+0,  & t \lt 0 \\
+\infty,  & t = 0 \\
 0,  & t \gt 0
 \end{cases}
 {% end %}
@@ -64,7 +64,7 @@ So, now that we have the transform of the 1-function (albeit the derivation was 
 ### Final Result
 
 {% katex(block=true) %}
-\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi) =
+\frac{1}{2}\widehat{1}(\xi-1) + \frac{1}{2}\widehat{1}(1-\xi) = \\
 \frac{1}{2}\delta(\xi-1) + \frac{1}{2}\delta(1-\xi)
 {% end %}
 
@@ -82,7 +82,7 @@ We can write this using the scaling operator {% katex(block=false) %}\sigma_{a} 
 Applying this to the Cosine yields:
 
 {% katex(block=true) %}
-\sigma_{a}\widehat{cos} = \frac{1}{a}\widehat{cos}(\frac{\xi}{a}) =
+\sigma_{a}\widehat{cos} = \frac{1}{a}\widehat{cos}(\frac{\xi}{a}) = \\
 \frac{1}{a}\frac{1}{2}\delta(\frac{\xi-1}{a}) + \frac{1}{a}\frac{1}{2}\delta(\frac{1-\xi}{a})
 {% end %}
 
