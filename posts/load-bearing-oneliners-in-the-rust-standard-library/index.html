@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         Load-Bearing Oneliners in the Rust Standard Library
+        
+    </title>
+
+        
+            <meta property="og:title" content="Load-Bearing Oneliners in the Rust Standard Library" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.css" integrity="sha384-irXK0JiCGinqGL+slwVklbhJetrjczNwaP2lANewD8lKAs9n61SbQ3As28iSqXUE" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.js" integrity="sha384-m/s9umSlhJbqEdA/j7pQVdGCMx2fHf7GXtgCVhNGOwLuu+1qJQES5AzIE8pn3nKQ" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/contrib/mathtex-script-type.min.js" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ]
+            });"></script>
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+        
+            <link rel="stylesheet" href="https://barafael.github.io/custom.css">
+        
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=ea4cce23717c23883714"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        Load-Bearing Oneliners in the Rust Standard Library<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2022-09-14</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 256 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/load-bearing-oneliners-in-the-rust-standard-library/#shared-references-are-copy-look-don-t-touch">Shared References are Copy (look don&#x27;t touch)</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/load-bearing-oneliners-in-the-rust-standard-library/#drop-dead-gorgeous">Drop-Dead Gorgeous</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>The Rust language tries to be as minimal as possible.
+Many crucial features and design decisions aren't compiler magic, instead they live in <code>core</code> or other parts of the standard library.
+Here are some:</p>
+<h1 id="shared-references-are-copy-look-don-t-touch">Shared References are <code>Copy</code> (look don't touch)<a class="zola-anchor" href="#shared-references-are-copy-look-don-t-touch" aria-label="Anchor link for: shared-references-are-copy-look-don-t-touch">🔗</a></h1>
+<p>The <code>core::marker::Copy</code> trait marks a type which can be safely copied by simply copying its bits.
+Think <code>bool</code>, <code>f64</code>, <code>Duration</code>, or <code>SocketAddr</code>.</p>
+<p>A shared reference can obviously be copied. Owning a shared reference to a <code>T</code>, i.e., a <code>&amp;T</code>, allows us to copy it.</p>
+<p>Here's the implementation of <code>core::marker::Copy</code> for shared references:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#000000, #EBDBB2); background-color: light-dark(#FFFFFF, #282828);"><code data-lang="rust"><span class="giallo-l"><span style="color: light-dark(#008000, #928374);">///</span><span style="color: light-dark(#008000, #928374);"> Shared references can be copied, but mutable references *cannot*!</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">#</span><span style="color: light-dark(#000000, #A89984);">[</span><span>stable</span><span style="color: light-dark(#000000, #A89984);">(</span><span>feature </span><span style="color: light-dark(#000000, #8EC07C);">=</span><span style="color: light-dark(#A31515, #A89984);"> &quot;</span><span style="color: light-dark(#A31515, #B8BB26);">rust1</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span><span> since </span><span style="color: light-dark(#000000, #8EC07C);">=</span><span style="color: light-dark(#A31515, #A89984);"> &quot;</span><span style="color: light-dark(#A31515, #B8BB26);">1.0.0</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FB4934);">impl</span><span style="color: light-dark(#000000, #A89984);">&lt;</span><span style="color: light-dark(#267F99, #FABD2F);">T</span><span style="color: light-dark(#000000, #8EC07C);">:</span><span style="color: light-dark(#000000, #8EC07C);"> ?</span><span style="color: light-dark(#267F99, #FABD2F);">Sized</span><span style="color: light-dark(#000000, #A89984);">&gt;</span><span style="color: light-dark(#267F99, #FABD2F);"> Copy</span><span style="color: light-dark(#AF00DB, #FB4934);"> for</span><span style="color: light-dark(#000000, #8EC07C);"> &amp;</span><span style="color: light-dark(#267F99, #FABD2F);">T</span><span style="color: light-dark(#000000, #A89984);"> {</span><span style="color: light-dark(#000000, #A89984);">}</span></span></code></pre>
+<p>(lives at: https://doc.rust-lang.org/src/core/marker.rs.html#839)</p>
+<p>This means, any shared reference to objects which aren't necessarily even <code>Sized</code> can be copied.
+That's why we even can call a method taking <code>&amp;self</code> - copy the pointer to <code>self</code>, pass it to the method.</p>
+<h1 id="drop-dead-gorgeous">Drop-Dead Gorgeous<a class="zola-anchor" href="#drop-dead-gorgeous" aria-label="Anchor link for: drop-dead-gorgeous">🔗</a></h1>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#000000, #EBDBB2); background-color: light-dark(#FFFFFF, #282828);"><code data-lang="rust"><span class="giallo-l"><span style="color: light-dark(#008000, #928374);">///</span><span style="color: light-dark(#008000, #928374);"> --- Doc comment omitted ---</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">#</span><span style="color: light-dark(#000000, #A89984);">[</span><span>inline</span><span style="color: light-dark(#000000, #A89984);">]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">#</span><span style="color: light-dark(#000000, #A89984);">[</span><span>stable</span><span style="color: light-dark(#000000, #A89984);">(</span><span>feature </span><span style="color: light-dark(#000000, #8EC07C);">=</span><span style="color: light-dark(#A31515, #A89984);"> &quot;</span><span style="color: light-dark(#A31515, #B8BB26);">rust1</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span><span> since </span><span style="color: light-dark(#000000, #8EC07C);">=</span><span style="color: light-dark(#A31515, #A89984);"> &quot;</span><span style="color: light-dark(#A31515, #B8BB26);">1.0.0</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">#</span><span style="color: light-dark(#000000, #A89984);">[</span><span>cfg_attr</span><span style="color: light-dark(#000000, #A89984);">(</span><span>not</span><span style="color: light-dark(#000000, #A89984);">(</span><span>test</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">,</span><span> rustc_diagnostic_item </span><span style="color: light-dark(#000000, #8EC07C);">=</span><span style="color: light-dark(#A31515, #A89984);"> &quot;</span><span style="color: light-dark(#A31515, #B8BB26);">mem_drop</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FB4934);">pub</span><span style="color: light-dark(#0000FF, #FB4934);"> fn</span><span style="color: light-dark(#795E26, #FABD2F);"> drop</span><span style="color: light-dark(#000000, #A89984);">&lt;</span><span style="color: light-dark(#267F99, #FABD2F);">T</span><span style="color: light-dark(#000000, #A89984);">&gt;</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#001080, #83A598);">_x</span><span style="color: light-dark(#000000, #8EC07C);">:</span><span style="color: light-dark(#267F99, #FABD2F);"> T</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);"> {</span><span style="color: light-dark(#000000, #A89984);">}</span></span></code></pre>
+<p>The function <code>drop</code> is passed a <code>T</code> without any trait bounds.
+What can it do with a <code>T</code>?
+It cannot <code>Clone</code> it, cannot do <code>Add</code> or <code>Neg</code>, cannot even <code>Display</code>/<code>Debug</code>.
+And it isn't returning a value of <code>T</code>!
+There isn't much besides <code>{}</code> that would be a valid function body:</p>
+<ul>
+<li>Doing <code>unsafe</code> things to look at <code>T</code> (perilous, <code>T</code> might not be <code>Sized</code>)</li>
+<li>Looping forever</li>
+<li>Producing a value of type <code>Never</code> or <code>core::marker::Infallible</code> (<code>panic</code> and friends, or <code>std::process::exit</code>)</li>
+<li>Taking a shared reference to <code>_x</code>, converting it to a usize, and storing it in a global <code>AtomicUsize</code>:</li>
+</ul>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#000000, #EBDBB2); background-color: light-dark(#FFFFFF, #282828);"><code data-lang="rust"><span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">static</span><span style="color: light-dark(#267F99, #FABD2F);"> R</span><span style="color: light-dark(#000000, #8EC07C);">:</span><span style="color: light-dark(#267F99, #FABD2F);"> AtomicUsize</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#267F99, #FABD2F);"> AtomicUsize</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">new</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#098658, #D3869B);">0</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FB4934);">pub</span><span style="color: light-dark(#0000FF, #FB4934);"> fn</span><span style="color: light-dark(#795E26, #FABD2F);"> drop</span><span style="color: light-dark(#000000, #A89984);">&lt;</span><span style="color: light-dark(#267F99, #FABD2F);">T</span><span style="color: light-dark(#000000, #A89984);">&gt;</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#001080, #83A598);">_x</span><span style="color: light-dark(#000000, #8EC07C);">:</span><span style="color: light-dark(#267F99, #FABD2F);"> T</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);"> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">    let</span><span style="color: light-dark(#001080, #83A598);"> r</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#000000, #8EC07C);"> &amp;</span><span style="color: light-dark(#001080, #83A598);">_x</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#267F99, #FABD2F);">    R</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">store</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#001080, #83A598);">r</span><span style="color: light-dark(#0000FF, #FB4934);"> as</span><span style="color: light-dark(#000000, #8EC07C);"> *</span><span style="color: light-dark(#0000FF, #FE8019);">const</span><span style="color: light-dark(#267F99, #FABD2F);"> T</span><span style="color: light-dark(#0000FF, #FB4934);"> as</span><span style="color: light-dark(#267F99, #FABD2F);"> usize</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#267F99, #FABD2F);"> Ordering</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">SeqCst</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">}</span></span></code></pre>
+<p>Playground: https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=5e603039ddafeac0fdd599d78a59a13e</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

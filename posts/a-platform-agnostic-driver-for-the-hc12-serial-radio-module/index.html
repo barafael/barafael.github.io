@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https:&#x2F;&#x2F;barafael.github.io">
+
+    
+
+    
+    
+    
+    <title>
+         A Platform-Agnostic driver for the HC12 serial radio module
+        
+    </title>
+
+        
+            <meta property="og:title" content="A Platform-Agnostic driver for the HC12 serial radio module" />
+        
+     
+
+     
+         
+     
+
+     
+         
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.css" integrity="sha384-irXK0JiCGinqGL+slwVklbhJetrjczNwaP2lANewD8lKAs9n61SbQ3As28iSqXUE" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.js" integrity="sha384-m/s9umSlhJbqEdA/j7pQVdGCMx2fHf7GXtgCVhNGOwLuu+1qJQES5AzIE8pn3nKQ" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/contrib/mathtex-script-type.min.js" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ]
+            });"></script>
+    
+
+    
+    <link rel="alternate" type="application/atom+xml" title="" href="https://barafael.github.io/atom.xml">
+
+
+    
+    
+        <link rel="stylesheet" type="text/css" href=https://barafael.github.io/theme/light.css />
+        <link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://barafael.github.io/theme/dark.css" />
+    
+
+    <!-- Set the correct theme in the script -->
+
+    
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>setTheme(getSavedTheme());</script>
+        
+    
+
+
+    <link rel="stylesheet" type="text/css" media="screen" href=https://barafael.github.io/main.css />
+
+    
+        
+            <link rel="stylesheet" href="https://barafael.github.io/custom.css">
+        
+    
+
+    <script defer src="https://barafael.github.io/search_index.en.js?h=ea4cce23717c23883714"></script>
+        <script defer src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script></head>
+
+
+<body>
+    <div class="content">
+        <header>
+    <div class="main">
+        
+            <a href=https:&#x2F;&#x2F;barafael.github.io></a>
+        
+
+
+        <div class="socials">
+            
+            <a rel="me" href="https:&#x2F;&#x2F;github.com&#x2F;barafael&#x2F;" class="social">
+                <img alt=github src=https://barafael.github.io/icons/social/github.svg>
+            </a>
+            
+        </div>
+    </div>
+
+    <nav>
+        
+            <a href=https://barafael.github.io/posts style="margin-left: 0.25em">&#x2F;posts</a>
+        
+
+        
+        <button
+            id="search-button"
+            class="search-button"
+            title="$SHORTCUT to open search"
+        >
+            <img
+                src="https://barafael.github.io/icons/search.svg"
+                alt="Search"
+                class="search-icon"
+            >
+        </button>
+
+        <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+            <div id="modal-content">
+                <h1 id="modalTitle" class="page-header">Search</h1>
+                <div id="searchBar">
+                    <input
+                        id="searchInput"
+                        role="combobox"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-expanded="false"
+                        aria-controls="results-container"
+                        placeholder="Search..."
+                    />
+                    <button
+                        id="clear-search"
+                        class="clear-button"
+                        title="Clear search"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="results-container">
+                    <div id="results-info">
+                        <span id="zero_results" style="display: none;">No results</span>
+                        <span id="one_result" style="display: none;">1 result</span>
+                        <span id="many_results" style="display: none;">$NUMBER results</span>
+                    </div>
+                    <div id="results" role="listbox"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+            <a id="dark-mode-toggle" onclick="toggleTheme(); event.preventDefault();" href="#">
+                <img src=https://barafael.github.io/icons/sun.svg id="sun-icon" style="filter: invert(1);" alt="Light" />
+                <img src=https://barafael.github.io/icons/moon.svg id="moon-icon" alt="Dark" />
+            </a>
+
+            <!-- Inititialize the theme toggle icons -->
+            <script>updateItemToggleTheme()</script>
+        
+    </nav>
+</header>
+
+
+        
+        
+    
+<main>
+    <article>
+        <div class="title">
+            
+            
+    <div class="page-header">
+        A Platform-Agnostic driver for the HC12 serial radio module<span class="primary-color" style="font-size: 1.6em">.</span>
+    </div>
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2021-03-21</time>
+                    
+
+                    
+
+                    
+
+                    
+                        :: 253 Words
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+        </div>
+
+        
+
+        
+        
+        
+            <div class="toc-container">
+                <h1 class="toc-title">Table of Contents</h1>
+                <ul class="toc-list">
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-hc12-serial-radio-module/#usage-example">Usage example</a>
+                            
+                        </li>
+                    
+                        <li>
+                            <a href="https://barafael.github.io/posts/a-platform-agnostic-driver-for-the-hc12-serial-radio-module/#configuration">Configuration</a>
+                            
+                        </li>
+                    
+                </ul>
+            </div>
+        
+        
+
+        <section class="body">
+            <p>If only a serial port could be used without having to deal with cables!
+The HC12 serial radio module enables just this super power.
+It connects to a normal serial port, sending and receiving data to/from another hc12 module.</p>
+<p>The baud rate, transmission power, channel, and some other properties can be configured over the same serial interface, using simple AT commands.
+To disambiguate the normal mode from the configuration mode, a digital signal is used.</p>
+<p>In this blog post, I introduce a simple embedded-hal driver for the hc12 module.
+It requires a serial interface, a delay implementation, and a digital pin.</p>
+<p>Type-state is used to disambiguate the modes of operation: normal mode, configuration mode, and sleeping mode.
+In normal mode, the driver instance can simply be used like any other serial device (with the Read and Write methods of the embedded-hal Serial trait).</p>
+<h2 id="usage-example">Usage example<a class="zola-anchor" href="#usage-example" aria-label="Anchor link for: usage-example">🔗</a></h2>
+<p>Full code <a rel="external" href="https://github.com/barafael/hc12-at-rs/tree/main/hc12-example-raspi">here</a>.
+This example makes a driver instance, queries a few parameters, then sends a basic string over the hc12 repeatedly.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#000000, #EBDBB2); background-color: light-dark(#FFFFFF, #282828);"><code data-lang="rust"><span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#001080, #83A598);"> uart</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#267F99, #FABD2F);"> Uart</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">new</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#098658, #D3869B);">9600</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#267F99, #FABD2F);"> Parity</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">None</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#098658, #D3869B);"> 8</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#098658, #D3869B);"> 1</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#001080, #83A598);"> set_pin</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#267F99, #FABD2F);"> Gpio</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">new</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#098658, #D3869B);">18</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">into_output</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#267F99, #FABD2F);"> hc12_at</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">hc12</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">Hc12</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">new</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#001080, #83A598);">uart</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#001080, #83A598);"> set_pin</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#267F99, #FABD2F);"> linux_embedded_hal</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">Delay</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#0000FF, #FE8019);"> mut</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#AF00DB, #FB4934);"> match</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">into_configuration_mode</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#795E26, #FABD2F);">assert!</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#001080, #83A598);">hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">is_ok</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#0000FF, #FE8019);"> mut</span><span style="color: light-dark(#001080, #83A598);"> buffer</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#000000, #A89984);"> [</span><span style="color: light-dark(#098658, #D3869B);">0</span><span style="color: light-dark(#267F99, #FABD2F);">u8</span><span style="color: light-dark(#000000, #A89984);">;</span><span style="color: light-dark(#098658, #D3869B);"> 64</span><span style="color: light-dark(#000000, #A89984);">]</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#001080, #83A598);"> result</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get_version</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #8EC07C);">&amp;</span><span style="color: light-dark(#0000FF, #FE8019);">mut</span><span style="color: light-dark(#001080, #83A598);"> buffer</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#795E26, #FABD2F);">println!</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#A31515, #A89984);">{</span><span style="color: light-dark(#A31515, #B8BB26);">:?</span><span style="color: light-dark(#A31515, #A89984);">}</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#267F99, #FABD2F);"> std</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#267F99, #FABD2F);">str</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">from_utf8</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #8EC07C);">&amp;</span><span style="color: light-dark(#001080, #83A598);">result</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#001080, #83A598);"> params</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get_parameters</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#795E26, #FABD2F);">println!</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#A31515, #A89984);">{</span><span style="color: light-dark(#A31515, #B8BB26);">:#?</span><span style="color: light-dark(#A31515, #A89984);">}</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#001080, #83A598);"> params</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#795E26, #FABD2F);">println!</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#A31515, #A89984);">{</span><span style="color: light-dark(#A31515, #B8BB26);">:?</span><span style="color: light-dark(#A31515, #A89984);">}</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span><span style="color: light-dark(#001080, #83A598);"> params</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get_air_baud_rate</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#795E26, #FABD2F);">println!</span><span style="color: light-dark(#000000, #A89984);">(</span></span>
+<span class="giallo-l"><span style="color: light-dark(#A31515, #A89984);">    &quot;</span><span style="color: light-dark(#A31515, #A89984);">{</span><span style="color: light-dark(#A31515, #B8BB26);">:?</span><span style="color: light-dark(#A31515, #A89984);">}</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#001080, #83A598);">    params</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get_air_baud_rate</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">get_wireless_sensitivity_dbm</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0000FF, #FE8019);">let</span><span style="color: light-dark(#0000FF, #FE8019);"> mut</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);"> =</span><span style="color: light-dark(#AF00DB, #FB4934);"> match</span><span style="color: light-dark(#001080, #83A598);"> hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">into_normal_mode</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#AF00DB, #FB4934);">loop</span><span style="color: light-dark(#000000, #A89984);"> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#001080, #83A598);">    hc12</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">write_buffer</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#A31515, #B8BB26);">b</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#A31515, #B8BB26);">hello hc12</span><span style="color: light-dark(#EE0000, #D3869B);">\</span><span style="color: light-dark(#EE0000, #D3869B);">r</span><span style="color: light-dark(#EE0000, #D3869B);">\</span><span style="color: light-dark(#EE0000, #D3869B);">n</span><span style="color: light-dark(#A31515, #A89984);">&quot;</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #8EC07C);">.</span><span style="color: light-dark(#795E26, #FABD2F);">unwrap</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#267F99, #FABD2F);">    thread</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">sleep</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#267F99, #FABD2F);">Duration</span><span style="color: light-dark(#000000, #8EC07C);">::</span><span style="color: light-dark(#795E26, #FABD2F);">from_millis</span><span style="color: light-dark(#000000, #A89984);">(</span><span style="color: light-dark(#098658, #D3869B);">500</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">)</span><span style="color: light-dark(#000000, #A89984);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#000000, #A89984);">}</span></span></code></pre><h2 id="configuration">Configuration<a class="zola-anchor" href="#configuration" aria-label="Anchor link for: configuration">🔗</a></h2>
+<p>The baudrate, radio channel, radio mode, and transmission power can be configured using AT commands.
+To get the current configuration, the API function get_params can be used.</p>
+<p>Only some combinations of settings are valid though - the API should protect from misconfiguration.</p>
+<p>To get the air baud rate and the wireless sensitivity as specified in the <a rel="external" href="https://www.elecrow.com/download/HC-12.pdf">datasheet</a>, API functions get_air_baud_rate and get_wireless_sensitivity_dbm can be used.</p>
+
+        </section>
+    </article>
+</main>
+
+
+
+        
+            
+        
+
+        
+    </div>
+</body>
+
+</html>

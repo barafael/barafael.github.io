@@ -1,0 +1,111 @@
+/* @theme rhea */
+
+@import 'gaia';
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitter&display=swap');
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+img[alt~="center"] {
+    display: block;
+    margin: 0 auto;
+}
+
+img {
+    border-radius: 8px;
+}
+
+ul {
+    list-style-type: square;
+}
+  
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+footer,
+li {
+    font-family: 'Bitter', sans-serif;
+}
+
+footer {
+    line-height: 36px;
+    height: 60px;
+}
+
+.table td,
+.table th {
+    font-family: 'Bitter', sans-serif;
+}
+
+header {
+    height: 3%;
+    background-color: #eb5b20;
+    color: #fff;
+    font-size: 1em;
+}
+
+:root {
+    --color-foreground: #333;
+    --color-highlight: #eb5b20;
+    --color-dimmed: #6b6b6b;
+}
+
+section {
+    background-color: #fff8e1;
+}
+
+.hljs-title {
+    text-decoration: none !important;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion {
+    color: #6b6b6b;
+}
+
+.hljs-meta {
+    color: #ccc;
+}
+
+code {
+    border-radius: 4px;
+    font-family: 'Fira Mono', monospace !important;
+}
+
+pre {
+    border-radius: 6px;
+}
+
+h1 {
+    font-size: 1.8em;
+}
+
+h2 {
+    margin-top: 0px;
+    font-size: 1.5em;
+}
+
+h3 {
+    font-size: 1.3em;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h5 {
+    font-size: 1em;
+}
+
+h6 {
+    font-size: 0.9em;
+}
