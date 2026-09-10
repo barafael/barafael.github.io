@@ -24,7 +24,7 @@ One of the key design decisions was to map rulebook sections to implementation a
 - **Compile time:** a dedicated test crate references every _cited_ symbol as `use path as _;` (renaming breaks build).
 - **Test time:** bijectivity + citation coverage checks; `#[rulebook("§6.3")]` macro makes tests self-annotate their covered sections into a JSONL the checker reads.
 - **Live editor:** an LSP server gives diagnostics/hover/definitions over `.rs`, `.toml`, and the OCR'd manual — same `checks` as the test, so editor and CI always agree.
-- **Generated artifact:** a typst pipeline regenerates `traceability.pdf`; `fix_lines` re-syncs stale line numbers.
+- **Generated artifact:** a typst pipeline regenerates [traceability.pdf](/traceability.pdf); `fix_lines` re-syncs stale line numbers.
 
 This means if a rulebook section is referenced in the code, it must exist in the manual, and vice versa. It's a nice way to keep everything in sync.
 
