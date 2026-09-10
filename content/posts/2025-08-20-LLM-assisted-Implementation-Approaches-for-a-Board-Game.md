@@ -78,6 +78,8 @@ The rules engine uses a layered testing strategy to catch both expected and unex
 - **Snapshot testing:** Combat results, terrain modifiers, and CRT outputs are snapshot-tested against known-good values from the rulebook, catching regressions when logic is refactored.
 - **Mockable transport:** The `Completion` trait behind the LLM transport allows the entire observer pipeline to run on canned responses, making agent-audit tests fully deterministic and CI-friendly.
 
+Beyond the property tests, the rules engine is model-checked with [Kani](https://model-checking.github.io/kani/): 63 proof harnesses cover the hex geometry, die arithmetic, chart lookups, and the atomicity and monotonicity of `apply_effect`. Proofs close the domain where tests only sample it — they caught `distance` using the wrong cube axis, contradicting `neighbors` and silently corrupting line-of-sight for 65% of on-board firing pairs, while every test kept passing because they happened to sample a pure-axis case that works under both conventions. The proofs are first-class citizens of the traceability matrix (`proofs = [...]` citations, annotated `// §N`), and the proof suite runs in CI.
+
 ## Testability & Offline Operation
 
 The LLM transport is behind a mockable `Completion` trait; the entire observer pipeline runs on canned responses. Env-driven config (`LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL`) shared across app and bot; no-key runs skip cleanly. Every LLM path has a deterministic fallback — the whole stack runs with zero API access.
