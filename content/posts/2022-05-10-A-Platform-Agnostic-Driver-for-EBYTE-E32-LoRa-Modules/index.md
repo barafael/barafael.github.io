@@ -33,7 +33,7 @@ All operations are blocking, of course... Should be changed when `embedded-hal` 
 
 ## Module Graph
 
-{% set data = resize_image(path = "ebyte-e32-rs-mods.png", op = "fit") %}
+{% set data = resize_image(path = "posts/2022-05-10-A-Platform-Agnostic-Driver-for-EBYTE-E32-LoRa-Modules/ebyte-e32-rs-mods.png", op = "fit", width = 1000, height = 1000) %}
 <img src={{data.url}}>
 
 ![Image of Module Graph](ebyte-e32-rs-mods.png)

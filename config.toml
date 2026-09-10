@@ -12,10 +12,13 @@ build_search_index = true
 
 theme = "apollo"
 taxonomies = [{ name = "tags" }]
+generate_feeds = true
+feed_filenames = ["atom.xml"]
 
 [markdown.highlighting]
-light_theme = "light-plus"
-dark_theme = "gruvbox-dark-medium"
+style = "class"
+light_theme = "github-light"
+dark_theme = "github-dark"
 
 [extra]
 katex_enable = true
@@ -34,3 +37,6 @@ menu = [
     { name = "/posts", url = "/posts", weight = 1 },
     # { name = "/projects", url = "../projects", weight = 2 },
 ]
+
+[extra.analytics]
+enabled = false

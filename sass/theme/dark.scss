@@ -6,10 +6,12 @@ $bg-2: lighten($bg-1, 10%);
 
 $text-0: lighten($bg-0, 87%);
 $text-1: lighten($bg-0, 60%);
+$text-2: lighten($bg-0, 40%);
 
 :root.dark {
   --text-0: #{$text-0};
   --text-1: #{$text-1};
+  --text-2: #{$text-2};
 
   --bg-0: #{$bg-0};
   --bg-1: #{$bg-1};
@@ -20,7 +22,9 @@ $text-1: lighten($bg-0, 60%);
   --primary-color: #ff5600;
   --hover-color: white;
 
-  .social>img {
+  --icon-filter: invert(1);
+
+  .social > img, .search-button > img {
     filter: invert(1);
   }
 }
