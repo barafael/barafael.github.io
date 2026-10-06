@@ -36,7 +36,8 @@ stylesheets = ["custom.css"]
 
 menu = [
     { name = "/posts", url = "/posts", weight = 1 },
-    # { name = "/projects", url = "../projects", weight = 2 },
+    { name = "/showcase", url = "/showcase", weight = 2 },
+    # { name = "/projects", url = "../projects", weight = 3 },
 ]
 
 [extra.analytics]
