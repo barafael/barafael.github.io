@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fortnight Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+/* Layout: a commit ledger. Summary strip, projects x days matrix, then one ruled entry per project. */
+:root {
+  --bg: #f5f4f1;
+  --panel: #ffffff;
+  --fg: #1c1a18;
+  --muted: #6d6760;
+  --line: #dcd7d0;
+  --accent: #b8411a;
+  --cell0: #ebe8e3;
+  --ok: #2f7d4f;
+  --open: #8a6a12;
+  --add: #b8411a;
+  --del: #2f6db0;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151413; --panel: #1d1b1a; --fg: #ebe7e2; --muted: #9b948c; --line: #34302c;
+    --accent: #ee7446; --cell0: #25221f; --ok: #6cc08e; --open: #d9b44a; --add: #e0683a; --del: #5b8fd6; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151413; --panel: #1d1b1a; --fg: #ebe7e2; --muted: #9b948c; --line: #34302c;
+  --accent: #ee7446; --cell0: #25221f; --ok: #6cc08e; --open: #d9b44a; --add: #e0683a; --del: #5b8fd6; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); padding-inline: 16px; padding-block: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 48px; }
+a { color: inherit; text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent); text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+.label { font: 500 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+header { display: grid; gap: 14px; }
+header h1 { font-size: clamp(34px, 6vw, 54px); font-weight: 700; line-height: 1; letter-spacing: -.01em; }
+header h1 span { color: var(--accent); }
+header p { margin: 0; max-width: 64ch; color: var(--muted); }
+
+.strip { display: flex; flex-wrap: wrap; border-top: 2px solid var(--fg); border-bottom: 1px solid var(--line); }
+.strip div { flex: 1 1 140px; padding: 12px 16px 12px 0; display: grid; gap: 2px; }
+.strip b { font: 500 26px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.strip small { color: var(--muted); font-size: 12.5px; }
+
+section { display: grid; gap: 16px; }
+.sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--fg); padding-bottom: 6px; }
+.sechead h2 { font-size: 22px; font-weight: 600; }
+
+/* matrix */
+.scroll { overflow-x: auto; }
+table.mx { border-collapse: separate; border-spacing: 3px; font: 12px/1 var(--mono); min-width: 720px; width: 100%; }
+.mx th, .mx td { padding: 0; }
+.mx th.name, .mx td.name { text-align: left; padding-right: 10px; white-space: nowrap; font-family: var(--mono); font-weight: 400; }
+.mx td.name a { text-decoration: none; }
+.mx td.name a:hover { text-decoration: underline; }
+.mx thead th { color: var(--muted); font-weight: 400; text-align: center; padding-bottom: 4px; }
+.mx thead th.we { color: var(--accent); }
+.mx td.c { height: 18px; min-width: 22px; border-radius: 2px; background: var(--cell0); text-align: center; font-size: 10px; color: transparent; }
+.mx td.c:hover { color: var(--fg); outline: 1px solid var(--fg); }
+.mx td.c.l1 { background: color-mix(in oklab, var(--accent) 18%, var(--cell0)); }
+.mx td.c.l2 { background: color-mix(in oklab, var(--accent) 36%, var(--cell0)); }
+.mx td.c.l3 { background: color-mix(in oklab, var(--accent) 58%, var(--cell0)); }
+.mx td.c.l4 { background: color-mix(in oklab, var(--accent) 80%, var(--cell0)); color: transparent; }
+.mx td.c.l5 { background: var(--accent); }
+.mx td.c.l4:hover, .mx td.c.l5:hover { color: var(--bg); }
+.mx td.t { text-align: right; padding-left: 8px; font-variant-numeric: tabular-nums; }
+.mx tr.bars td { vertical-align: bottom; height: 64px; }
+.mx tr.bars .bar { background: var(--fg); opacity: .8; width: 100%; border-radius: 1px 1px 0 0; }
+.mx tr.bars .bv { display: block; text-align: center; font-size: 9.5px; color: var(--muted); padding-bottom: 2px; }
+.mx tr.sum td { border-top: 1px solid var(--line); padding-top: 6px; color: var(--muted); text-align: center; font-size: 10.5px; }
+.legend { display: flex; align-items: center; gap: 4px; font: 11px var(--mono); color: var(--muted); }
+.legend i { width: 14px; height: 12px; border-radius: 2px; display: inline-block; background: var(--cell0); }
+
+
+/* lines */
+.lnsum { display: flex; flex-wrap: wrap; gap: 8px 28px; font: 13px/1.4 var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.lnsum b { color: var(--fg); font-weight: 500; }
+.key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.key.a { background: var(--add); } .key.d { background: var(--del); }
+table.ln { border-collapse: collapse; width: 100%; min-width: 820px; font: 12px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.ln th { font: 500 10.5px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); text-align: right; padding: 0 8px 6px; border-bottom: 1px solid var(--fg); white-space: nowrap; vertical-align: bottom; }
+.ln th.l, .ln td.l { text-align: left; padding-left: 0; }
+.ln th.grp { text-align: center; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+.ln td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.ln td.l a { text-decoration: none; } .ln td.l a:hover { text-decoration: underline; }
+.ln tr:hover td { background: color-mix(in oklab, var(--fg) 5%, transparent); }
+.ln td.sep, .ln th.sep { border-left: 1px solid var(--line); }
+.ln td.m { color: var(--muted); }
+.ln td.chart { width: 34%; min-width: 220px; padding-inline: 4px; }
+.dv { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; height: 12px; position: relative; }
+.dv::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--muted); opacity: .5; }
+.dv .d { justify-self: end; background: var(--del); border-radius: 4px 0 0 4px; height: 100%; }
+.dv .a { justify-self: start; background: var(--add); border-radius: 0 4px 4px 0; height: 100%; }
+.ln td.dn { color: var(--del); } .ln td.ad { color: var(--add); }
+.ln tfoot td { border-top: 1px solid var(--fg); border-bottom: 0; font-weight: 500; padding-top: 8px; }
+.lnnote { font-size: 12.5px; color: var(--muted); margin: 0; max-width: 90ch; }
+
+/* threads */
+.threads { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 28px; }
+.threads div { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 4px; min-width: 0; }
+.threads h3 { font-size: 16px; font-weight: 600; }
+.threads p { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* projects */
+.group { display: grid; gap: 0; }
+.group > .label { padding: 18px 0 6px; color: var(--accent); }
+article { display: grid; grid-template-columns: 220px 1fr; gap: 6px 28px; border-top: 1px solid var(--line); padding-block: 14px; }
+article .meta { display: grid; gap: 6px; align-content: start; min-width: 0; }
+article h3 { font-size: 19px; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; }
+article h3 a { text-decoration: none; }
+article .figs { font: 12px/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+article .figs b { color: var(--fg); font-weight: 500; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { font: 500 10.5px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 4px 6px 3px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); white-space: nowrap; }
+.chip.new { border-color: var(--accent); color: var(--accent); }
+.chip.rel { border-color: var(--ok); color: var(--ok); }
+.chip.live { background: var(--fg); color: var(--bg); border-color: var(--fg); text-decoration: none; }
+.chip.live:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+article .body { min-width: 0; }
+article .body p { margin: 0 0 6px; max-width: 70ch; }
+article ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; max-width: 74ch; }
+article li { font-size: 14px; }
+article li::marker { color: var(--accent); }
+article .d { font: 11.5px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.small article { grid-template-columns: 220px 1fr; padding-block: 9px; }
+.small article h3 { font-size: 15px; font-family: var(--mono); font-weight: 500; }
+
+/* upstream */
+table.up { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+.up th { text-align: left; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--fg); }
+.up td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.up td:first-child { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
+.up td.k { font: 12px var(--mono); color: var(--muted); }
+.st { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.st.merged, .st.fixed { color: var(--ok); }
+.st.open { color: var(--open); }
+
+/* demos */
+.demo { grid-column: 1 / -1; display: grid; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--panel); margin-top: 8px; }
+.demo .bar { display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.demo .bar .src { font: 11.5px var(--mono); color: var(--muted); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.demo button, .demo .bar a { font: 500 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 9px 5px; border: 1px solid var(--line); border-radius: 3px; background: transparent; color: var(--fg); cursor: pointer; text-decoration: none; white-space: nowrap; }
+.demo button:hover, .demo .bar a:hover { border-color: var(--accent); color: var(--accent); }
+.demo button:focus-visible, .demo .bar a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.demo button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.demo button.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.demo .stage { position: relative; aspect-ratio: 16 / 9; max-height: 72vh; width: 100%; max-width: 100%; background: repeating-linear-gradient(135deg, var(--cell0) 0 10px, var(--panel) 10px 20px); }
+.demo .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+.demo .ph { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; padding: 16px; color: var(--muted); font-size: 13.5px; }
+.demo .ph button { justify-self: center; font-size: 12px; padding: 9px 14px 8px; }
+.demo.max { position: fixed; z-index: 50; inset: 0; margin: 0; border-radius: 0; border: 0; grid-template-rows: auto 1fr; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.demo.max .stage { aspect-ratio: auto; max-height: none; height: 100%; }
+body.has-max { overflow: hidden; }
+.demonote { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* screenshots */
+.shots { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 10px; }
+.shots.one { max-width: 760px; }
+.shots figure { margin: 0; display: grid; gap: 5px; min-width: 0; align-content: start; }
+.shots img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 4px; background: var(--cell0); }
+.shots pre { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); overflow-x: auto; font: 12px/1.6 var(--mono); }
+.s-media pre { max-width: 100%; max-height: calc(100% - 22px); overflow: auto; }
+.shots figcaption { font: 11.5px/1.4 var(--mono); color: var(--muted); }
+.shots figcaption b { color: var(--fg); font-weight: 500; }
+
+/* header tools */
+header .tools { display: flex; gap: 8px; align-items: center; }
+.btn { font: 500 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 7px 10px 6px; border: 1px solid var(--line); border-radius: 3px; background: transparent; color: var(--fg); cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.btn kbd { font: inherit; opacity: .6; margin-left: 6px; }
+
+/* presentation mode: fixed 1280x720 slides scaled to the viewport */
+#deck { position: fixed; inset: 0; z-index: 100; background: var(--bg); color: var(--fg); display: none; overflow: hidden; }
+#deck.on { display: block; }
+body.presenting { overflow: hidden; }
+#deck .stagearea { position: absolute; inset: 0; }
+.slide { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; display: none; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; padding: 40px 56px 32px; background: var(--bg); }
+.slide.cur { display: grid; }
+.slide .label { font-size: 12px; }
+.s-head { display: grid; gap: 8px; }
+.s-head h2 { font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -.01em; }
+.s-head h2 a { text-decoration: none; }
+.s-head h2 small { font: 400 20px var(--mono); color: var(--muted); margin-left: 10px; }
+.s-figs { font: 14px/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.s-figs b { color: var(--fg); font-weight: 500; }
+.s-figs .ad { color: var(--add); } .s-figs .dn { color: var(--del); }
+.s-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; min-height: 0; align-items: start; }
+.s-main.nomedia { grid-template-columns: minmax(0, 1fr); }
+.s-main.nomedia .s-text { max-width: 900px; }
+.s-text { display: grid; gap: 10px; align-content: start; min-height: 0; }
+.s-text p { margin: 0; font-size: 19px; line-height: 1.4; max-width: 60ch; }
+.s-text ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.s-text li { font-size: 15.5px; line-height: 1.4; }
+.s-text li::marker { color: var(--accent); }
+.s-text .chips { margin-top: 2px; }
+.s-media { display: grid; gap: 10px; min-height: 0; height: 100%; grid-auto-rows: minmax(0, 1fr); align-content: start; }
+.s-media figure { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 0; }
+.s-media img { width: auto; height: auto; max-width: 100%; max-height: calc(100% - 22px); flex: 0 0 auto; border: 1px solid var(--line); border-radius: 4px; background: var(--cell0); }
+.s-media figcaption { font: 11px/1.3 var(--mono); color: var(--muted); }
+.s-foot { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: end; gap: 24px; white-space: nowrap; border-top: 1px solid var(--line); padding-top: 12px; font: 12px var(--mono); color: var(--muted); }
+.s-days { display: flex; gap: 3px; align-items: flex-end; }
+.s-days i { display: grid; place-items: center; width: 27px; height: 22px; border-radius: 2px; background: var(--cell0); font: 10px var(--mono); color: var(--fg); font-style: normal; }
+.s-days i.l1 { background: color-mix(in oklab, var(--accent) 18%, var(--cell0)); }
+.s-days i.l2 { background: color-mix(in oklab, var(--accent) 36%, var(--cell0)); }
+.s-days i.l3 { background: color-mix(in oklab, var(--accent) 58%, var(--cell0)); }
+.s-days i.l4 { background: color-mix(in oklab, var(--accent) 80%, var(--cell0)); color: var(--bg); }
+.s-days i.l5 { background: var(--accent); color: var(--bg); }
+.s-days i.empty { color: transparent; }
+.s-days .lab { font-size: 10px; color: var(--muted); margin-right: 6px; }
+.s-links { text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.s-links a { text-decoration: none; margin-left: 14px; }
+/* cover and section slides */
+.slide.cover { grid-template-rows: 1fr auto auto; gap: 28px; }
+.slide.cover h1 { font-size: 96px; font-weight: 700; line-height: .95; letter-spacing: -.015em; align-self: end; }
+.slide.cover h1 span { color: var(--accent); }
+.slide.cover .strip { border-top: 2px solid var(--fg); }
+.slide.cover .strip b { font-size: 34px; }
+.cover-bars { display: grid; grid-template-columns: repeat(15, 1fr); gap: 6px; align-items: end; height: 110px; }
+.cover-bars div { display: grid; grid-template-rows: 1fr auto auto; gap: 3px; height: 100%; align-items: end; text-align: center; font: 10.5px var(--mono); color: var(--muted); }
+.cover-bars .bar { background: var(--fg); opacity: .85; border-radius: 2px 2px 0 0; align-self: end; }
+.cover-bars .we { color: var(--accent); }
+.slide.plain .s-main { display: block; }
+.slide .threads { grid-template-columns: repeat(3, 1fr); gap: 0 36px; }
+.slide .threads h3 { font-size: 22px; }
+.slide .threads p { font-size: 16px; color: var(--fg); }
+.slide table.up { font-size: 15px; min-width: 0; }
+.slide .up td { padding: 7px 14px 7px 0; }
+.slide .smalls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; }
+.slide .smalls div { border-top: 1px solid var(--line); padding-top: 8px; }
+.slide .smalls h3 { font: 500 17px var(--mono); }
+.slide .smalls p { margin: 4px 0 0; font-size: 15px; }
+.slide .smalls .d { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+/* deck chrome */
+.deckbar { position: absolute; right: 16px; top: 12px; display: flex; gap: 6px; align-items: center; z-index: 2; font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.deckbar .btn { padding: 6px 9px 5px; background: var(--bg); }
+.deckbar .cnt { padding: 0 6px; }
+.deckhint { position: absolute; right: 250px; top: 20px; font: 11px var(--mono); color: var(--muted); z-index: 2; transition: opacity .4s; }
+#deck.moved .deckhint { opacity: 0; }
+.deckhint kbd { border: 1px solid var(--line); border-radius: 3px; padding: 1px 4px; font: inherit; }
+@media print {
+  body.presenting .wrap, .deckbar, .deckhint { display: none !important; }
+  #deck { position: static; display: block !important; overflow: visible; }
+  .slide { display: grid !important; position: relative; left: 0; top: 0; transform: none !important; break-after: page; margin: 0 auto; }
+}
+
+footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 12px; }
+footer p { margin: 0 0 4px; max-width: 90ch; }
+
+@media (max-width: 640px) {
+  article, .small article { grid-template-columns: 1fr; }
+  .wrap { gap: 36px; padding-block: 24px 48px; }
+}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="label" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>barafael · 2026-09-22 → 2026-10-06 · 15 days</span>
+    <span class="tools"><button type="button" class="btn primary" id="present" title="Presentation mode: one slide per project">Present<kbd>P</kbd></button></span></div>
+  <h1>Fortnight <span>Ledger</span></h1>
+  <p>Commits, releases and upstream work across local repositories and github.com/barafael. Counts are non-merge commits, local branches and GitHub combined, deduplicated by hash.</p>
+</header>
+
+<div class="strip" id="strip">
+  <div><span class="label">Commits</span><b id="s-commits">–</b><small>non-merge</small></div>
+  <div><span class="label">Repositories</span><b id="s-repos">–</b><small>with commits</small></div>
+  <div><span class="label">New projects</span><b>11</b><small>started in window</small></div>
+  <div><span class="label">Releases</span><b>7</b><small>6 crates.io · 1 Typst Universe</small></div>
+  <div><span class="label">Upstream</span><b>6 / 5</b><small>PRs / issues · 2 merged, 3 fixed</small></div>
+  <div><span class="label">Code lines</span><b id="s-code">–</b><small id="s-coded">–</small></div>
+  <div><span class="label">Peak day</span><b id="s-peak">–</b><small id="s-peakd">–</small></div>
+</div>
+
+<section>
+  <div class="sechead"><h2>Activity</h2>
+    <div class="legend">0 <i></i><i style="background:color-mix(in oklab,var(--accent) 18%,var(--cell0))"></i><i style="background:color-mix(in oklab,var(--accent) 36%,var(--cell0))"></i><i style="background:color-mix(in oklab,var(--accent) 58%,var(--cell0))"></i><i style="background:color-mix(in oklab,var(--accent) 80%,var(--cell0))"></i><i style="background:var(--accent)"></i> 41+ commits/day</div>
+  </div>
+  <div class="scroll"><table class="mx" id="mx"></table></div>
+</section>
+
+
+<section>
+  <div class="sechead"><h2>Lines</h2>
+    <div class="legend"><span class="key a"></span>added <span class="key d" style="margin-left:10px"></span>deleted · code only</div>
+  </div>
+  <div class="lnsum" id="lnsum"></div>
+  <div class="scroll"><table class="ln" id="ln"></table></div>
+  <p class="lnnote">Churn counts lines in the window from <span class="num">git log --numstat</span>, all branches, merges excluded. <b>Code</b>: rs, py, js, ts, css, html, wgsl, slint, sh, swift, pas and similar. <b>Docs</b>: md, typ, txt. <b>Data &amp; generated</b>: lockfiles, json/jsonl, research yaml, RON corpora, a PDF that git diffs as text; shown, never charted. Size now is tokei over tracked files at HEAD: Rust, other code (RON excluded), and docs (Markdown and Typst).</p>
+</section>
+
+<section>
+  <div class="sechead"><h2>Threads</h2><span class="label">across projects</span></div>
+  <div class="threads">
+    <div><h3>One P2P stack for five games</h3><p>A hardened matchbox fork (Bevy 0.19, TLS 1.2 option, disconnect handling) went upstream as #558 and now backs chinese-checke.rs, aces, gnils, flexplore and cake. All five moved the room id into the URL fragment on 10-01/02.</p></div>
+    <div><h3>webrtc 0.17 → 0.21</h3><p>Two data-channel bugs filed on webrtc 0.17 (#915, #916) turned out fixed on master. That led to matchbox #559 moving to webrtc 0.21, which surfaced a late-open bug in the sans-IO rtc crate: issue #268, fix #269 merged the same day.</p></div>
+    <div><h3>Specs as code</h3><p>Rules checked mechanically against code: chinese-checke.rs makes every normative claim a Rust type and publishes a laws report; omdurman keeps a bijective rulebook↔code traceability map, Kani harnesses and a cargo-mutants gate in CI.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Projects</h2><span class="label">by area · most commits first</span></div>
+  <p class="demonote" id="demonote">Projects on GitHub Pages carry a live demo. Demos load on request; Maximise fills the window, Esc or Minimise puts it back, Stop unloads it. Screenshots marked “Pages build” were captured from the deployed sites on 2026-10-07 in a headless Chromium with software WebGL; the rest come from the repositories.</p>
+
+  <div class="group">
+    <div class="label">Games · Bevy</div>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/omdurman">omdurman</a></h3>
+        <div class="figs"><b>192</b> commits · <b>10</b> days</div>
+        <div class="chips"><a class="chip live" href="https://barafael.github.io/omdurman/">play</a><span class="chip">wasm + native</span></div>
+      </div>
+      <div class="body">
+        <p><em>Remember Gordon! The Battle of Omdurman</em> (Phoenix Enterprises, 1982) as a Rust/Bevy hex wargame with peer-to-peer play, a bot and a rules engine traced to the rulebook.</p>
+        <ul>
+          <li>PR #2 merged 10-05: deterministic press, one UI, overlays that fit, set-up and rules fixes. 82 commits on 10-04 alone.</li>
+          <li>Two-instance play-test on 10-05; its findings fixed, rulings on branch <span class="num">playtest-rulings-2026-10-05</span>.</li>
+          <li>Rules: river chain per §10.21–§10.23; transport unlock when the Isa Zachneih deserts; Kani melee harnesses fixed.</li>
+          <li>Per-frame work cut to state changes; dead code removed across app, board, rules and types crates; mutation gate on cargo-mutants 27.</li>
+          <li>10-06: board animation in one fx module; bot joins weak weapons to massed-fire targets.</li>
+        </ul>
+      </div>
+    
+      <div class="shots"><figure><img src="shots/omdurman-title.webp" alt="Remember Gordon! title screen over the hex map, with a Lobby button" width="1280" height="720" loading="lazy"><figcaption><b>Title screen</b> · Pages build</figcaption></figure><figure><img src="shots/omdurman-gazette.webp" alt="The London Gazette end-of-game report over the board, with combat panels at the sides" width="1280" height="785" loading="lazy"><figcaption><b>Gazette</b> after the 10-05 play-test, from the repo</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/kernel-panic-bevy">kernel-panic-bevy</a></h3>
+        <div class="figs"><b>121</b> commits · <b>8</b> days</div>
+        <div class="chips"><a class="chip live" href="https://barafael.github.io/kernel-panic-bevy/">play</a><span class="chip">10-06 local</span></div>
+      </div>
+      <div class="body">
+        <p>Kernel Panic, the Spring-engine RTS, ported to Bevy.</p>
+        <ul>
+          <li>Rendering: 64-square terrain chunks (4× fewer terrain draws); CEG particles, flames and smoke batched into quad meshes; no MSAA on the web.</li>
+          <li>Upstream unit data baked into an embedded bundle (<span class="num">units.kpu</span>); terrain labelling moved off the main thread.</li>
+          <li>KP-style Settings page, live and saved, with frame-rate readout; crash review hardening.</li>
+          <li>10-06, not yet pushed: Spring movement parity: terrain model, stuck escape, 16-bit headings, impulse and skidding, QTPFS pathfinding replacing grid A*.</li>
+        </ul>
+      </div>
+    
+      <div class="shots"><figure><img src="shots/kernel-panic-bevy-showcase.webp" alt="Kernel Panic showcase: wireframe terrain with raised platforms, a minimap and unit icons" width="1280" height="720" loading="lazy"><figcaption><b>Showcase</b>, System faction: terrain chunks and minimap · Pages build</figcaption></figure><figure><img src="shots/kernel-panic-bevy-skirmish.webp" alt="Kernel Panic skirmish: two hexagonal platforms in the dark, minimap top left" width="1280" height="720" loading="lazy"><figcaption><b>Skirmish</b> vs the computer on Medium · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/chinese-checke.rs">chinese-checke.rs</a></h3>
+        <div class="figs"><b>62</b> commits · <b>3</b> days</div>
+        <div class="chips"><a class="chip live" href="https://barafael.github.io/chinese-checke.rs/">play</a><a class="chip" href="https://barafael.github.io/chinese-checke.rs/laws/">laws</a></div>
+      </div>
+      <div class="body">
+        <p>Six-player Chinese Checkers: a specification plus an implementation checked against it.</p>
+        <ul>
+          <li>09-27/28 simplification pass over engine, laws, lobby and net tests: +5.5k / −6.2k lines.</li>
+          <li>Fixed move order (BTreeSet coordinates); touch drag told apart from tap.</li>
+          <li>10-02: HTML report of every law published beside the game.</li>
+        </ul>
+      </div>
+    
+      <div class="shots"><figure><img src="shots/chinese-checke.rs.webp" alt="Two-player Chinese Checkers board, red at the top, blue at the bottom" width="1280" height="720" loading="lazy"><figcaption><b>Two-player table</b> · Pages build</figcaption></figure><figure><img src="shots/chinese-checke.rs-laws.webp" alt="The laws report: 43 laws, 11 proven, 17 exhaustive, 15 property-tested, 15 chapters" width="1280" height="800" loading="lazy"><figcaption><b>Laws report</b> published beside the game</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/aces">aces</a></h3>
+        <div class="figs"><b>28</b> commits · <b>5</b> days</div>
+        <div class="chips"><span class="chip new">new 09-27</span><a class="chip live" href="https://barafael.github.io/aces/">play</a></div>
+      </div>
+      <div class="body">
+        <p>Ace Combat-style peer-to-peer flight combat, native and wasm.</p>
+        <ul>
+          <li>Milestones 2–6 in three days: solo flight and mouse-aim instructor; lobby, snapshots, interpolation; rigid-body flight model with recorder and replay; guns, IR missiles, respawn; radar missiles, flares/chaff, RWR; kill feed and scoreboard.</li>
+          <li>16 aircraft models in Git LFS, rigged with landing gear and exhaust; per-aircraft flight models (09-30).</li>
+        </ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/aces.webp" alt="Aircraft seen from behind over a grid plane with a horizon" width="1280" height="720" loading="lazy"><figcaption><b>Solo flight</b> · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/cake">cake</a></h3>
+        <div class="figs"><b>18</b> commits · <b>4</b> days</div>
+        <div class="chips"><span class="chip new">new 09-27</span><a class="chip live" href="https://barafael.github.io/cake/">play</a></div>
+      </div>
+      <div class="body">
+        <p>Real-time strategy on a ring: up to eight players, two neighbours each, host-sequenced lockstep.</p>
+        <ul>
+          <li>Frameless circular window; projectiles, effects, recap chart, bots, demo recording.</li>
+          <li>10-05: lockstep checks (Start sender verified, far-ahead turns refused); tick scans windowed by angle order; health rings, wakes, ruins, settings dial.</li>
+        </ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/cake.webp" alt="A dark ring with supply and unit counters, the circular play window" width="1280" height="720" loading="lazy"><figcaption><b>Ring window</b> in play · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/gnils">gnils</a></h3>
+        <div class="figs"><b>12</b> commits · <b>5</b> days</div>
+        <div class="chips"><a class="chip live" href="https://barafael.github.io/gnils/">play</a></div>
+      </div>
+      <div class="body">
+        <p>Bevy port of the Linux game Slingshot.</p>
+        <ul>
+          <li>Multiplayer (09-24); zoom minimap rendered by a second camera; HUD and end-of-round panel matched to the original.</li>
+        </ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/gnils.webp" alt="Two ships and two planets in space, round 1" width="1280" height="720" loading="lazy"><figcaption><b>Round 1</b> · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/demolition">demolition</a></h3>
+        <div class="figs"><b>6</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip new">new 10-06</span><a class="chip live" href="https://barafael.github.io/demolition/">play</a></div>
+      </div>
+      <div class="body">
+        <p>2D physics demolition sandbox and level editor (Bevy 0.19, Avian 2D, Feathers UI). Pong is one preset.</p>
+        <ul>
+          <li>Elements are cell grids on compliant joints that bend, yield and snap. TNT, ice, jelly, honey, gravity flip, share links. CI and Pages on day one.</li>
+        </ul>
+      </div>
+    
+      <div class="shots"><figure><img src="shots/demolition-editor.webp" alt="Demolition Lab editor with the element palette and a scene of walls, a lattice and hanging plates" width="1280" height="720" loading="lazy"><figcaption><b>Editor</b> · Pages build</figcaption></figure><figure><img src="shots/demolition-play.webp" alt="Cannonball trajectory preview aimed at a bending beam, stress overlay on" width="1280" height="720" loading="lazy"><figcaption><b>Play</b>: trajectory preview, a beam bending under stress</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3>caribbean-fruit</h3>
+        <div class="figs"><b>6</b> commits · <b>2</b> days</div>
+        <div class="chips"><span class="chip new">new 09-23</span><span class="chip">local only</span></div>
+      </div>
+      <div class="body">
+        <p>Sailing simulation, Bevy 0.19 + Avian 3D.</p>
+        <ul>
+          <li>M1 parametric hull, Bonjean buoyancy, weather field · M2 drag, hull-speed wall, lateral resistance · M3 hull drafting studio, rig and sail aerodynamics, 3D preview.</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <div class="group">
+    <div class="label">Messaging</div>
+    <article>
+      <div class="meta">
+        <h3>beep <span class="d">(langis)</span></h3>
+        <div class="figs"><b>78</b> commits · <b>3</b> days</div>
+        <div class="chips"><span class="chip new">new 10-04</span><span class="chip">private</span></div>
+      </div>
+      <div class="body">
+        <p>Desktop Signal client: Slint UI over presage and libsignal-service-rs. AGPL-3.0.</p>
+        <ul>
+          <li>Base: device linking with 45 days of history transfer, encrypted store, tray, notifications.</li>
+          <li>M1 done: receipts, typing, edits and deletions, disappearing messages, mentions, pinned/muted/archived chats.</li>
+          <li>M2 done (61 commits on 10-05): search, forwarding, media gallery, drop/paste attachments, link previews, stickers, chat folders as tabs, safety numbers, message requests, screen-reader support, opt-in storage-service write-back.</li>
+          <li>M3: groups, voice and audio playback, stories; reviewed twice. Next: real-account test, portable build, M4.</li>
+          <li>Upstream: libsignal-service-rs #473 (group create/change); presage branch <span class="num">langis/link-history-key</span>.</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <div class="group">
+    <div class="label">Libraries &amp; tools</div>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/fmtron">fmtron</a></h3>
+        <div class="figs"><b>18</b> commits · <b>5</b> days</div>
+        <div class="chips"><span class="chip rel">0.7 → 0.10</span><a class="chip live" href="https://barafael.github.io/fmtron/">demo</a></div>
+      </div>
+      <div class="body">
+        <p>RON formatter CLI.</p>
+        <ul>
+          <li>Four crates.io releases: 0.7.0 (09-23), 0.8.0, 0.9.0, 0.10.0 (all 09-26).</li>
+          <li>Five adversarial audit rounds plus a real-world corpus; blank lines kept by default; <span class="num">fmt.ron</span> config; line width 100.</li>
+          <li>09-28: whitespace matched to the reference parser; output pinned by a stability test (branch <span class="num">formatting-stability</span>).</li>
+        </ul>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/matchbox">matchbox</a> <span class="d">fork</span></h3>
+        <div class="figs"><b>10</b> commits · <b>2</b> days</div>
+        <div class="chips"><span class="chip">2 PRs open</span></div>
+      </div>
+      <div class="body">
+        <p>Peer-to-peer WebRTC for Rust/wasm.</p>
+        <ul>
+          <li>Socket ends when signalling is lost with no peers; failed connections reported as disconnects; <span class="num">tls12</span> feature; cargo-audit fixes. Upstream as #558 and #559.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/flexplore">flexplore</a></h3>
+        <div class="figs"><b>12</b> commits · <b>3</b> days</div>
+        <div class="chips"><a class="chip live" href="https://barafael.github.io/flexplore/">open</a></div>
+      </div>
+      <div class="body">
+        <p>Interactive flexbox explorer with code export.</p>
+        <ul>
+          <li>CI (fmt, clippy, tests, wasm check); golden-screenshot harness for SwiftUI and Linux backends; multiplayer modelled on chinese-checke.rs.</li>
+        </ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/flexplore.webp" alt="Flexbox explorer: tree, property panel and the rendered container" width="1280" height="800" loading="lazy"><figcaption><b>Explorer</b> · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/document-formulas">document-formulas</a></h3>
+        <div class="figs"><b>11</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip new">new 09-29</span><span class="chip rel">0.1 · 0.2</span></div>
+      </div>
+      <div class="body">
+        <p>Proc macro that renders the formula in a Rust function body as KaTeX in its rustdoc.</p>
+        <ul>
+          <li>Built, renamed from formularium, released twice to crates.io and documented on Pages, all on 09-29.</li>
+        </ul>
+      </div>
+    
+      <div class="shots"><figure><pre>#[formula_doc]
+pub fn predict(&amp;mut self, acceleration: f64, dt: f64) {
+    let transitioned = self.state + 0.5 * acceleration * dt.powi(2);
+    let propagated = self.covariance + self.process_noise;
+    self.state = transitioned;
+    self.covariance = propagated;
+}
+
+#[formula_doc]
+pub fn update(&amp;mut self, measurement: f64) {
+    let innovation = measurement - self.state;
+    let gain = self.covariance / (self.covariance + self.measurement_noise);
+    let corrected = self.state + gain * innovation;
+    let covariance = (1.0 - gain) * self.covariance;
+    self.state = corrected;
+    self.covariance = covariance;
+}</pre><figcaption><b>Input</b> · <span class="num">examples/kalman</span>, bodies written as the equations</figcaption></figure><figure><img src="shots/document-formulas.webp" alt="rustdoc page for Kalman1D with predict and update formulas typeset by KaTeX" width="1040" height="570" loading="lazy"><figcaption><b>Rendered rustdoc</b> for <span class="num">kalman::Kalman1D</span>: predict and update, typeset from the function bodies</figcaption></figure></div>
+    </article>
+  </div>
+
+  <div class="group">
+    <div class="label">Music &amp; visualisation</div>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/sinephonic">sinephonic</a></h3>
+        <div class="figs"><b>12</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip new">new 09-27</span><a class="chip live" href="https://barafael.github.io/sinephonic/">open</a></div>
+      </div>
+      <div class="body">
+        <p>Chord Anatomy: a one-screen chord-voicing analyser. Rust analysis crates in wasm; Dioxus replaced by plain HTML/CSS/JS.</p>
+        <ul><li>Roughness, 12-TET beats, information measures, consonance landscape, pitch-class clocks, staff notation, four mood quadrants.</li></ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/sinephonic.webp" alt="Chord Anatomy analysing Cm(b6): staff, keyboard, roughness and consonance panels" width="1280" height="800" loading="lazy"><figcaption><b>Cm(♭6)</b> analysed · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/tonality-graph">tonality-graph</a></h3>
+        <div class="figs"><b>8</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip">7 PRs merged</span><a class="chip live" href="https://barafael.github.io/tonality-graph">open</a></div>
+      </div>
+      <div class="body">
+        <p>2018 visualisation of steps between tonalities, redesigned on 09-26.</p>
+        <ul><li>Responsive data-driven SVG; implicit graph without circles or arrows; stained-glass tile lattice with chevron step badges.</li></ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/tonality-graph.webp" alt="Lattice of tonality tiles with chevron step badges" width="1280" height="800" loading="lazy"><figcaption><b>Tile lattice</b> · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/voicing-atlas">voicing-atlas</a></h3>
+        <div class="figs"><b>4</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip new">new 09-30</span><a class="chip live" href="https://barafael.github.io/voicing-atlas/">open</a></div>
+      </div>
+      <div class="body">
+        <p>All 55,455 two-octave voicing shapes as a playable tree and lattice, common jazz voicings marked. Column browser, frosted-glass magnifier.</p>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/voicing-atlas.webp" alt="Voicing Atlas tree view with the selected voicing panel" width="1280" height="800" loading="lazy"><figcaption><b>Tree view</b> with the selection panel · Pages build</figcaption></figure></div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/bytebeat">bytebeat</a></h3>
+        <div class="figs"><b>7</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip new">new 09-26</span><span class="chip">research</span></div>
+      </div>
+      <div class="body">
+        <p>Research for a collaborative mini DAW in Rust: audio I/O and real-time safety, CRDT sync, GUI frameworks, plugin/MIDI crates, a ByteBeat device baseline.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="group">
+    <div class="label">Research</div>
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/bavovniatko">bavovniatko</a></h3>
+        <div class="figs"><b>17</b> commits · <b>7</b> days</div>
+        <div class="chips"><span class="chip new">new 09-28</span><a class="chip live" href="https://barafael.github.io/bavovniatko/">explorer</a></div>
+      </div>
+      <div class="body">
+        <p>Research base for a game of the Russo-Ukrainian war played as Ukraine.</p>
+        <ul>
+          <li>SurrealDB graph of about 10,800 cited claims with claimants, places, numbers and support/contradiction links; chapter dossiers generated from it.</li>
+          <li>Client-side explorer on Pages since 10-02; every claim shows its sources, every record has a page.</li>
+        </ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/bavovniatko.webp" alt="bavovniatko explorer home with corpus counts and the strongest disagreements" width="1280" height="800" loading="lazy"><figcaption><b>Explorer home</b> once the knowledge base has loaded · Pages build</figcaption></figure></div>
+    </article>
+  </div>
+
+  <div class="group">
+    <div class="label">Talks &amp; async Rust</div>
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/more-actors-with-tokio">more-actors-with-tokio</a></h3>
+        <div class="figs"><b>20</b> commits · <b>4</b> days</div>
+        <div class="chips"><span class="chip">talk</span></div>
+      </div>
+      <div class="body">
+        <p>Interactive slide app for the talk.</p>
+        <ul><li>speedd actor architecture to step through by hand; watchdog, budget chat, FuturesUnordered and pipeline boards; one frame for every slide; fits 4:3 and phone screens.</li></ul>
+      </div>
+    
+      <div class="shots one"><figure><img src="shots/more-actors-with-tokio.webp" alt="Slide: An architecture, by hand. The speedd actor board with sources, collector, dispatcher and subscribers" width="1280" height="720" loading="lazy"><figcaption><b>speedd board</b> slide from the static export (09-28)</figcaption></figure></div>
+    </article>
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/protohackers">protohackers</a></h3>
+        <div class="figs"><b>11</b> commits · <b>1</b> day</div>
+        <div class="chips"><span class="chip">1 merged · 1 open</span></div>
+      </div>
+      <div class="body">
+        <p>Talk pattern applied: actors over injected Stream/Sink instead of <span class="num">Arc&lt;Mutex&gt;</span> (PR #1 merged). PR #2 open: protocol fixes in problems 1, 5, 6, 7.</p>
+      </div>
+    </article>
+    <article>
+      <div class="meta">
+        <h3><a href="https://github.com/barafael/tokio">tokio</a> <span class="d">fork</span></h3>
+        <div class="figs">branch <b>mpsc-weak-sender-send</b></div>
+      </div>
+      <div class="body"><p>Draft: <span class="num">send</span> and <span class="num">try_send</span> on mpsc weak senders (fork PR #2).</p></div>
+    </article>
+  </div>
+
+  <div class="group small">
+    <div class="label">Smaller moves</div>
+    <article><div class="meta"><h3>mt21-rs</h3></div><div class="body"><p><span class="d">8 · private</span> Resilient host USB link, reworked firmware USB session, udev rule against ModemManager, upstream ssd1309 and tokio-serial.</p></div></article>
+    <article><div class="meta"><h3><a href="https://github.com/barafael/yaaacv-typst">yaaacv-typst</a></h3></div><div class="body"><p><span class="d">3 + 8 cv</span> yaaacv 0.1.0 on Typst Universe (typst/packages #5900, merged 09-22); 0.1.1 layout pass; CV builds in GitHub Actions.</p></div></article>
+    <article><div class="meta"><h3><a href="https://github.com/barafael/samothraki-june-2026">samothraki-june-2026</a></h3></div><div class="body"><p><span class="d">2</span> Trip photo map hosted on fly.io, media from GitHub Releases.</p></div></article>
+    <article><div class="meta"><h3>ghoblin · repos</h3></div><div class="body"><p><span class="d">4 · local</span> CLI for GitHub repo metadata; curated tag manifest over fetched repos.</p></div></article>
+    <article><div class="meta"><h3><a href="https://github.com/barafael/deutsche-bahn-delay-reasons">deutsche-bahn-delay-reasons</a></h3></div><div class="body"><p><span class="d">1</span> Random payloads from curated lists, 1.2.2. Demo site dependencies updated.</p></div></article>
+    <article><div class="meta"><h3>ProgrammiersprachenSS22</h3></div><div class="body"><p><span class="d">fork</span> PR #1: Rust interpreter aligned with Python semantics, benchmarks refreshed.</p></div></article>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Upstream</h2><span class="label">outside barafael/*</span></div>
+  <div class="scroll">
+  <table class="up">
+    <thead><tr><th>Ref</th><th>Kind</th><th>Title</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com/typst/packages/pull/5900">typst/packages#5900</a></td><td class="k">PR</td><td>yaaacv:0.1.0</td><td><span class="st merged">merged 09-22</span></td></tr>
+      <tr><td><a href="https://github.com/webrtc-rs/webrtc/issues/915">webrtc-rs/webrtc#915</a></td><td class="k">issue</td><td>Negotiated data channels ignore their reliability parameters</td><td><span class="st fixed">fixed on master</span></td></tr>
+      <tr><td><a href="https://github.com/webrtc-rs/webrtc/issues/916">webrtc-rs/webrtc#916</a></td><td class="k">issue</td><td>SCTP: Rexmit chunks abandoned at first transmission; FORWARD TSN overtakes in-flight data</td><td><span class="st fixed">fixed on master</span></td></tr>
+      <tr><td><a href="https://github.com/johanhelsing/matchbox/pull/558">johanhelsing/matchbox#558</a></td><td class="k">PR</td><td>Bevy 0.19: socket hardening, security fixes and an exit-abort fix</td><td><span class="st open">open</span></td></tr>
+      <tr><td><a href="https://github.com/johanhelsing/matchbox/pull/559">johanhelsing/matchbox#559</a></td><td class="k">PR</td><td>Move matchbox_socket to webrtc 0.21</td><td><span class="st open">open</span></td></tr>
+      <tr><td><a href="https://github.com/webrtc-rs/rtc/issues/268">webrtc-rs/rtc#268</a></td><td class="k">issue</td><td>Negotiated data channels open ~2 s late: poll_event doesn't pump read queues</td><td><span class="st fixed">closed by #269</span></td></tr>
+      <tr><td><a href="https://github.com/webrtc-rs/rtc/pull/269">webrtc-rs/rtc#269</a></td><td class="k">PR</td><td>Deliver reads queued while handling events from poll_event</td><td><span class="st merged">merged 10-04</span></td></tr>
+      <tr><td><a href="https://github.com/vladbat00/bevy_egui/issues/504">vladbat00/bevy_egui#504</a></td><td class="k">issue</td><td>Reactive update modes never go idle since 0.42: ModifiersChanged sent every frame</td><td><span class="st open">open</span></td></tr>
+      <tr><td><a href="https://github.com/vladbat00/bevy_egui/pull/505">vladbat00/bevy_egui#505</a></td><td class="k">PR</td><td>Send ModifiersChanged only when the modifiers change</td><td><span class="st open">open</span></td></tr>
+      <tr><td><a href="https://github.com/whisperfish/libsignal-service-rs/pull/473">whisperfish/libsignal-service-rs#473</a></td><td class="k">PR</td><td>Groups: create and change; fetch expiring profile key credentials</td><td><span class="st open">open</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  <p>Sources: <span class="num">git log --all --no-merges</span> in local clones, GitHub commits API for default branches, GitHub events and search. Dates are author dates. Line counts chart code only; data, lockfiles and generated files are listed separately because corpora and a text-diffed PDF dwarf the code.</p>
+  <p>Compiled 2026-10-06.</p>
+</footer>
+</div>
+
+<div id="deck" hidden aria-label="Presentation" role="dialog"><div class="stagearea" id="stagearea"></div>
+  <div class="deckhint">← → <kbd>Space</kbd> navigate · <kbd>F</kbd> fullscreen · <kbd>Esc</kbd> exit</div>
+  <div class="deckbar"><button type="button" class="btn" data-nav="-1" title="Previous">‹</button><span class="cnt" id="deckcnt"></span><button type="button" class="btn" data-nav="1" title="Next">›</button><button type="button" class="btn" data-nav="full" title="Fullscreen">⤢</button><button type="button" class="btn" data-nav="exit" title="Exit (Esc)">✕</button></div>
+</div>
+
+<script>
+(function () {
+  var start = new Date(Date.UTC(2026, 8, 22));
+  var rows = [
+    ["omdurman", "https://github.com/barafael/omdurman", [9,0,0,0,1,24,12,0,0,6,10,24,82,20,4]],
+    ["kernel-panic-bevy", "https://github.com/barafael/kernel-panic-bevy", [11,2,3,0,31,52,12,0,2,0,0,0,0,0,8]],
+    ["beep", "", [0,0,0,0,0,0,0,0,0,0,0,0,12,61,5]],
+    ["chinese-checke.rs", "https://github.com/barafael/chinese-checke.rs", [0,0,0,0,0,12,48,0,0,0,2,0,0,0,0]],
+    ["aces", "https://github.com/barafael/aces", [0,0,0,0,9,9,8,0,1,1,0,0,0,0,0]],
+    ["more-actors-with-tokio", "https://github.com/barafael/more-actors-with-tokio", [7,0,0,0,6,5,0,0,0,0,0,2,0,0,0]],
+    ["fmtron", "https://github.com/barafael/fmtron", [1,3,0,0,10,1,3,0,0,0,0,0,0,0,0]],
+    ["cake", "https://github.com/barafael/cake", [0,0,0,0,0,2,6,0,0,0,1,0,0,9,0]],
+    ["bavovniatko", "https://github.com/barafael/bavovniatko", [0,0,0,0,0,0,1,0,1,2,4,4,1,4,0]],
+    ["gnils", "https://github.com/barafael/gnils", [0,0,1,0,8,0,1,0,0,1,1,0,0,0,0]],
+    ["flexplore", "https://github.com/barafael/flexplore", [0,0,0,0,0,0,1,0,6,5,0,0,0,0,0]],
+    ["sinephonic", "https://github.com/barafael/sinephonic", [0,0,0,0,0,12,0,0,0,0,0,0,0,0,0]],
+    ["document-formulas", "https://github.com/barafael/document-formulas", [0,0,0,0,0,0,0,11,0,0,0,0,0,0,0]],
+    ["protohackers", "https://github.com/barafael/protohackers", [0,0,0,0,11,0,0,0,0,0,0,0,0,0,0]],
+    ["matchbox", "https://github.com/barafael/matchbox", [0,0,0,0,0,6,4,0,0,0,0,0,0,0,0]],
+    ["curriculum-vitae", "", [4,0,0,0,0,0,0,0,3,1,0,0,0,0,0]],
+    ["mt21-rs", "", [0,0,0,0,8,0,0,0,0,0,0,0,0,0,0]],
+    ["tonality-graph", "https://github.com/barafael/tonality-graph", [0,0,0,0,8,0,0,0,0,0,0,0,0,0,0]],
+    ["bytebeat", "https://github.com/barafael/bytebeat", [0,0,0,0,7,0,0,0,0,0,0,0,0,0,0]],
+    ["demolition", "https://github.com/barafael/demolition", [0,0,0,0,0,0,0,0,0,0,0,0,0,0,6]],
+    ["caribbean-fruit", "", [0,2,0,0,0,4,0,0,0,0,0,0,0,0,0]],
+    ["voicing-atlas", "https://github.com/barafael/voicing-atlas", [0,0,0,0,0,0,0,0,4,0,0,0,0,0,0]],
+    ["yaaacv-typst", "https://github.com/barafael/yaaacv-typst", [0,0,0,0,0,0,0,0,3,0,0,0,0,0,0]],
+    ["repos", "", [2,1,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+    ["samothraki-june-2026", "https://github.com/barafael/samothraki-june-2026", [0,0,0,0,2,0,0,0,0,0,0,0,0,0,0]],
+    ["ghoblin", "", [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+    ["barafael.github.io", "https://github.com/barafael/barafael.github.io", [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]]
+  ];
+  var N = 15, wd = "SMTWTFS";
+  var days = [], totals = new Array(N).fill(0), grand = 0;
+  for (var i = 0; i < N; i++) days.push(new Date(start.getTime() + i * 864e5));
+  rows.forEach(function (r) { r[3] = r[2].reduce(function (a, b) { return a + b; }, 0); r[2].forEach(function (v, i) { totals[i] += v; }); grand += r[3]; });
+  rows.sort(function (a, b) { return b[3] - a[3]; });
+  var maxDay = Math.max.apply(null, totals), peakI = totals.indexOf(maxDay);
+  function lvl(v) { return v === 0 ? 0 : v <= 2 ? 1 : v <= 6 ? 2 : v <= 15 ? 3 : v <= 40 ? 4 : 5; }
+  function iso(d) { return d.toISOString().slice(0, 10); }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  var h = "<thead><tr><th class='name'></th>";
+  days.forEach(function (d) { var w = d.getUTCDay(); h += "<th class='" + (w === 0 || w === 6 ? "we" : "") + "'>" + d.getUTCDate() + "<br>" + wd[w] + "</th>"; });
+  h += "<th class='t'>Σ</th></tr></thead><tbody><tr class='bars'><td class='name label'>per day</td>";
+  totals.forEach(function (t) { h += "<td><span class='bv'>" + t + "</span><div class='bar' style='height:" + Math.max(1, Math.round(t / maxDay * 44)) + "px'></div></td>"; });
+  h += "<td class='t'>" + grand + "</td></tr>";
+  rows.forEach(function (r) {
+    h += "<tr><td class='name'>" + (r[1] ? "<a href='" + r[1] + "'>" + esc(r[0]) + "</a>" : esc(r[0])) + "</td>";
+    r[2].forEach(function (v, i) { h += "<td class='c l" + lvl(v) + "' title='" + esc(r[0]) + " · " + iso(days[i]) + " · " + v + "'>" + (v || "") + "</td>"; });
+    h += "<td class='t'>" + r[3] + "</td></tr>";
+  });
+  h += "</tbody>";
+  document.getElementById("mx").innerHTML = h;
+  document.getElementById("s-commits").textContent = grand;
+  document.getElementById("s-repos").textContent = rows.length;
+  document.getElementById("s-peak").textContent = maxDay;
+  document.getElementById("s-peakd").textContent = iso(days[peakI]) + " · commits";
+
+  // Lines: [name, code+, code-, docs+, docs-, conf+, conf-, data+, data-, rustNow, otherNow, docsNow]
+  var L = [
+    ["omdurman",65176,43060,10091,14235,1962,1620,250478,435110,85609,357,6315],
+    ["kernel-panic-bevy",41977,17746,886,166,54,19,11,20,55180,382,4380],
+    ["beep",29129,3640,491,115,290,39,9859,81,18225,3600,292],
+    ["chinese-checke.rs",5322,5859,21,13,16,7,167,331,15341,55,3020],
+    ["aces",17424,3483,463,79,157,13,8292,37,9117,1741,338],
+    ["more-actors-with-tokio",17541,4973,641,623,7,0,51,51,19069,11371,665],
+    ["fmtron",4955,390,850,15,38,9,248707,65,5539,572,762],
+    ["cake",15742,1758,603,53,202,2,8661,224,11381,23,438],
+    ["bavovniatko",9705,473,15447,581,214,7,290991,11618,3175,3943,13052],
+    ["gnils",5144,2704,8,4,30,29,1763,1870,5779,15,55],
+    ["flexplore",12196,12761,44,51,240,116,3247,7530,28082,17714,119],
+    ["sinephonic",12057,2843,544,288,303,84,7256,5727,6320,1648,87],
+    ["document-formulas",1400,379,108,33,142,40,311,20,772,47,44],
+    ["protohackers",5760,2193,0,0,30,10,0,0,3972,0,0],
+    ["matchbox",517,165,1,0,29,13,1785,2336,5792,41,208],
+    ["curriculum-vitae",0,0,705,449,2,0,3672,3548,0,606,968],
+    ["mt21-rs",477,134,7,3,25,34,1989,3462,3187,15626,298],
+    ["tonality-graph",1189,855,0,0,0,0,0,381,0,59,2],
+    ["bytebeat",0,0,2853,0,0,0,0,0,0,0,2315],
+    ["demolition",8014,967,68,6,184,2,6562,413,6240,17,46],
+    ["caribbean-fruit",4070,960,579,83,14,0,7292,0,2445,0,412],
+    ["voicing-atlas",6602,711,20,0,0,0,1,0,0,5202,14],
+    ["yaaacv-typst",0,0,96,86,1,1,0,0,0,0,647],
+    ["repos",0,0,44,0,3908,434,0,0,0,0,31],
+    ["samothraki-june-2026",1316,704,155,165,189,128,339,2963,2699,310,140],
+    ["ghoblin",2556,0,149,0,50,0,594,0,2099,0,98],
+    ["deutsche-bahn-delay-reasons",0,0,0,0,0,0,0,0,198,0,2],
+    ["barafael.github.io",0,0,6,0,0,0,0,0,405,288,1549]
+  ];
+  var links = {}; rows.forEach(function (r) { links[r[0]] = r[1]; });
+  L.sort(function (a, b) { return (b[1] + b[2]) - (a[1] + a[2]) || (b[3] + b[4]) - (a[3] + a[4]); });
+  var T = new Array(12).fill(0);
+  L.forEach(function (r) { for (var k = 1; k < 12; k++) T[k] += r[k]; });
+  var mx2 = 0; L.forEach(function (r) { mx2 = Math.max(mx2, r[1], r[2]); });
+  function f(n) { return n.toLocaleString("en-US"); }
+  function k(n) { return n >= 10000 ? Math.round(n / 1000) + "k" : n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(n); }
+  function sg(n) { return (n > 0 ? "+" : n < 0 ? "−" : "±") + f(Math.abs(n)); }
+  function pm(a, d) { return a || d ? "+" + k(a) + " / −" + k(d) : "·"; }
+  function pct(v) { return (v / mx2 * 100).toFixed(2) + "%"; }
+  var g = "<thead><tr><th class='l' rowspan='2'>Project</th><th class='grp' colspan='4'>Code churn</th><th class='grp sep' colspan='2'>Other churn</th><th class='grp sep' colspan='3'>Size now</th></tr>" +
+    "<tr><th>deleted</th><th style='text-align:center'>−  ·  +</th><th>added</th><th>net</th><th class='sep'>docs</th><th>data &amp; gen.</th><th class='sep'>Rust</th><th>other</th><th>docs</th></tr></thead><tbody>";
+  L.forEach(function (r) {
+    var n = r[0], href = links[n];
+    g += "<tr title='" + esc(n) + ": code +" + f(r[1]) + " / −" + f(r[2]) + ", docs +" + f(r[3]) + " / −" + f(r[4]) + "'>" +
+      "<td class='l'>" + (href ? "<a href='" + href + "'>" + esc(n) + "</a>" : esc(n)) + "</td>" +
+      "<td class='dn'>" + (r[2] ? "−" + f(r[2]) : "") + "</td>" +
+      "<td class='chart'><div class='dv'><span class='d' style='width:" + pct(r[2]) + "'></span><span class='a' style='width:" + pct(r[1]) + "'></span></div></td>" +
+      "<td class='ad'>" + (r[1] ? "+" + f(r[1]) : "") + "</td>" +
+      "<td>" + (r[1] || r[2] ? sg(r[1] - r[2]) : "") + "</td>" +
+      "<td class='sep m'>" + pm(r[3], r[4]) + "</td><td class='m'>" + pm(r[7], r[8]) + "</td>" +
+      "<td class='sep'>" + (r[9] ? f(r[9]) : "·") + "</td><td class='m'>" + (r[10] ? f(r[10]) : "·") + "</td><td class='m'>" + (r[11] ? f(r[11]) : "·") + "</td></tr>";
+  });
+  g += "</tbody><tfoot><tr><td class='l'>" + L.length + " repos</td><td class='dn'>−" + f(T[2]) + "</td><td></td><td class='ad'>+" + f(T[1]) + "</td><td>" + sg(T[1] - T[2]) +
+    "</td><td class='sep'>" + pm(T[3], T[4]) + "</td><td class='m'>" + pm(T[7], T[8]) + "</td><td class='sep'>" + f(T[9]) + "</td><td>" + f(T[10]) + "</td><td>" + f(T[11]) + "</td></tr></tfoot>";
+  document.getElementById("ln").innerHTML = g;
+  document.getElementById("lnsum").innerHTML =
+    "<span><span class='key a'></span><b>+" + f(T[1]) + "</b> code added</span>" +
+    "<span><span class='key d'></span><b>−" + f(T[2]) + "</b> code deleted</span>" +
+    "<span>net <b>" + sg(T[1] - T[2]) + "</b></span>" +
+    "<span>docs <b>+" + f(T[3]) + " / −" + f(T[4]) + "</b></span>" +
+    "<span>Rust in tree now <b>" + f(T[9]) + "</b></span>";
+  document.getElementById("s-code").textContent = "+" + k(T[1]);
+  document.getElementById("s-coded").textContent = "−" + k(T[2]) + " deleted · net " + (T[1] - T[2] >= 0 ? "+" : "−") + k(Math.abs(T[1] - T[2]));
+
+  // Demos: one panel per article with a GitHub Pages link.
+  var framed = true;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  if (framed) document.getElementById("demonote").textContent =
+    "Projects on GitHub Pages carry a live demo. This viewer blocks embedded sites, so the demos open in a new tab here; open the local copy of this page in a browser to play them inline.";
+  var current = null;
+  function setMax(demo, on) {
+    if (on && current && current !== demo) setMax(current, false);
+    demo.classList.toggle("max", on);
+    document.body.classList.toggle("has-max", on);
+    demo.querySelector("[data-act=max]").textContent = on ? "Minimise" : "Maximise";
+    current = on ? demo : null;
+    if (on) demo.querySelector("[data-act=max]").focus();
+  }
+  function load(demo) {
+    if (demo.querySelector("iframe")) return;
+    var f = document.createElement("iframe");
+    f.src = demo.dataset.src;
+    f.title = demo.dataset.name + " demo";
+    f.allow = "fullscreen; autoplay; gamepad; pointer-lock; clipboard-write; cross-origin-isolated";
+    f.allowFullscreen = true;
+    demo.querySelector(".stage").appendChild(f);
+    demo.querySelector(".ph").hidden = true;
+    demo.querySelector("[data-act=stop]").hidden = false;
+  }
+  function stop(demo) {
+    var f = demo.querySelector("iframe");
+    if (f) f.remove();
+    demo.querySelector(".ph").hidden = false;
+    demo.querySelector("[data-act=stop]").hidden = true;
+    if (demo.classList.contains("max")) setMax(demo, false);
+  }
+  document.querySelectorAll("article").forEach(function (art) {
+    var live = art.querySelector("a.chip.live");
+    if (!live) return;
+    var src = live.getAttribute("href"), name = art.querySelector("h3").textContent.trim().split(/\s/)[0];
+    var d = document.createElement("div");
+    d.className = "demo";
+    d.dataset.src = src; d.dataset.name = name;
+    var host = src.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    d.innerHTML =
+      "<div class='bar'><span class='src'>demo · " + esc(host) + "</span>" +
+      (framed ? "" : "<button type='button' data-act='stop' hidden>Stop</button><button type='button' data-act='max'>Maximise</button>") +
+      "<a href='" + src + "' target='_blank' rel='noopener'>Open ↗</a></div>" +
+      (framed ? "" : "<div class='stage'><div class='ph'><span>" + esc(name) + " runs here. Large wasm builds take a few seconds.</span><button type='button' class='primary' data-act='load'>Load demo</button></div></div>");
+    art.appendChild(d);
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".demo button"); if (!b) return;
+    var demo = b.closest(".demo"), act = b.dataset.act;
+    if (act === "load") load(demo);
+    else if (act === "stop") stop(demo);
+    else if (act === "max") { var on = !demo.classList.contains("max"); if (on) load(demo); setMax(demo, on); }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && current) setMax(current, false); });
+
+  // Presentation mode: one slide per project, built from the articles above plus the activity and lines data.
+  var deck = document.getElementById("deck"), stage = document.getElementById("stagearea"), cnt = document.getElementById("deckcnt");
+  var slides = null, cur = 0, built = false;
+  var byName = {}; rows.forEach(function (r) { byName[r[0]] = r; });
+  var lnBy = {}; L.forEach(function (r) { lnBy[r[0]] = r; });
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function dayCells(name) {
+    var r = byName[name]; if (!r) return "";
+    var h = "<span class='lab'>" + iso(days[0]).slice(5) + " → " + iso(days[N - 1]).slice(5) + "</span>";
+    r[2].forEach(function (v, i) { h += "<i class='l" + lvl(v) + (v ? "" : " empty") + "' title='" + iso(days[i]) + "'>" + v + "</i>"; });
+    return h;
+  }
+  function figs(name, figsEl) {
+    var parts = [];
+    if (figsEl) parts.push(figsEl.innerHTML);
+    var l = lnBy[name];
+    if (l && (l[1] || l[2])) parts.push("code <b class='ad'>+" + f(l[1]) + "</b> / <b class='dn'>−" + f(l[2]) + "</b>");
+    if (l && (l[3] || l[4])) parts.push("docs <b>+" + f(l[3]) + "</b> / <b>−" + f(l[4]) + "</b>");
+    if (l && l[9]) parts.push("Rust now <b>" + f(l[9]) + "</b>");
+    if (l && l[10]) parts.push("other code now <b>" + f(l[10]) + "</b>");
+    return parts.map(function (x) { return "<span>" + x + "</span>"; }).join("");
+  }
+  function projectSlide(art, group, idx, total) {
+    var meta = art.querySelector(".meta"), h3 = meta.querySelector("h3"), name = h3.textContent.trim().split(/\s/)[0];
+    var sl = el("div", "slide"); sl.dataset.id = name;
+    var head = el("div", "s-head");
+    head.appendChild(el("div", "label", esc(group) + " · " + idx + " / " + total));
+    var h2 = el("h2"); h2.innerHTML = h3.innerHTML.replace(/<span class="d">/g, "<small>").replace(/<\/span>/g, "</small>"); head.appendChild(h2);
+    head.appendChild(el("div", "s-figs", figs(name, meta.querySelector(".figs"))));
+    sl.appendChild(head);
+    var main = el("div", "s-main"), text = el("div", "s-text");
+    var body = art.querySelector(".body");
+    Array.prototype.forEach.call(body.children, function (c) { if (!c.classList.contains("demo") && !c.classList.contains("shots")) text.appendChild(c.cloneNode(true)); });
+    var chips = meta.querySelector(".chips"); if (chips) text.appendChild(chips.cloneNode(true));
+    main.appendChild(text);
+    var shots = art.querySelector(".shots");
+    if (shots) {
+      var media = el("div", "s-media");
+      shots.querySelectorAll("figure").forEach(function (fg) { media.appendChild(fg.cloneNode(true)); });
+      main.appendChild(media);
+    } else main.classList.add("nomedia");
+    sl.appendChild(main);
+    var foot = el("div", "s-foot");
+    foot.appendChild(el("div", "s-days", dayCells(name)));
+    foot.appendChild(el("div", "", byName[name] ? "<b>" + byName[name][3] + "</b> commits in window" : ""));
+    var links = [];
+    meta.querySelectorAll("a[href]").forEach(function (a) { links.push("<a href='" + a.getAttribute("href") + "' target='_blank' rel='noopener'>" + esc(a.getAttribute("href").replace(/^https?:\/\//, "").replace(/\/$/, "")) + "</a>"); });
+    foot.appendChild(el("div", "s-links", links.join("")));
+    sl.appendChild(foot);
+    return sl;
+  }
+  function coverSlide() {
+    var sl = el("div", "slide cover"); sl.dataset.id = "cover";
+    sl.appendChild(el("h1", "", "Fortnight <span>Ledger</span><br><small style='font:500 22px var(--mono);color:var(--muted);letter-spacing:0'>barafael · 2026-09-22 → 2026-10-06 · 15 days</small>"));
+    sl.appendChild(document.getElementById("strip").cloneNode(true));
+    var bars = el("div", "cover-bars");
+    totals.forEach(function (t, i) { var w = days[i].getUTCDay(); bars.innerHTML += "<div class='" + (w === 0 || w === 6 ? "we" : "") + "'><span>" + t + "</span><div class='bar' style='height:" + Math.max(2, Math.round(t / maxDay * 70)) + "px'></div><span>" + days[i].getUTCDate() + "</span></div>"; });
+    sl.appendChild(bars);
+    return sl;
+  }
+  function plainSlide(id, label, title, node) {
+    var sl = el("div", "slide plain"); sl.dataset.id = id;
+    var head = el("div", "s-head"); head.appendChild(el("div", "label", label)); head.appendChild(el("h2", "", title)); sl.appendChild(head);
+    var main = el("div", "s-main"); main.appendChild(node); sl.appendChild(main);
+    sl.appendChild(el("div", "s-foot", "<div></div><div></div><div class='s-links'>github.com/barafael</div>"));
+    return sl;
+  }
+  function build() {
+    slides = [coverSlide()];
+    var th = document.querySelector(".threads").cloneNode(true);
+    slides.push(plainSlide("threads", "Threads", "Across projects", th));
+    var arts = []; document.querySelectorAll(".group:not(.small) article").forEach(function (a) { arts.push(a); });
+    var total = arts.length;
+    arts.forEach(function (a, i) { slides.push(projectSlide(a, a.closest(".group").querySelector(".label").textContent, i + 1, total)); });
+    var sm = el("div", "smalls");
+    document.querySelectorAll(".group.small article").forEach(function (a) { var d = el("div"); d.innerHTML = "<h3>" + a.querySelector("h3").innerHTML + "</h3>" + a.querySelector(".body").innerHTML; sm.appendChild(d); });
+    slides.push(plainSlide("smaller", "Smaller moves", "Also this fortnight", sm));
+    var up = el("div", "scroll"); up.appendChild(document.querySelector("table.up").cloneNode(true));
+    slides.push(plainSlide("upstream", "Upstream · outside barafael/*", "PRs and issues", up));
+    slides.forEach(function (sl) { stage.appendChild(sl); });
+    built = true;
+  }
+  function fit() { var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720); deck.style.setProperty("--s", s.toFixed(4)); }
+  function show(i, push) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (sl, j) { sl.classList.toggle("cur", j === cur); });
+    cnt.textContent = (cur + 1) + " / " + slides.length;
+    if (cur > 0) deck.classList.add("moved");
+    if (push !== false) history.replaceState(null, "", "#slide=" + slides[cur].dataset.id);
+  }
+  function openDeck(id) {
+    if (!built) build();
+    if (current) setMax(current, false);
+    deck.hidden = false; deck.classList.add("on"); document.body.classList.add("presenting");
+    fit();
+    var i = 0; if (id) slides.forEach(function (sl, j) { if (sl.dataset.id === id) i = j; });
+    show(i);
+    deck.querySelector("[data-nav='1']").focus();
+  }
+  function closeDeck() {
+    deck.classList.remove("on"); deck.hidden = true; document.body.classList.remove("presenting");
+    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+    history.replaceState(null, "", location.pathname + location.search);
+    document.getElementById("present").focus();
+  }
+  function fullscreen() { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(function () {}); }
+  document.getElementById("present").addEventListener("click", function () { openDeck(); fullscreen(); });
+  deck.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-nav]"); if (!b) return;
+    var n = b.dataset.nav;
+    if (n === "exit") closeDeck(); else if (n === "full") fullscreen(); else show(cur + (+n));
+  });
+  window.addEventListener("resize", function () { if (deck.classList.contains("on")) fit(); });
+  document.addEventListener("fullscreenchange", function () { if (deck.classList.contains("on")) fit(); });
+  var px = null;
+  deck.addEventListener("pointerdown", function (e) { if (!e.target.closest("a, button")) px = e.clientX; });
+  deck.addEventListener("pointerup", function (e) { if (px == null) return; var dx = e.clientX - px; px = null; if (Math.abs(dx) > 60) show(cur + (dx < 0 ? 1 : -1)); });
+  document.addEventListener("keydown", function (e) {
+    if (e.target.matches("input, textarea")) return;
+    var on = deck.classList.contains("on");
+    if (!on) { if ((e.key === "p" || e.key === "P") && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); openDeck(); } return; }
+    switch (e.key) {
+      case "ArrowRight": case "ArrowDown": case " ": case "PageDown": case "Enter": e.preventDefault(); show(cur + 1); break;
+      case "ArrowLeft": case "ArrowUp": case "PageUp": case "Backspace": e.preventDefault(); show(cur - 1); break;
+      case "Home": e.preventDefault(); show(0); break;
+      case "End": e.preventDefault(); show(slides.length - 1); break;
+      case "f": case "F": e.preventDefault(); fullscreen(); break;
+      case "Escape": if (!document.fullscreenElement) closeDeck(); break;
+    }
+  }, true);
+  var m = location.hash.match(/^#slide=([\w.\-]+)/);
+  if (m) openDeck(m[1]);
+})();
+</script>
+
+</html>

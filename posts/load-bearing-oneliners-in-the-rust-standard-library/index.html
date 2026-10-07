@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark light">
+
+    
+<head>
+    
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="base" content="https://barafael.github.io" />
+
+    
+
+    
+
+    
+    
+    
+        <title>
+            
+                Load-Bearing Oneliners in the Rust Standard Library
+            
+        </title>
+
+        
+            <meta property="og:title"
+                  content="Load-Bearing Oneliners in the Rust Standard Library" />
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+    
+
+    
+    
+        <link href=https://barafael.github.io/fonts.css rel="stylesheet" />
+    
+
+    
+    
+
+    
+    
+
+    
+    
+        <script defer src=https://barafael.github.io/js/toc.js></script>
+    
+
+    
+    
+
+    
+
+    
+    
+        
+            
+                <link rel="alternate"
+                      type="application/atom+xml"
+                      title="
+Flipped Bits
+"
+                      href="https://barafael.github.io/atom.xml" />
+            
+        
+    
+
+
+    
+
+    
+    
+        
+            <link id="syntaxLightStyle"
+                  rel="stylesheet"
+                  type="text/css"
+                  href="https://barafael.github.io/giallo-light.css" />
+            <link id="syntaxDarkStyle"
+                  rel="stylesheet"
+                  type="text/css"
+                  href="https://barafael.github.io/giallo-dark.css"
+                  disabled />
+        
+    
+
+    
+    
+        <link rel="stylesheet"
+              type="text/css"
+              href="https://barafael.github.io/theme/light.css" />
+        <link id="darkModeStyle"
+              rel="stylesheet"
+              type="text/css"
+              href="https://barafael.github.io/theme/dark.css" />
+    
+
+    
+        
+            <script>
+                var themeToggleMode = "toggle";
+            </script>
+        
+        <script src=https://barafael.github.io/js/themetoggle.js></script>
+
+        
+            <script>
+                setTheme(getSavedTheme());
+            </script>
+        
+    
+
+
+    <link rel="stylesheet"
+          type="text/css"
+          media="screen"
+          href="https://barafael.github.io/main.css" />
+
+    
+        
+            <link rel="stylesheet" href="https://barafael.github.io/custom.css" />
+        
+    
+
+    <script defer
+                    src="https://barafael.github.io/search_index.en.js?h=c7dd91be02d840433796"></script>
+        <script defer
+                src="https://barafael.github.io/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+
+</head>
+
+
+    <body>
+        
+
+        <div class="left-content">
+            
+            
+        </div>
+
+        <div class="content">
+            <nav>
+    <div class="left-nav">
+        
+            <a href=https://barafael.github.io>Flipped Bits</a>
+        
+
+
+        <div class="socials">
+            
+                
+            
+            
+                <a rel='me' href="https://github.com/barafael/" class="social">
+                    <img alt="github"
+                         src="https://barafael.github.io/icons/social/github.svg" />
+                </a>
+            
+        </div>
+    </div>
+
+    <div class="right-nav">
+        
+            <a href=https://barafael.github.io/posts style="margin-right: 0.5em">/posts</a>
+        
+            <a href=https://barafael.github.io/showcase style="margin-right: 0.5em">/showcase</a>
+        
+            <a href=https://barafael.github.io/cv style="margin-right: 0.5em">/cv</a>
+        
+
+        
+            <button id="search-button"
+                    class="search-button"
+                    title="$SHORTCUT to open search">
+                <img src="https://barafael.github.io/icons/search.svg"
+                     alt="Search"
+                     class="search-icon" />
+            </button>
+
+            <div id="searchModal"
+                 class="search-modal js"
+                 role="dialog"
+                 aria-labelledby="modalTitle">
+                <div id="modal-content">
+                    <h1 id="modalTitle" class="page-header">
+                        Search
+                    </h1>
+                    <div id="searchBar">
+                        <input id="searchInput"
+                               role="combobox"
+                               autocomplete="off"
+                               spellcheck="false"
+                               aria-expanded="false"
+                               aria-controls="results-container"
+                               placeholder="Search..." />
+                        <button id="clear-search" class="clear-button" title="Clear search">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="results-container">
+                        <div id="results-info">
+                            <span id="zero_results" style="display: none;">No results</span>
+                            <span id="one_result" style="display: none;">1 result</span>
+                            <span id="many_results" style="display: none;">$NUMBER results</span>
+                        </div>
+                        <div id="results" role="listbox">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+        
+        
+            <a id="dark-mode-toggle"
+               onclick="toggleTheme(); event.preventDefault();"
+               href="#">
+                <img src="https://barafael.github.io/icons/sun.svg" id="sun-icon" alt="Light" />
+                <img src="https://barafael.github.io/icons/moon.svg"
+                     id="moon-icon"
+                     style="filter: invert(1)"
+                     alt="Dark" />
+                
+            </a>
+
+            <!-- Initialize the theme toggle icons -->
+            <script>
+                updateItemToggleTheme()
+            </script>
+        
+    </div>
+</nav>
+
+
+            
+            
+    
+<div class="visible-element-observer-root" data-selector="main article p">
+    <main>
+        <article>
+            <div class="title">
+                
+                
+
+    <div class="page-header">
+        Load-Bearing Oneliners in the Rust Standard Library
+    </div>
+
+
+
+                <div class="meta">
+                    
+                        Posted on <time>2022-09-14</time>
+                    
+
+
+                    
+
+                    
+
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+                    
+
+                    
+
+                </div>
+            </div>
+
+            
+
+            <section class="body">
+                <p>The Rust language tries to be as minimal as possible.
+Many crucial features and design decisions aren't compiler magic, instead they live in <code>core</code> or other parts of the standard library.
+Here are some:</p>
+<h1 id="shared-references-are-copy-look-don-t-touch">Shared References are <code>Copy</code> (look don't touch)<a class="zola-anchor" href="#shared-references-are-copy-look-don-t-touch" aria-label="Anchor link for: shared-references-are-copy-look-don-t-touch">🔗</a></h1>
+<p>The <code>core::marker::Copy</code> trait marks a type which can be safely copied by simply copying its bits.
+Think <code>bool</code>, <code>f64</code>, <code>Duration</code>, or <code>SocketAddr</code>.</p>
+<p>A shared reference can obviously be copied. Owning a shared reference to a <code>T</code>, i.e., a <code>&amp;T</code>, allows us to copy it.</p>
+<p>Here's the implementation of <code>core::marker::Copy</code> for shared references:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-l-5 z-d-3">///</span><span class="z-l-5 z-d-3"> Shared references can be copied, but mutable references *cannot*!</span></span>
+<span class="giallo-l"><span>#</span><span>[</span><span>stable</span><span>(</span><span>feature </span><span class="z-l-8 z-d-10">=</span><span class="z-l-2 z-d-6"> &quot;</span><span class="z-l-2 z-d-6">rust1</span><span class="z-l-2 z-d-6">&quot;</span><span>,</span><span> since </span><span class="z-l-8 z-d-10">=</span><span class="z-l-2 z-d-6"> &quot;</span><span class="z-l-2 z-d-6">1.0.0</span><span class="z-l-2 z-d-6">&quot;</span><span>)</span><span>]</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-10">impl</span><span>&lt;</span><span class="z-l-6 z-d-7">T</span><span class="z-l-8 z-d-10">:</span><span class="z-l-8 z-d-10"> ?</span><span class="z-l-6 z-d-7">Sized</span><span>&gt;</span><span class="z-l-6 z-d-7"> Copy</span><span class="z-l-8 z-d-10"> for</span><span class="z-l-8 z-d-10"> &amp;</span><span class="z-l-6 z-d-7">T</span><span> {</span><span>}</span></span></code></pre>
+<p>(lives at: https://doc.rust-lang.org/src/core/marker.rs.html#839)</p>
+<p>This means, any shared reference to objects which aren't necessarily even <code>Sized</code> can be copied.
+That's why we even can call a method taking <code>&amp;self</code> - copy the pointer to <code>self</code>, pass it to the method.</p>
+<h1 id="drop-dead-gorgeous">Drop-Dead Gorgeous<a class="zola-anchor" href="#drop-dead-gorgeous" aria-label="Anchor link for: drop-dead-gorgeous">🔗</a></h1>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-l-5 z-d-3">///</span><span class="z-l-5 z-d-3"> --- Doc comment omitted ---</span></span>
+<span class="giallo-l"><span>#</span><span>[</span><span>inline</span><span>]</span></span>
+<span class="giallo-l"><span>#</span><span>[</span><span>stable</span><span>(</span><span>feature </span><span class="z-l-8 z-d-10">=</span><span class="z-l-2 z-d-6"> &quot;</span><span class="z-l-2 z-d-6">rust1</span><span class="z-l-2 z-d-6">&quot;</span><span>,</span><span> since </span><span class="z-l-8 z-d-10">=</span><span class="z-l-2 z-d-6"> &quot;</span><span class="z-l-2 z-d-6">1.0.0</span><span class="z-l-2 z-d-6">&quot;</span><span>)</span><span>]</span></span>
+<span class="giallo-l"><span>#</span><span>[</span><span>cfg_attr</span><span>(</span><span>not</span><span>(</span><span>test</span><span>)</span><span>,</span><span> rustc_diagnostic_item </span><span class="z-l-8 z-d-10">=</span><span class="z-l-2 z-d-6"> &quot;</span><span class="z-l-2 z-d-6">mem_drop</span><span class="z-l-2 z-d-6">&quot;</span><span>)</span><span>]</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-10">pub</span><span class="z-l-8 z-d-10"> fn</span><span class="z-l-6 z-d-7"> drop</span><span>&lt;</span><span class="z-l-6 z-d-7">T</span><span>&gt;</span><span>(</span><span>_x</span><span class="z-l-8 z-d-10">:</span><span class="z-l-6 z-d-7"> T</span><span>)</span><span> {</span><span>}</span></span></code></pre>
+<p>The function <code>drop</code> is passed a <code>T</code> without any trait bounds.
+What can it do with a <code>T</code>?
+It cannot <code>Clone</code> it, cannot do <code>Add</code> or <code>Neg</code>, cannot even <code>Display</code>/<code>Debug</code>.
+And it isn't returning a value of <code>T</code>!
+There isn't much besides <code>{}</code> that would be a valid function body:</p>
+<ul>
+<li>Doing <code>unsafe</code> things to look at <code>T</code> (perilous, <code>T</code> might not be <code>Sized</code>)</li>
+<li>Looping forever</li>
+<li>Producing a value of type <code>Never</code> or <code>core::marker::Infallible</code> (<code>panic</code> and friends, or <code>std::process::exit</code>)</li>
+<li>Taking a shared reference to <code>_x</code>, converting it to a usize, and storing it in a global <code>AtomicUsize</code>:</li>
+</ul>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-l-8 z-d-10">static</span><span class="z-l-6 z-d-7"> R</span><span class="z-l-8 z-d-10">:</span><span class="z-l-6 z-d-7"> AtomicUsize</span><span class="z-l-8 z-d-10"> =</span><span class="z-l-6 z-d-7"> AtomicUsize</span><span class="z-l-8 z-d-10">::</span><span class="z-l-6 z-d-7">new</span><span>(</span><span class="z-l-1 z-d-4">0</span><span>)</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-8 z-d-10">pub</span><span class="z-l-8 z-d-10"> fn</span><span class="z-l-6 z-d-7"> drop</span><span>&lt;</span><span class="z-l-6 z-d-7">T</span><span>&gt;</span><span>(</span><span>_x</span><span class="z-l-8 z-d-10">:</span><span class="z-l-6 z-d-7"> T</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-10">    let</span><span> r</span><span class="z-l-8 z-d-10"> =</span><span class="z-l-8 z-d-10"> &amp;</span><span>_x</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-6 z-d-7">    R</span><span class="z-l-8 z-d-10">.</span><span class="z-l-6 z-d-7">store</span><span>(</span><span>r</span><span class="z-l-8 z-d-10"> as</span><span class="z-l-8 z-d-10"> *</span><span class="z-l-8 z-d-10">const</span><span class="z-l-6 z-d-7"> T</span><span class="z-l-8 z-d-10"> as</span><span class="z-l-6 z-d-7"> usize</span><span>,</span><span class="z-l-6 z-d-7"> Ordering</span><span class="z-l-8 z-d-10">::</span><span class="z-l-6 z-d-7">SeqCst</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Playground: https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=5e603039ddafeac0fdd599d78a59a13e</p>
+
+            </section>
+        </article>
+    </main>
+</div>
+
+
+
+            
+                
+            
+
+            
+        </div>
+
+        <div class="right-content">
+            
+    
+    
+        <div class="toc">
+    <div class="heading">
+        Table of Contents
+    </div>
+    <ul class="toc-list">
+        
+            <li class="parent">
+                
+                <a href="https://barafael.github.io/posts/load-bearing-oneliners-in-the-rust-standard-library/#shared-references-are-copy-look-don-t-touch">Shared References are Copy (look don&#39;t touch)</a>
+
+                
+            </li>
+        
+            <li class="parent">
+                
+                <a href="https://barafael.github.io/posts/load-bearing-oneliners-in-the-rust-standard-library/#drop-dead-gorgeous">Drop-Dead Gorgeous</a>
+
+                
+            </li>
+        
+    </ul>
+</div>
+
+    
+
+        </div>
+        
+
+    </body>
+
+</html>
