@@ -2,6 +2,7 @@
 title = "LLM-assisted Implementation Approaches for a Board Game"
 date = 2025-08-20
 path = "posts/llm-assisted-implementation-approaches-for-a-board-game"
+include_in_feeds = false
 +++
 
 I've been working on `Omdurman`, a Bevy implementation of *Remember Gordon! — The Battle of Omdurman* (1982). It's a turn-based strategy game originally made on paper, where two very different factions battle it out over the Sudanese desert cities and the Nile.

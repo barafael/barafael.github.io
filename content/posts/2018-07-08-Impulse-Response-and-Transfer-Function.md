@@ -1,7 +1,8 @@
 +++
 title = "Impulse Response and Transfer Function"
 date = 2018-07-08
-
+[extra]
+katex = true
 +++
 
 Applying filters to signals is one of the most important applications of mathematics in signal processing.
