@@ -168,6 +168,8 @@ body.has-max { overflow: hidden; }
 .shots.one { max-width: 760px; }
 .shots figure { margin: 0; display: grid; gap: 5px; min-width: 0; align-content: start; }
 .shots img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 4px; background: var(--cell0); }
+.shots pre { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); overflow-x: auto; font: 12px/1.6 var(--mono); }
+.s-media pre { max-width: 100%; max-height: calc(100% - 22px); overflow: auto; }
 .shots figcaption { font: 11.5px/1.4 var(--mono); color: var(--muted); }
 .shots figcaption b { color: var(--fg); font-weight: 500; }
 
@@ -480,7 +482,7 @@ footer p { margin: 0 0 4px; max-width: 90ch; }
       <div class="meta">
         <h3><a href="https://github.com/barafael/fmtron">fmtron</a></h3>
         <div class="figs"><b>18</b> commits · <b>5</b> days</div>
-        <div class="chips"><span class="chip rel">0.7 → 0.10</span></div>
+        <div class="chips"><span class="chip rel">0.7 → 0.10</span><a class="chip live" href="https://barafael.github.io/fmtron/">demo</a></div>
       </div>
       <div class="body">
         <p>RON formatter CLI.</p>
@@ -535,21 +537,23 @@ footer p { margin: 0 0 4px; max-width: 90ch; }
         </ul>
       </div>
     
-      <div class="shots one"><figure><img src="shots/document-formulas.webp" alt="rustdoc page for Kalman1D with predict and update formulas typeset by KaTeX" width="1040" height="570" loading="lazy"><figcaption><b>Rendered rustdoc</b> for <span class="num">kalman::Kalman1D</span>: predict and update, typeset from the function bodies</figcaption></figure></div>
-    </article>
+      <div class="shots"><figure><pre>#[formula_doc]
+pub fn predict(&amp;mut self, acceleration: f64, dt: f64) {
+    let transitioned = self.state + 0.5 * acceleration * dt.powi(2);
+    let propagated = self.covariance + self.process_noise;
+    self.state = transitioned;
+    self.covariance = propagated;
+}
 
-    <article>
-      <div class="meta">
-        <h3><a href="https://codeberg.org/barafael/Thingy">Thingy</a></h3>
-        <div class="figs"><b>17</b> commits · <b>4</b> days</div>
-        <div class="chips"><span class="chip">codeberg</span></div>
-      </div>
-      <div class="body">
-        <p>Rust and Dioxus successor to a Pascal application.</p>
-        <ul>
-          <li><span class="num">thingy-validate</span> checker and an 18-step <span class="num">.description</span> tutorial; anonymous write hole closed, delete requires manage rights; mutexes replaced by one state actor.</li>
-        </ul>
-      </div>
+#[formula_doc]
+pub fn update(&amp;mut self, measurement: f64) {
+    let innovation = measurement - self.state;
+    let gain = self.covariance / (self.covariance + self.measurement_noise);
+    let corrected = self.state + gain * innovation;
+    let covariance = (1.0 - gain) * self.covariance;
+    self.state = corrected;
+    self.covariance = covariance;
+}</pre><figcaption><b>Input</b> · <span class="num">examples/kalman</span>, bodies written as the equations</figcaption></figure><figure><img src="shots/document-formulas.webp" alt="rustdoc page for Kalman1D with predict and update formulas typeset by KaTeX" width="1040" height="570" loading="lazy"><figcaption><b>Rendered rustdoc</b> for <span class="num">kalman::Kalman1D</span>: predict and update, typeset from the function bodies</figcaption></figure></div>
     </article>
   </div>
 
@@ -718,7 +722,6 @@ footer p { margin: 0 0 4px; max-width: 90ch; }
     ["more-actors-with-tokio", "https://github.com/barafael/more-actors-with-tokio", [7,0,0,0,6,5,0,0,0,0,0,2,0,0,0]],
     ["fmtron", "https://github.com/barafael/fmtron", [1,3,0,0,10,1,3,0,0,0,0,0,0,0,0]],
     ["cake", "https://github.com/barafael/cake", [0,0,0,0,0,2,6,0,0,0,1,0,0,9,0]],
-    ["Thingy", "https://codeberg.org/barafael/Thingy", [3,0,4,0,5,5,0,0,0,0,0,0,0,0,0]],
     ["bavovniatko", "https://github.com/barafael/bavovniatko", [0,0,0,0,0,0,1,0,1,2,4,4,1,4,0]],
     ["gnils", "https://github.com/barafael/gnils", [0,0,1,0,8,0,1,0,0,1,1,0,0,0,0]],
     ["flexplore", "https://github.com/barafael/flexplore", [0,0,0,0,0,0,1,0,6,5,0,0,0,0,0]],
@@ -775,7 +778,6 @@ footer p { margin: 0 0 4px; max-width: 90ch; }
     ["more-actors-with-tokio",17541,4973,641,623,7,0,51,51,19069,11371,665],
     ["fmtron",4955,390,850,15,38,9,248707,65,5539,572,762],
     ["cake",15742,1758,603,53,202,2,8661,224,11381,23,438],
-    ["Thingy",3676,1769,817,629,17,3,3910,176226,16419,11628,1242],
     ["bavovniatko",9705,473,15447,581,214,7,290991,11618,3175,3943,13052],
     ["gnils",5144,2704,8,4,30,29,1763,1870,5779,15,55],
     ["flexplore",12196,12761,44,51,240,116,3247,7530,28082,17714,119],
