@@ -1,0 +1,20 @@
+Image sources
+
+Third-party images used in the "More Actors with Tokio" slide deck.
+
+gorch-fock-takelage/Takelage_(Gorch_Fock_II).jpeg
+
+- Source: https://commons.wikimedia.org/wiki/File:Takelage_%28Gorch_Fock_II%29.JPG
+- Author: Mehlauge
+- License: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)
+
+Routing_Diagram_for_Materials_and_for_Printing_Forms_in_a_Manufacturing_Plant/Routing_Diagram_for_Materials_and_for_Printing_Forms_in_a_Manufacturing_Plant,_1914.jpg
+
+- Source: https://commons.wikimedia.org/wiki/File:Routing_Diagram_for_Materials_and_for_Printing_Forms_in_a_Manufacturing_Plant,_1914.jpg
+- Author: Willard Cope Brinton, "Graphic methods for presenting facts", The Engineering Magazine Company, 1914
+- License: Public domain
+
+tokio-logo/tokio-horizontal.svg
+
+- Source: https://tokio.rs/img/tokio-horizontal.svg
+- Trademark of the Tokio project

@@ -3,7 +3,7 @@
 	url = https://github.com/not-matthias/apollo
 [submodule "content/posts/2025-02-19-More-Actors-with-Tokio/marp-theme-rhea"]
 	path = content/posts/2025-02-19-More-Actors-with-Tokio/marp-theme-rhea
-	url = git@github.com:barafael/marp-theme-rhea.git
+	url = https://github.com/barafael/marp-theme-rhea.git
 [submodule "curriculum-vitae"]
 	path = curriculum-vitae
 	url = ../curriculum-vitae

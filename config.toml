@@ -5,14 +5,14 @@ title = "Flipped Bits"
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
 
-# ignore readmes, like the readme of the marp-theme-rhea git submodule
-ignored_content = ["*/README.md"]
+# ignore readmes, like the readme of the marp-theme-rhea git submodule, and
+# other post build tooling that must not end up on the site
+ignored_content = ["*/README.md", "*/justfile", "*/linkify.toml", "**/*.final.html", "**/*.final.pdf", "**/*.autolinked", "**/snippets.json", "*/marp-theme-rhea/**"]
 
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
 theme = "apollo"
-taxonomies = [{ name = "tags" }]
 generate_feeds = true
 feed_filenames = ["atom.xml"]
 

@@ -1,6 +1,8 @@
 +++
 title = "Fourier Transform of Cosine Function"
 date = 2018-08-08
+[extra]
+katex = true
 +++
 
 The Fourier transform maps a signal to its frequency spectrum, denoting exactly at which amplitude a given frequency appears in the signal.
