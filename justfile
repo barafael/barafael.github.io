@@ -1,5 +1,3 @@
-default := "build"
-
 # Build the site into public/
 build:
     zola build
